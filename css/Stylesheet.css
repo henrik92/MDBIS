@@ -1,0 +1,46 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 20.10.2017, 18:31:22
+    Author     : henrik
+*/
+
+
+body {
+    background-color: lightgrey;
+    color: black;
+}
+/*CONTAINER*/
+.container{
+    width: 80%;
+    padding: 10px;
+}
+
+img{
+    width: 50%;
+    height: auto;
+    border-radius: 5px;
+}
+
+ul{
+    list-style-type: none;
+}
+/*SEARCH.PHP*/
+
+.movie-view-image {
+    float: left;
+    width: 30%;
+    text-align: center;
+}
+.movie-view-description {
+    float: left;
+    width: 40%;
+}
+.movie-view-rating {
+    float: left;
+    width: 30%;
+    text-align: center;
+}
