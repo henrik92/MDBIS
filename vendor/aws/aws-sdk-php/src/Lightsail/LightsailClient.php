@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Lightsail;
 
 use Aws\AwsClient;
@@ -102,4 +103,6 @@ use Aws\AwsClient;
  * @method \Aws\Result updateDomainEntry(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateDomainEntryAsync(array $args = [])
  */
-class LightsailClient extends AwsClient {}
+class LightsailClient extends AwsClient {
+    
+}

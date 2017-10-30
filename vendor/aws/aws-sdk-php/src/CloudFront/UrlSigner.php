@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\CloudFront;
 
 use GuzzleHttp\Psr7;
@@ -8,8 +9,8 @@ use Psr\Http\Message\UriInterface;
 /**
  * Creates signed URLs for Amazon CloudFront resources.
  */
-class UrlSigner
-{
+class UrlSigner {
+
     private $signer;
 
     /**
@@ -19,8 +20,7 @@ class UrlSigner
      * @throws \RuntimeException if the openssl extension is missing
      * @throws \InvalidArgumentException if the private key cannot be found.
      */
-    public function __construct($keyPairId, $privateKey)
-    {
+    public function __construct($keyPairId, $privateKey) {
         $this->signer = new Signer($keyPairId, $privateKey);
     }
 
@@ -45,8 +45,7 @@ class UrlSigner
      * @throws \InvalidArgumentException if the URL provided is invalid
      * @link http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/WorkingWithStreamingDistributions.html
      */
-    public function getSignedUrl($url, $expires = null, $policy = null)
-    {
+    public function getSignedUrl($url, $expires = null, $policy = null) {
         // Determine the scheme of the url
         $urlSections = explode('://', $url);
 
@@ -59,21 +58,16 @@ class UrlSigner
         $uri = new Uri($scheme . '://' . $urlSections[1]);
         $query = Psr7\parse_query($uri->getQuery(), PHP_QUERY_RFC3986);
         $signature = $this->signer->getSignature(
-            $this->createResource($scheme, (string) $uri),
-            $expires,
-            $policy
+                $this->createResource($scheme, (string) $uri), $expires, $policy
         );
         $uri = $uri->withQuery(
-            http_build_query($query + $signature, null, '&', PHP_QUERY_RFC3986)
+                http_build_query($query + $signature, null, '&', PHP_QUERY_RFC3986)
         );
 
-        return $scheme === 'rtmp'
-            ? $this->createRtmpUrl($uri)
-            : (string) $uri;
+        return $scheme === 'rtmp' ? $this->createRtmpUrl($uri) : (string) $uri;
     }
 
-    private function createRtmpUrl(UriInterface $uri)
-    {
+    private function createRtmpUrl(UriInterface $uri) {
         // Use a relative URL when creating Flash player URLs
         $result = ltrim($uri->getPath(), '/');
 
@@ -90,8 +84,7 @@ class UrlSigner
      *
      * @return string
      */
-    private function createResource($scheme, $url)
-    {
+    private function createResource($scheme, $url) {
         switch ($scheme) {
             case 'http':
             case 'http*':
@@ -101,8 +94,7 @@ class UrlSigner
                 $parts = parse_url($url);
                 $pathParts = pathinfo($parts['path']);
                 $resource = ltrim(
-                    $pathParts['dirname'] . '/' . $pathParts['basename'],
-                    '/'
+                        $pathParts['dirname'] . '/' . $pathParts['basename'], '/'
                 );
 
                 // Add a query string if present.
@@ -114,6 +106,7 @@ class UrlSigner
         }
 
         throw new \InvalidArgumentException("Invalid URI scheme: {$scheme}. "
-            . "Scheme must be one of: http, https, or rtmp");
+        . "Scheme must be one of: http, https, or rtmp");
     }
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp;
 
 use GuzzleHttp\Cookie\CookieJar;
@@ -22,8 +23,8 @@ use Psr\Http\Message\ResponseInterface;
  * @method Promise\PromiseInterface patchAsync(string|UriInterface $uri, array $options = [])
  * @method Promise\PromiseInterface deleteAsync(string|UriInterface $uri, array $options = [])
  */
-class Client implements ClientInterface
-{
+class Client implements ClientInterface {
+
     /** @var array Default request options */
     private $config;
 
@@ -59,8 +60,7 @@ class Client implements ClientInterface
      *
      * @see \GuzzleHttp\RequestOptions for a list of available request options.
      */
-    public function __construct(array $config = [])
-    {
+    public function __construct(array $config = []) {
         if (!isset($config['handler'])) {
             $config['handler'] = HandlerStack::create();
         } elseif (!is_callable($config['handler'])) {
@@ -75,8 +75,7 @@ class Client implements ClientInterface
         $this->configureDefaults($config);
     }
 
-    public function __call($method, $args)
-    {
+    public function __call($method, $args) {
         if (count($args) < 1) {
             throw new \InvalidArgumentException('Magic request methods require a URI and optional options array');
         }
@@ -84,30 +83,24 @@ class Client implements ClientInterface
         $uri = $args[0];
         $opts = isset($args[1]) ? $args[1] : [];
 
-        return substr($method, -5) === 'Async'
-            ? $this->requestAsync(substr($method, 0, -5), $uri, $opts)
-            : $this->request($method, $uri, $opts);
+        return substr($method, -5) === 'Async' ? $this->requestAsync(substr($method, 0, -5), $uri, $opts) : $this->request($method, $uri, $opts);
     }
 
-    public function sendAsync(RequestInterface $request, array $options = [])
-    {
+    public function sendAsync(RequestInterface $request, array $options = []) {
         // Merge the base URI into the request URI if needed.
         $options = $this->prepareDefaults($options);
 
         return $this->transfer(
-            $request->withUri($this->buildUri($request->getUri(), $options), $request->hasHeader('Host')),
-            $options
+                        $request->withUri($this->buildUri($request->getUri(), $options), $request->hasHeader('Host')), $options
         );
     }
 
-    public function send(RequestInterface $request, array $options = [])
-    {
+    public function send(RequestInterface $request, array $options = []) {
         $options[RequestOptions::SYNCHRONOUS] = true;
         return $this->sendAsync($request, $options)->wait();
     }
 
-    public function requestAsync($method, $uri = '', array $options = [])
-    {
+    public function requestAsync($method, $uri = '', array $options = []) {
         $options = $this->prepareDefaults($options);
         // Remove request modifying parameter because it can be done up-front.
         $headers = isset($options['headers']) ? $options['headers'] : [];
@@ -125,21 +118,16 @@ class Client implements ClientInterface
         return $this->transfer($request, $options);
     }
 
-    public function request($method, $uri = '', array $options = [])
-    {
+    public function request($method, $uri = '', array $options = []) {
         $options[RequestOptions::SYNCHRONOUS] = true;
         return $this->requestAsync($method, $uri, $options)->wait();
     }
 
-    public function getConfig($option = null)
-    {
-        return $option === null
-            ? $this->config
-            : (isset($this->config[$option]) ? $this->config[$option] : null);
+    public function getConfig($option = null) {
+        return $option === null ? $this->config : (isset($this->config[$option]) ? $this->config[$option] : null);
     }
 
-    private function buildUri($uri, array $config)
-    {
+    private function buildUri($uri, array $config) {
         // for BC we accept null which would otherwise fail in uri_for
         $uri = Psr7\uri_for($uri === null ? '' : $uri);
 
@@ -155,18 +143,16 @@ class Client implements ClientInterface
      *
      * @param array $config
      */
-    private function configureDefaults(array $config)
-    {
+    private function configureDefaults(array $config) {
         $defaults = [
             'allow_redirects' => RedirectMiddleware::$defaultSettings,
-            'http_errors'     => true,
-            'decode_content'  => true,
-            'verify'          => true,
-            'cookies'         => false
+            'http_errors' => true,
+            'decode_content' => true,
+            'verify' => true,
+            'cookies' => false
         ];
 
         // Use the standard Linux HTTP_PROXY and HTTPS_PROXY if set.
-
         // We can only trust the HTTP_PROXY environment variable in a CLI
         // process due to the fact that PHP has no reliable mechanism to
         // get environment variables that start with "HTTP_".
@@ -210,8 +196,7 @@ class Client implements ClientInterface
      *
      * @return array
      */
-    private function prepareDefaults($options)
-    {
+    private function prepareDefaults($options) {
         $defaults = $this->config;
 
         if (!empty($defaults['headers'])) {
@@ -256,8 +241,7 @@ class Client implements ClientInterface
      *
      * @return Promise\PromiseInterface
      */
-    private function transfer(RequestInterface $request, array $options)
-    {
+    private function transfer(RequestInterface $request, array $options) {
         // save_to -> sink
         if (isset($options['save_to'])) {
             $options['sink'] = $options['save_to'];
@@ -288,17 +272,16 @@ class Client implements ClientInterface
      *
      * @return RequestInterface
      */
-    private function applyOptions(RequestInterface $request, array &$options)
-    {
+    private function applyOptions(RequestInterface $request, array &$options) {
         $modify = [];
 
         if (isset($options['form_params'])) {
             if (isset($options['multipart'])) {
                 throw new \InvalidArgumentException('You cannot use '
-                    . 'form_params and multipart at the same time. Use the '
-                    . 'form_params option if you want to send application/'
-                    . 'x-www-form-urlencoded requests, and the multipart '
-                    . 'option to send multipart/form-data requests.');
+                . 'form_params and multipart at the same time. Use the '
+                . 'form_params option if you want to send application/'
+                . 'x-www-form-urlencoded requests, and the multipart '
+                . 'option to send multipart/form-data requests.');
             }
             $options['body'] = http_build_query($options['form_params'], '', '&');
             unset($options['form_params']);
@@ -316,8 +299,7 @@ class Client implements ClientInterface
             $options['_conditional']['Content-Type'] = 'application/json';
         }
 
-        if (!empty($options['decode_content'])
-            && $options['decode_content'] !== true
+        if (!empty($options['decode_content']) && $options['decode_content'] !== true
         ) {
             $modify['set_headers']['Accept-Encoding'] = $options['decode_content'];
         }
@@ -345,7 +327,7 @@ class Client implements ClientInterface
             switch ($type) {
                 case 'basic':
                     $modify['set_headers']['Authorization'] = 'Basic '
-                        . base64_encode("$value[0]:$value[1]");
+                            . base64_encode("$value[0]:$value[1]");
                     break;
                 case 'digest':
                     // @todo: Do not rely on curl
@@ -383,7 +365,7 @@ class Client implements ClientInterface
         if ($request->getBody() instanceof Psr7\MultipartStream) {
             // Use a multipart/form-data POST if a Content-Type is not set.
             $options['_conditional']['Content-Type'] = 'multipart/form-data; boundary='
-                . $request->getBody()->getBoundary();
+                    . $request->getBody()->getBoundary();
         }
 
         // Merge in conditional headers if they are not present.
@@ -403,12 +385,12 @@ class Client implements ClientInterface
         return $request;
     }
 
-    private function invalidBody()
-    {
+    private function invalidBody() {
         throw new \InvalidArgumentException('Passing in the "body" request '
-            . 'option as an array to send a POST request has been deprecated. '
-            . 'Please use the "form_params" request option to send a '
-            . 'application/x-www-form-urlencoded request, or the "multipart" '
-            . 'request option to send a multipart/form-data request.');
+        . 'option as an array to send a POST request has been deprecated. '
+        . 'Please use the "form_params" request option to send a '
+        . 'application/x-www-form-urlencoded request, or the "multipart" '
+        . 'request option to send a multipart/form-data request.');
     }
+
 }

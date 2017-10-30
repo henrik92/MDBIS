@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\S3;
 
 use GuzzleHttp\Promise\PromisorInterface;
@@ -9,8 +10,8 @@ use Psr\Http\Message\StreamInterface;
  * Uploads an object to S3, using a PutObject command or a multipart upload as
  * appropriate.
  */
-class ObjectUploader implements PromisorInterface
-{
+class ObjectUploader implements PromisorInterface {
+
     const DEFAULT_MULTIPART_THRESHOLD = 16777216;
 
     private $client;
@@ -21,10 +22,10 @@ class ObjectUploader implements PromisorInterface
     private $options;
     private static $defaults = [
         'before_upload' => null,
-        'concurrency'   => 3,
+        'concurrency' => 3,
         'mup_threshold' => self::DEFAULT_MULTIPART_THRESHOLD,
-        'params'        => [],
-        'part_size'     => null,
+        'params' => [],
+        'part_size' => null,
     ];
 
     /**
@@ -44,12 +45,7 @@ class ObjectUploader implements PromisorInterface
      *                                          the sub command(s).
      */
     public function __construct(
-        S3ClientInterface $client,
-        $bucket,
-        $key,
-        $body,
-        $acl = 'private',
-        array $options = []
+    S3ClientInterface $client, $bucket, $key, $body, $acl = 'private', array $options = []
     ) {
         $this->client = $client;
         $this->bucket = $bucket;
@@ -59,25 +55,24 @@ class ObjectUploader implements PromisorInterface
         $this->options = $options + self::$defaults;
     }
 
-    public function promise()
-    {
+    public function promise() {
         /** @var int $mup_threshold */
         $mup_threshold = $this->options['mup_threshold'];
         if ($this->requiresMultipart($this->body, $mup_threshold)) {
             // Perform a multipart upload.
             return (new MultipartUploader($this->client, $this->body, [
-                    'bucket' => $this->bucket,
-                    'key'    => $this->key,
-                    'acl'    => $this->acl
-                ] + $this->options))->promise();
+                'bucket' => $this->bucket,
+                'key' => $this->key,
+                'acl' => $this->acl
+                    ] + $this->options))->promise();
         } else {
             // Perform a regular PutObject operation.
             $command = $this->client->getCommand('PutObject', [
-                    'Bucket' => $this->bucket,
-                    'Key'    => $this->key,
-                    'Body'   => $this->body,
-                    'ACL'    => $this->acl,
-                ] + $this->options['params']);
+                'Bucket' => $this->bucket,
+                'Key' => $this->key,
+                'Body' => $this->body,
+                'ACL' => $this->acl,
+                    ] + $this->options['params']);
             if (is_callable($this->options['before_upload'])) {
                 $this->options['before_upload']($command);
             }
@@ -85,8 +80,7 @@ class ObjectUploader implements PromisorInterface
         }
     }
 
-    public function upload()
-    {
+    public function upload() {
         return $this->promise()->wait();
     }
 
@@ -100,8 +94,7 @@ class ObjectUploader implements PromisorInterface
      *
      * @return bool
      */
-    private function requiresMultipart(StreamInterface &$body, $threshold)
-    {
+    private function requiresMultipart(StreamInterface &$body, $threshold) {
         // If body size known, compare to threshold to determine if Multipart.
         if ($body->getSize() !== null) {
             return $body->getSize() >= $threshold;
@@ -137,4 +130,5 @@ class ObjectUploader implements PromisorInterface
 
         return true;
     }
+
 }

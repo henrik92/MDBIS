@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Api\Serializer;
 
 use Aws\Api\StructureShape;
@@ -10,12 +11,11 @@ use Aws\Api\TimestampShape;
 /**
  * @internal
  */
-class QueryParamBuilder
-{
+class QueryParamBuilder {
+
     private $methods;
 
-    protected function queryName(Shape $shape, $default = null)
-    {
+    protected function queryName(Shape $shape, $default = null) {
         if (null !== $shape['queryName']) {
             return $shape['queryName'];
         }
@@ -31,13 +31,11 @@ class QueryParamBuilder
         return $default;
     }
 
-    protected function isFlat(Shape $shape)
-    {
+    protected function isFlat(Shape $shape) {
         return $shape['flattened'] === true;
     }
 
-    public function __invoke(StructureShape $shape, array $params)
-    {
+    public function __invoke(StructureShape $shape, array $params) {
         if (!$this->methods) {
             $this->methods = array_fill_keys(get_class_methods($this), true);
         }
@@ -48,8 +46,7 @@ class QueryParamBuilder
         return $query;
     }
 
-    protected function format(Shape $shape, $value, $prefix, array &$query)
-    {
+    protected function format(Shape $shape, $value, $prefix, array &$query) {
         $type = 'format_' . $shape['type'];
         if (isset($this->methods[$type])) {
             $this->{$type}($shape, $value, $prefix, $query);
@@ -59,10 +56,7 @@ class QueryParamBuilder
     }
 
     protected function format_structure(
-        StructureShape $shape,
-        array $value,
-        $prefix,
-        &$query
+    StructureShape $shape, array $value, $prefix, &$query
     ) {
         if ($prefix) {
             $prefix .= '.';
@@ -72,20 +66,14 @@ class QueryParamBuilder
             if ($shape->hasMember($k)) {
                 $member = $shape->getMember($k);
                 $this->format(
-                    $member,
-                    $v,
-                    $prefix . $this->queryName($member, $k),
-                    $query
+                        $member, $v, $prefix . $this->queryName($member, $k), $query
                 );
             }
         }
     }
 
     protected function format_list(
-        ListShape $shape,
-        array $value,
-        $prefix,
-        &$query
+    ListShape $shape, array $value, $prefix, &$query
     ) {
         // Handle empty list serialization
         if (!$value) {
@@ -110,10 +98,7 @@ class QueryParamBuilder
     }
 
     protected function format_map(
-        MapShape $shape,
-        array $value,
-        $prefix,
-        array &$query
+    MapShape $shape, array $value, $prefix, array &$query
     ) {
         $vals = $shape->getValue();
         $keys = $shape->getKey();
@@ -133,22 +118,18 @@ class QueryParamBuilder
         }
     }
 
-    protected function format_blob(Shape $shape, $value, $prefix, array &$query)
-    {
+    protected function format_blob(Shape $shape, $value, $prefix, array &$query) {
         $query[$prefix] = base64_encode($value);
     }
 
     protected function format_timestamp(
-        TimestampShape $shape,
-        $value,
-        $prefix,
-        array &$query
+    TimestampShape $shape, $value, $prefix, array &$query
     ) {
         $query[$prefix] = TimestampShape::format($value, 'iso8601');
     }
 
-    protected function format_boolean(Shape $shape, $value, $prefix, array &$query)
-    {
+    protected function format_boolean(Shape $shape, $value, $prefix, array &$query) {
         $query[$prefix] = ($value) ? 'true' : 'false';
     }
+
 }

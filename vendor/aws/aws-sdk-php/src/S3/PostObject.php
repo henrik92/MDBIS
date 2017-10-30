@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\S3;
 
 use Aws\Credentials\CredentialsInterface;
@@ -7,8 +8,8 @@ use GuzzleHttp\Psr7\Uri;
 /**
  * @deprecated
  */
-class PostObject
-{
+class PostObject {
+
     private $client;
     private $bucket;
     private $formAttributes;
@@ -28,10 +29,7 @@ class PostObject
      *                                      behalf.
      */
     public function __construct(
-        S3ClientInterface $client,
-        $bucket,
-        array $formInputs,
-        $jsonPolicy
+    S3ClientInterface $client, $bucket, array $formInputs, $jsonPolicy
     ) {
         $this->client = $client;
         $this->bucket = $bucket;
@@ -42,8 +40,8 @@ class PostObject
 
         $this->jsonPolicy = $jsonPolicy;
         $this->formAttributes = [
-            'action'  => $this->generateUri(),
-            'method'  => 'POST',
+            'action' => $this->generateUri(),
+            'method' => 'POST',
             'enctype' => 'multipart/form-data'
         ];
 
@@ -57,8 +55,7 @@ class PostObject
      *
      * @return S3ClientInterface
      */
-    public function getClient()
-    {
+    public function getClient() {
         return $this->client;
     }
 
@@ -67,8 +64,7 @@ class PostObject
      *
      * @return string
      */
-    public function getBucket()
-    {
+    public function getBucket() {
         return $this->bucket;
     }
 
@@ -77,8 +73,7 @@ class PostObject
      *
      * @return array
      */
-    public function getFormAttributes()
-    {
+    public function getFormAttributes() {
         return $this->formAttributes;
     }
 
@@ -88,8 +83,7 @@ class PostObject
      * @param string $attribute Form attribute to set.
      * @param string $value     Value to set.
      */
-    public function setFormAttribute($attribute, $value)
-    {
+    public function setFormAttribute($attribute, $value) {
         $this->formAttributes[$attribute] = $value;
     }
 
@@ -98,8 +92,7 @@ class PostObject
      *
      * @return array
      */
-    public function getFormInputs()
-    {
+    public function getFormInputs() {
         return $this->formInputs;
     }
 
@@ -109,8 +102,7 @@ class PostObject
      * @param string $field Field name to set
      * @param string $value Value to set.
      */
-    public function setFormInput($field, $value)
-    {
+    public function setFormInput($field, $value) {
         $this->formInputs[$field] = $value;
     }
 
@@ -119,18 +111,14 @@ class PostObject
      *
      * @return string
      */
-    public function getJsonPolicy()
-    {
+    public function getJsonPolicy() {
         return $this->jsonPolicy;
     }
 
-    private function generateUri()
-    {
+    private function generateUri() {
         $uri = new Uri($this->client->getEndpoint());
 
-        if ($this->client->getConfig('use_path_style_endpoint') === true
-            || ($uri->getScheme() === 'https'
-            && strpos($this->bucket, '.') !== false)
+        if ($this->client->getConfig('use_path_style_endpoint') === true || ($uri->getScheme() === 'https' && strpos($this->bucket, '.') !== false)
         ) {
             // Use path-style URLs
             $uri = $uri->withPath("/{$this->bucket}");
@@ -142,19 +130,16 @@ class PostObject
         return (string) $uri;
     }
 
-    protected function getPolicyAndSignature(CredentialsInterface $creds)
-    {
+    protected function getPolicyAndSignature(CredentialsInterface $creds) {
         $jsonPolicy64 = base64_encode($this->jsonPolicy);
 
         return [
             'AWSAccessKeyId' => $creds->getAccessKeyId(),
-            'policy'    => $jsonPolicy64,
+            'policy' => $jsonPolicy64,
             'signature' => base64_encode(hash_hmac(
-                'sha1',
-                $jsonPolicy64,
-                $creds->getSecretKey(),
-                true
+                            'sha1', $jsonPolicy64, $creds->getSecretKey(), true
             ))
         ];
     }
+
 }

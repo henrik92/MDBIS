@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp;
 
 /**
@@ -8,8 +9,8 @@ namespace GuzzleHttp;
  *
  * @link http://docs.guzzlephp.org/en/v6/request-options.html
  */
-final class RequestOptions
-{
+final class RequestOptions {
+
     /**
      * allow_redirects: (bool|array) Controls redirect behavior. Pass false
      * to disable redirects, pass true to enable redirects, pass an
@@ -252,4 +253,5 @@ final class RequestOptions
      * force_ip_resolve: (bool) Force client to use only ipv4 or ipv6 protocol
      */
     const FORCE_IP_RESOLVE = 'force_ip_resolve';
+
 }

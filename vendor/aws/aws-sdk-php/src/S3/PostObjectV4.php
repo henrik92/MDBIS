@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\S3;
 
 use Aws\Credentials\CredentialsInterface;
@@ -13,8 +14,8 @@ use Aws\Api\TimestampShape as TimestampShape;
  * @link http://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPOST.html
  * @link http://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-post-example.html
  */
-class PostObjectV4
-{
+class PostObjectV4 {
+
     use SignatureTrait;
 
     private $client;
@@ -37,23 +38,19 @@ class PostObjectV4
      *                                      default: 1 hour valid period.
      */
     public function __construct(
-        S3ClientInterface $client,
-        $bucket,
-        array $formInputs,
-        array $options = [],
-        $expiration = '+1 hours'
+    S3ClientInterface $client, $bucket, array $formInputs, array $options = [], $expiration = '+1 hours'
     ) {
         $this->client = $client;
         $this->bucket = $bucket;
 
         // setup form attributes
         $this->formAttributes = [
-            'action'  => $this->generateUri(),
-            'method'  => 'POST',
+            'action' => $this->generateUri(),
+            'method' => 'POST',
             'enctype' => 'multipart/form-data'
         ];
 
-        $credentials   = $this->client->getCredentials()->wait();
+        $credentials = $this->client->getCredentials()->wait();
 
         if ($securityToken = $credentials->getSecurityToken()) {
             array_push($options, ['x-amz-security-token' => $securityToken]);
@@ -72,8 +69,7 @@ class PostObjectV4
         // finalize policy and signature
 
         $this->formInputs += $this->getPolicyAndSignature(
-            $credentials,
-            $policy
+                $credentials, $policy
         );
     }
 
@@ -82,8 +78,7 @@ class PostObjectV4
      *
      * @return S3ClientInterface
      */
-    public function getClient()
-    {
+    public function getClient() {
         return $this->client;
     }
 
@@ -92,8 +87,7 @@ class PostObjectV4
      *
      * @return string
      */
-    public function getBucket()
-    {
+    public function getBucket() {
         return $this->bucket;
     }
 
@@ -102,8 +96,7 @@ class PostObjectV4
      *
      * @return array
      */
-    public function getFormAttributes()
-    {
+    public function getFormAttributes() {
         return $this->formAttributes;
     }
 
@@ -113,8 +106,7 @@ class PostObjectV4
      * @param string $attribute Form attribute to set.
      * @param string $value     Value to set.
      */
-    public function setFormAttribute($attribute, $value)
-    {
+    public function setFormAttribute($attribute, $value) {
         $this->formAttributes[$attribute] = $value;
     }
 
@@ -123,8 +115,7 @@ class PostObjectV4
      *
      * @return array
      */
-    public function getFormInputs()
-    {
+    public function getFormInputs() {
         return $this->formInputs;
     }
 
@@ -134,18 +125,14 @@ class PostObjectV4
      * @param string $field Field name to set
      * @param string $value Value to set.
      */
-    public function setFormInput($field, $value)
-    {
+    public function setFormInput($field, $value) {
         $this->formInputs[$field] = $value;
     }
 
-    private function generateUri()
-    {
+    private function generateUri() {
         $uri = new Uri($this->client->getEndpoint());
 
-        if ($this->client->getConfig('use_path_style_endpoint') === true
-            || ($uri->getScheme() === 'https'
-            && strpos($this->bucket, '.') !== false)
+        if ($this->client->getConfig('use_path_style_endpoint') === true || ($uri->getScheme() === 'https' && strpos($this->bucket, '.') !== false)
         ) {
             // Use path-style URLs
             $uri = $uri->withPath("/{$this->bucket}");
@@ -160,9 +147,8 @@ class PostObjectV4
     }
 
     protected function getPolicyAndSignature(
-        CredentialsInterface $credentials,
-        array $policy
-    ){
+    CredentialsInterface $credentials, array $policy
+    ) {
         $ldt = gmdate(SignatureV4::ISO8601_BASIC);
         $sdt = substr($ldt, 0, 8);
         $policy['conditions'][] = ['X-Amz-Date' => $ldt];
@@ -176,20 +162,18 @@ class PostObjectV4
 
         $jsonPolicy64 = base64_encode(json_encode($policy));
         $key = $this->getSigningKey(
-            $sdt,
-            $region,
-            's3',
-            $credentials->getSecretKey()
+                $sdt, $region, 's3', $credentials->getSecretKey()
         );
 
         return [
             'X-Amz-Credential' => $creds,
             'X-Amz-Algorithm' => "AWS4-HMAC-SHA256",
             'X-Amz-Date' => $ldt,
-            'Policy'           => $jsonPolicy64,
-            'X-Amz-Signature'  => bin2hex(
-                hash_hmac('sha256', $jsonPolicy64, $key, true)
+            'Policy' => $jsonPolicy64,
+            'X-Amz-Signature' => bin2hex(
+                    hash_hmac('sha256', $jsonPolicy64, $key, true)
             ),
         ];
     }
+
 }

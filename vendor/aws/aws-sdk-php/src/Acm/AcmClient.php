@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Acm;
 
 use Aws\AwsClient;
@@ -27,4 +28,6 @@ use Aws\AwsClient;
  * @method \Aws\Result resendValidationEmail(array $args = [])
  * @method \GuzzleHttp\Promise\Promise resendValidationEmailAsync(array $args = [])
  */
-class AcmClient extends AwsClient {}
+class AcmClient extends AwsClient {
+    
+}

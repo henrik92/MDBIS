@@ -1,4 +1,5 @@
 <?php
+
 namespace JmesPath;
 
 /**
@@ -11,8 +12,8 @@ namespace JmesPath;
  * 2. Append the MD5 checksum of the expression.
  * 3. Append ".php"
  */
-class CompilerRuntime
-{
+class CompilerRuntime {
+
     private $parser;
     private $compiler;
     private $cacheDir;
@@ -23,8 +24,7 @@ class CompilerRuntime
      * @param Parser $parser JMESPath parser to utilize
      * @throws \RuntimeException if the cache directory cannot be created
      */
-    public function __construct($dir = null, Parser $parser = null)
-    {
+    public function __construct($dir = null, Parser $parser = null) {
         $this->parser = $parser ?: new Parser();
         $this->compiler = new TreeCompiler();
         $dir = $dir ?: sys_get_temp_dir();
@@ -49,8 +49,7 @@ class CompilerRuntime
      * @return mixed|null Returns the matching data or null
      * @throws \RuntimeException
      */
-    public function __invoke($expression, $data)
-    {
+    public function __invoke($expression, $data) {
         $functionName = 'jmespath_' . md5($expression);
 
         if (!function_exists($functionName)) {
@@ -64,20 +63,16 @@ class CompilerRuntime
         return $functionName($this->interpreter, $data);
     }
 
-    private function compile($filename, $expression, $functionName)
-    {
+    private function compile($filename, $expression, $functionName) {
         $code = $this->compiler->visit(
-            $this->parser->parse($expression),
-            $functionName,
-            $expression
+                $this->parser->parse($expression), $functionName, $expression
         );
 
         if (!file_put_contents($filename, $code)) {
             throw new \RuntimeException(sprintf(
-                'Unable to write the compiled PHP code to: %s (%s)',
-                $filename,
-                var_export(error_get_last(), true)
+                    'Unable to write the compiled PHP code to: %s (%s)', $filename, var_export(error_get_last(), true)
             ));
         }
     }
+
 }

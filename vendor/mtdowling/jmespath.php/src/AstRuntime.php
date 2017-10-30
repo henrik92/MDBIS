@@ -1,19 +1,19 @@
 <?php
+
 namespace JmesPath;
 
 /**
  * Uses an external tree visitor to interpret an AST.
  */
-class AstRuntime
-{
+class AstRuntime {
+
     private $parser;
     private $interpreter;
     private $cache = [];
     private $cachedCount = 0;
 
     public function __construct(
-        Parser $parser = null,
-        callable $fnDispatcher = null
+    Parser $parser = null, callable $fnDispatcher = null
     ) {
         $fnDispatcher = $fnDispatcher ?: FnDispatcher::getInstance();
         $this->interpreter = new TreeInterpreter($fnDispatcher);
@@ -31,8 +31,7 @@ class AstRuntime
      *
      * @return mixed|null Returns the matching data or null
      */
-    public function __invoke($expression, $data)
-    {
+    public function __invoke($expression, $data) {
         if (!isset($this->cache[$expression])) {
             // Clear the AST cache when it hits 1024 entries
             if (++$this->cachedCount > 1024) {
@@ -44,4 +43,5 @@ class AstRuntime
 
         return $this->interpreter->visit($this->cache[$expression], $data);
     }
+
 }

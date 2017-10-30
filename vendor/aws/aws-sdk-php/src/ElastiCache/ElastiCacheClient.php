@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\ElastiCache;
 
 use Aws\AwsClient;
@@ -85,4 +86,6 @@ use Aws\AwsClient;
  * @method \Aws\Result testFailover(array $args = [])
  * @method \GuzzleHttp\Promise\Promise testFailoverAsync(array $args = [])
  */
-class ElastiCacheClient extends AwsClient {}
+class ElastiCacheClient extends AwsClient {
+    
+}

@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\DirectConnect;
 
 use Aws\AwsClient;
@@ -81,4 +82,6 @@ use Aws\AwsClient;
  * @method \Aws\Result updateLag(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateLagAsync(array $args = [])
  */
-class DirectConnectClient extends AwsClient {}
+class DirectConnectClient extends AwsClient {
+    
+}

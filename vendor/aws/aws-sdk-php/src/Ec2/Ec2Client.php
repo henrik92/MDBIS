@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Ec2;
 
 use Aws\AwsClient;
@@ -495,24 +496,20 @@ use Aws\PresignUrlMiddleware;
  * @method \Aws\Result updateSecurityGroupRuleDescriptionsIngress(array $args = []) (supported in versions 2016-11-15)
  * @method \GuzzleHttp\Promise\Promise updateSecurityGroupRuleDescriptionsIngressAsync(array $args = []) (supported in versions 2016-11-15)
  */
-class Ec2Client extends AwsClient
-{
-    public function __construct(array $args)
-    {
+class Ec2Client extends AwsClient {
+
+    public function __construct(array $args) {
         $args['with_resolved'] = function (array $args) {
             $this->getHandlerList()->appendInit(
-                PresignUrlMiddleware::wrap(
-                    $this,
-                    $args['endpoint_provider'],
-                    [
+                    PresignUrlMiddleware::wrap(
+                            $this, $args['endpoint_provider'], [
                         'operations' => [
                             'CopySnapshot',
                         ],
                         'service' => 'ec2',
                         'presign_param' => 'PresignedUrl',
-                    ]
-                ),
-                'ec2.copy_snapshot'
+                            ]
+                    ), 'ec2.copy_snapshot'
             );
         };
 
@@ -523,20 +520,18 @@ class Ec2Client extends AwsClient
      * @internal
      * @codeCoverageIgnore
      */
-    public static function applyDocFilters(array $api, array $docs)
-    {
+    public static function applyDocFilters(array $api, array $docs) {
         // Several copy snapshot parameters are optional.
-        $docs['shapes']['String']['refs']['CopySnapshotRequest$PresignedUrl']
-            = '<div class="alert alert-info">The SDK will compute this value '
-            . 'for you on your behalf.</div>';
-        $docs['shapes']['String']['refs']['CopySnapshotRequest$DestinationRegion']
-            = '<div class="alert alert-info">The SDK will populate this '
-            . 'parameter on your behalf using the configured region value of '
-            . 'the client.</div>';
+        $docs['shapes']['String']['refs']['CopySnapshotRequest$PresignedUrl'] = '<div class="alert alert-info">The SDK will compute this value '
+                . 'for you on your behalf.</div>';
+        $docs['shapes']['String']['refs']['CopySnapshotRequest$DestinationRegion'] = '<div class="alert alert-info">The SDK will populate this '
+                . 'parameter on your behalf using the configured region value of '
+                . 'the client.</div>';
 
         return [
             new Service($api, ApiProvider::defaultProvider()),
             new DocModel($docs)
         ];
     }
+
 }

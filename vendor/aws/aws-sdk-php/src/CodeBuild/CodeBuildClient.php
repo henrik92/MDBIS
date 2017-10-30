@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\CodeBuild;
 
 use Aws\AwsClient;
@@ -34,4 +35,6 @@ use Aws\AwsClient;
  * @method \Aws\Result updateProject(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateProjectAsync(array $args = [])
  */
-class CodeBuildClient extends AwsClient {}
+class CodeBuildClient extends AwsClient {
+    
+}

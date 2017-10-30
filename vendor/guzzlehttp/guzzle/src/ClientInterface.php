@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp;
 
 use GuzzleHttp\Promise\PromiseInterface;
@@ -10,8 +11,8 @@ use Psr\Http\Message\UriInterface;
 /**
  * Client interface for sending HTTP requests.
  */
-interface ClientInterface
-{
+interface ClientInterface {
+
     const VERSION = '6.2.1';
 
     /**

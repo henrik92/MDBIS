@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\ServiceCatalog;
 
 use Aws\AwsClient;
@@ -112,4 +113,6 @@ use Aws\AwsClient;
  * @method \Aws\Result updateTagOption(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateTagOptionAsync(array $args = [])
  */
-class ServiceCatalogClient extends AwsClient {}
+class ServiceCatalogClient extends AwsClient {
+    
+}

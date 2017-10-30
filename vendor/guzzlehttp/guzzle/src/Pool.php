@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp;
 
 use GuzzleHttp\Promise\PromisorInterface;
@@ -16,8 +17,8 @@ use GuzzleHttp\Promise\EachPromise;
  * "request_options" array that should be merged on top of any existing
  * options, and the function MUST then return a wait-able promise.
  */
-class Pool implements PromisorInterface
-{
+class Pool implements PromisorInterface {
+
     /** @var EachPromise */
     private $each;
 
@@ -32,9 +33,7 @@ class Pool implements PromisorInterface
      *     - rejected: (callable) Function to invoke when a request is rejected.
      */
     public function __construct(
-        ClientInterface $client,
-        $requests,
-        array $config = []
+    ClientInterface $client, $requests, array $config = []
     ) {
         // Backwards compatibility.
         if (isset($config['pool_size'])) {
@@ -59,9 +58,9 @@ class Pool implements PromisorInterface
                     yield $key => $rfn($opts);
                 } else {
                     throw new \InvalidArgumentException('Each value yielded by '
-                        . 'the iterator must be a Psr7\Http\Message\RequestInterface '
-                        . 'or a callable that returns a promise that fulfills '
-                        . 'with a Psr7\Message\Http\ResponseInterface object.');
+                    . 'the iterator must be a Psr7\Http\Message\RequestInterface '
+                    . 'or a callable that returns a promise that fulfills '
+                    . 'with a Psr7\Message\Http\ResponseInterface object.');
                 }
             }
         };
@@ -69,8 +68,7 @@ class Pool implements PromisorInterface
         $this->each = new EachPromise($requests(), $config);
     }
 
-    public function promise()
-    {
+    public function promise() {
         return $this->each->promise();
     }
 
@@ -92,9 +90,7 @@ class Pool implements PromisorInterface
      * @throws \InvalidArgumentException if the event format is incorrect.
      */
     public static function batch(
-        ClientInterface $client,
-        $requests,
-        array $options = []
+    ClientInterface $client, $requests, array $options = []
     ) {
         $res = [];
         self::cmpCallback($options, 'fulfilled', $res);
@@ -106,8 +102,7 @@ class Pool implements PromisorInterface
         return $res;
     }
 
-    private static function cmpCallback(array &$options, $name, array &$results)
-    {
+    private static function cmpCallback(array &$options, $name, array &$results) {
         if (!isset($options[$name])) {
             $options[$name] = function ($v, $k) use (&$results) {
                 $results[$k] = $v;
@@ -120,4 +115,5 @@ class Pool implements PromisorInterface
             };
         }
     }
+
 }

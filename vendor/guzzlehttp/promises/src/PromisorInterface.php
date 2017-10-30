@@ -1,11 +1,12 @@
 <?php
+
 namespace GuzzleHttp\Promise;
 
 /**
  * Interface used with classes that return a promise.
  */
-interface PromisorInterface
-{
+interface PromisorInterface {
+
     /**
      * Returns a promise.
      *

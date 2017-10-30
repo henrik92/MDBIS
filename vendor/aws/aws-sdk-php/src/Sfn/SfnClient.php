@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Sfn;
 
 use Aws\AwsClient;
@@ -40,4 +41,6 @@ use Aws\AwsClient;
  * @method \Aws\Result stopExecution(array $args = [])
  * @method \GuzzleHttp\Promise\Promise stopExecutionAsync(array $args = [])
  */
-class SfnClient extends AwsClient {}
+class SfnClient extends AwsClient {
+    
+}

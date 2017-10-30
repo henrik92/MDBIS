@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Glacier;
 
 use Aws\HashInterface;
@@ -6,8 +7,8 @@ use Aws\HashInterface;
 /**
  * Encapsulates the creation of a tree hash from streamed data
  */
-class TreeHash implements HashInterface
-{
+class TreeHash implements HashInterface {
+
     const MB = 1048576;
     const EMPTY_HASH = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
 
@@ -23,8 +24,7 @@ class TreeHash implements HashInterface
     /** @var string Resulting hash in binary form. */
     private $hash;
 
-    public function __construct($algorithm = 'sha256')
-    {
+    public function __construct($algorithm = 'sha256') {
         $this->algorithm = $algorithm;
         $this->reset();
     }
@@ -33,12 +33,11 @@ class TreeHash implements HashInterface
      * {@inheritdoc}
      * @throws \LogicException if the root tree hash is already calculated
      */
-    public function update($data)
-    {
+    public function update($data) {
         // Error if hash is already calculated.
         if ($this->hash) {
             throw new \LogicException('You may not add more data to a '
-                . 'complete tree hash.');
+            . 'complete tree hash.');
         }
 
         // Buffer incoming data.
@@ -63,12 +62,11 @@ class TreeHash implements HashInterface
      * @return self
      * @throws \LogicException if the root tree hash is already calculated
      */
-    public function addChecksum($checksum, $inBinaryForm = false)
-    {
+    public function addChecksum($checksum, $inBinaryForm = false) {
         // Error if hash is already calculated
         if ($this->hash) {
             throw new \LogicException('You may not add more checksums to a '
-                . 'complete tree hash.');
+            . 'complete tree hash.');
         }
 
         // Convert the checksum to binary form if necessary
@@ -77,8 +75,7 @@ class TreeHash implements HashInterface
         return $this;
     }
 
-    public function complete()
-    {
+    public function complete() {
         if (!$this->hash) {
             // Clear out the remaining buffer.
             if (strlen($this->buffer) > 0) {
@@ -97,9 +94,7 @@ class TreeHash implements HashInterface
                 $sets = array_chunk($hashes, 2);
                 $hashes = array();
                 foreach ($sets as $set) {
-                    $hashes[] = (count($set) === 1)
-                        ? $set[0]
-                        : hash($this->algorithm, $set[0] . $set[1], true);
+                    $hashes[] = (count($set) === 1) ? $set[0] : hash($this->algorithm, $set[0] . $set[1], true);
                 }
             }
 
@@ -109,10 +104,10 @@ class TreeHash implements HashInterface
         return $this->hash;
     }
 
-    public function reset()
-    {
+    public function reset() {
         $this->hash = null;
         $this->checksums = [];
         $this->buffer = '';
     }
+
 }

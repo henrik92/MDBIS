@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Pinpoint;
 
 use Aws\AwsClient;
@@ -114,4 +115,6 @@ use Aws\AwsClient;
  * @method \Aws\Result updateSmsChannel(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateSmsChannelAsync(array $args = [])
  */
-class PinpointClient extends AwsClient {}
+class PinpointClient extends AwsClient {
+    
+}

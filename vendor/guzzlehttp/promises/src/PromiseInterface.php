@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp\Promise;
 
 /**
@@ -10,8 +11,8 @@ namespace GuzzleHttp\Promise;
  *
  * @link https://promisesaplus.com/
  */
-interface PromiseInterface
-{
+interface PromiseInterface {
+
     const PENDING = 'pending';
     const FULFILLED = 'fulfilled';
     const REJECTED = 'rejected';
@@ -26,8 +27,7 @@ interface PromiseInterface
      * @return PromiseInterface
      */
     public function then(
-        callable $onFulfilled = null,
-        callable $onRejected = null
+    callable $onFulfilled = null, callable $onRejected = null
     );
 
     /**

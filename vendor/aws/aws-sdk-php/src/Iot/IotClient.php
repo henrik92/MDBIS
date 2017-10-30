@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Iot;
 
 use Aws\AwsClient;
@@ -121,4 +122,6 @@ use Aws\AwsClient;
  * @method \Aws\Result updateThing(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateThingAsync(array $args = [])
  */
-class IotClient extends AwsClient {}
+class IotClient extends AwsClient {
+    
+}

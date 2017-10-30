@@ -1,12 +1,13 @@
 <?php
+
 namespace Aws\Credentials;
 
 /**
  * Basic implementation of the AWS Credentials interface that allows callers to
  * pass in the AWS Access Key and AWS Secret Access Key in the constructor.
  */
-class Credentials implements CredentialsInterface, \Serializable
-{
+class Credentials implements CredentialsInterface, \Serializable {
+
     private $key;
     private $secret;
     private $token;
@@ -21,66 +22,53 @@ class Credentials implements CredentialsInterface, \Serializable
      * @param string $token   Security token to use
      * @param int    $expires UNIX timestamp for when credentials expire
      */
-    public function __construct($key, $secret, $token = null, $expires = null)
-    {
+    public function __construct($key, $secret, $token = null, $expires = null) {
         $this->key = trim($key);
         $this->secret = trim($secret);
         $this->token = $token;
         $this->expires = $expires;
     }
 
-    public static function __set_state(array $state)
-    {
+    public static function __set_state(array $state) {
         return new self(
-            $state['key'],
-            $state['secret'],
-            $state['token'],
-            $state['expires']
+                $state['key'], $state['secret'], $state['token'], $state['expires']
         );
     }
 
-    public function getAccessKeyId()
-    {
+    public function getAccessKeyId() {
         return $this->key;
     }
 
-    public function getSecretKey()
-    {
+    public function getSecretKey() {
         return $this->secret;
     }
 
-    public function getSecurityToken()
-    {
+    public function getSecurityToken() {
         return $this->token;
     }
 
-    public function getExpiration()
-    {
+    public function getExpiration() {
         return $this->expires;
     }
 
-    public function isExpired()
-    {
+    public function isExpired() {
         return $this->expires !== null && time() >= $this->expires;
     }
 
-    public function toArray()
-    {
+    public function toArray() {
         return [
-            'key'     => $this->key,
-            'secret'  => $this->secret,
-            'token'   => $this->token,
+            'key' => $this->key,
+            'secret' => $this->secret,
+            'token' => $this->token,
             'expires' => $this->expires
         ];
     }
 
-    public function serialize()
-    {
+    public function serialize() {
         return json_encode($this->toArray());
     }
 
-    public function unserialize($serialized)
-    {
+    public function unserialize($serialized) {
         $data = json_decode($serialized, true);
 
         $this->key = $data['key'];
@@ -88,4 +76,5 @@ class Credentials implements CredentialsInterface, \Serializable
         $this->token = $data['token'];
         $this->expires = $data['expires'];
     }
+
 }

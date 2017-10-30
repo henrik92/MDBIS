@@ -1,12 +1,13 @@
 <?php
+
 namespace Aws\Api;
 
 /**
  * DateTime overrides that make DateTime work more seamlessly as a string,
  * with JSON documents, and with JMESPath.
  */
-class DateTimeResult extends \DateTime implements \JsonSerializable
-{
+class DateTimeResult extends \DateTime implements \JsonSerializable {
+
     /**
      * Create a new DateTimeResult from a unix timestamp.
      *
@@ -14,8 +15,7 @@ class DateTimeResult extends \DateTime implements \JsonSerializable
      *
      * @return DateTimeResult
      */
-    public static function fromEpoch($unixTimestamp)
-    {
+    public static function fromEpoch($unixTimestamp) {
         return new self(gmdate('c', $unixTimestamp));
     }
 
@@ -24,8 +24,7 @@ class DateTimeResult extends \DateTime implements \JsonSerializable
      *
      * @return string
      */
-    public function __toString()
-    {
+    public function __toString() {
         return $this->format('c');
     }
 
@@ -34,8 +33,8 @@ class DateTimeResult extends \DateTime implements \JsonSerializable
      *
      * @return mixed|string
      */
-    public function jsonSerialize()
-    {
+    public function jsonSerialize() {
         return (string) $this;
     }
+
 }

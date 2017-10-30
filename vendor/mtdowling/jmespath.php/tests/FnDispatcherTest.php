@@ -1,12 +1,12 @@
 <?php
+
 namespace JmesPath\Tests;
 
 use JmesPath\FnDispatcher;
 
-class FnDispatcherTest extends \PHPUnit_Framework_TestCase
-{
-    public function testConvertsToString()
-    {
+class FnDispatcherTest extends \PHPUnit_Framework_TestCase {
+
+    public function testConvertsToString() {
         $fn = new FnDispatcher();
         $this->assertEquals('foo', $fn('to_string', ['foo']));
         $this->assertEquals('1', $fn('to_string', [1]));
@@ -17,25 +17,25 @@ class FnDispatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('foo', $fn('to_string', [new _TestStringClass()]));
         $this->assertEquals('"foo"', $fn('to_string', [new _TestJsonStringClass()]));
     }
+
 }
 
-class _TestStringClass
-{
-    public function __toString()
-    {
+class _TestStringClass {
+
+    public function __toString() {
         return 'foo';
     }
+
 }
 
-class _TestJsonStringClass implements \JsonSerializable
-{
-    public function __toString()
-    {
+class _TestJsonStringClass implements \JsonSerializable {
+
+    public function __toString() {
         return 'no!';
     }
 
-    public function jsonSerialize()
-    {
+    public function jsonSerialize() {
         return 'foo';
     }
+
 }

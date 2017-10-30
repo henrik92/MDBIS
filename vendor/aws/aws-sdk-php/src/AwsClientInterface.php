@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws;
 
 use Psr\Http\Message\UriInterface;
@@ -7,8 +8,8 @@ use GuzzleHttp\Promise\PromiseInterface;
 /**
  * Represents an AWS client.
  */
-interface AwsClientInterface
-{
+interface AwsClientInterface {
+
     /**
      * Creates and executes a command for an operation by name.
      *

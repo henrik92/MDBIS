@@ -1,12 +1,13 @@
 <?php
+
 namespace Aws\S3\Exception;
 
 /**
  * Exception thrown when errors occur while deleting objects using a
  * {@see S3\BatchDelete} object.
  */
-class DeleteMultipleObjectsException extends \Exception
-{
+class DeleteMultipleObjectsException extends \Exception {
+
     private $deleted = [];
     private $errors = [];
 
@@ -14,13 +15,12 @@ class DeleteMultipleObjectsException extends \Exception
      * @param array       $deleted Array of successfully deleted keys
      * @param array       $errors  Array of errors that were encountered
      */
-    public function __construct(array $deleted, array $errors)
-    {
+    public function __construct(array $deleted, array $errors) {
         $this->deleted = array_values($deleted);
         $this->errors = array_values($errors);
         parent::__construct('Unable to delete certain keys when executing a'
-            . ' DeleteMultipleObjects request: '
-            . self::createMessageFromErrors($errors));
+                . ' DeleteMultipleObjects request: '
+                . self::createMessageFromErrors($errors));
     }
 
     /**
@@ -30,11 +30,10 @@ class DeleteMultipleObjectsException extends \Exception
      *
      * @return string
      */
-    public static function createMessageFromErrors(array $errors)
-    {
+    public static function createMessageFromErrors(array $errors) {
         return "\n- " . implode("\n- ", array_map(function ($key) {
-            return json_encode($key);
-        }, $errors));
+                            return json_encode($key);
+                        }, $errors));
     }
 
     /**
@@ -43,8 +42,7 @@ class DeleteMultipleObjectsException extends \Exception
      * @return array Returns an array of associative arrays, each containing
      *               a 'Code', 'Message', and 'Key' key.
      */
-    public function getErrors()
-    {
+    public function getErrors() {
         return $this->errors;
     }
 
@@ -55,8 +53,8 @@ class DeleteMultipleObjectsException extends \Exception
      *               a 'Key' and optionally 'DeleteMarker' and
      *              'DeleterMarkerVersionId'
      */
-    public function getDeleted()
-    {
+    public function getDeleted() {
         return $this->deleted;
     }
+
 }

@@ -13,25 +13,21 @@ foreach (glob($dir . '/*.json') as $file) {
 }
 echo "\nTotal time: {$total}\n";
 
-function runSuite($file)
-{
+function runSuite($file) {
     $contents = file_get_contents($file);
     $json = json_decode($contents, true);
     $total = 0;
     foreach ($json as $suite) {
         foreach ($suite['cases'] as $case) {
             $total += runCase(
-                $suite['given'],
-                $case['expression'],
-                $case['name']
+                    $suite['given'], $case['expression'], $case['name']
             );
         }
     }
     return $total;
 }
 
-function runCase($given, $expression, $name)
-{
+function runCase($given, $expression, $name) {
     $best = 99999;
     $runtime = \JmesPath\Env::createRuntime();
 

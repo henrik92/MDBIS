@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\ElasticLoadBalancingV2;
 
 use Aws\AwsClient;
@@ -77,4 +78,6 @@ use Psr\Http\Message\RequestInterface;
  * @method \Aws\Result setSubnets(array $args = [])
  * @method \GuzzleHttp\Promise\Promise setSubnetsAsync(array $args = [])
  */
-class ElasticLoadBalancingV2Client extends AwsClient {}
+class ElasticLoadBalancingV2Client extends AwsClient {
+    
+}

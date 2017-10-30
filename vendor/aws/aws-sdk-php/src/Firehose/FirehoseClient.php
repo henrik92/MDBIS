@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Firehose;
 
 use Aws\AwsClient;
@@ -23,4 +24,6 @@ use Aws\AwsClient;
  * @method \Aws\Result updateDestination(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateDestinationAsync(array $args = [])
  */
-class FirehoseClient extends AwsClient {}
+class FirehoseClient extends AwsClient {
+    
+}

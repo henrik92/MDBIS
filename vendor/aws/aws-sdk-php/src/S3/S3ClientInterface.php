@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\S3;
 
 use Aws\AwsClientInterface;
@@ -7,8 +8,8 @@ use Aws\ResultInterface;
 use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\RequestInterface;
 
-interface S3ClientInterface extends AwsClientInterface
-{
+interface S3ClientInterface extends AwsClientInterface {
+
     /**
      * Create a pre-signed URL for the given S3 command object.
      *
@@ -79,10 +80,7 @@ interface S3ClientInterface extends AwsClientInterface
      * @throws \RuntimeException if no prefix and no regex is given
      */
     public function deleteMatchingObjects(
-        $bucket,
-        $prefix = '',
-        $regex = '',
-        array $options = []
+    $bucket, $prefix = '', $regex = '', array $options = []
     );
 
     /**
@@ -101,10 +99,7 @@ interface S3ClientInterface extends AwsClientInterface
      *                              objects are deleted.
      */
     public function deleteMatchingObjectsAsync(
-        $bucket,
-        $prefix = '',
-        $regex = '',
-        array $options = []
+    $bucket, $prefix = '', $regex = '', array $options = []
     );
 
     /**
@@ -140,11 +135,7 @@ interface S3ClientInterface extends AwsClientInterface
      * @return ResultInterface Returns the result of the upload.
      */
     public function upload(
-        $bucket,
-        $key,
-        $body,
-        $acl = 'private',
-        array $options = []
+    $bucket, $key, $body, $acl = 'private', array $options = []
     );
 
     /**
@@ -163,11 +154,7 @@ interface S3ClientInterface extends AwsClientInterface
      *                              with the result of the upload.
      */
     public function uploadAsync(
-        $bucket,
-        $key,
-        $body,
-        $acl = 'private',
-        array $options = []
+    $bucket, $key, $body, $acl = 'private', array $options = []
     );
 
     /**
@@ -200,12 +187,7 @@ interface S3ClientInterface extends AwsClientInterface
      * @return ResultInterface Returns the result of the copy.
      */
     public function copy(
-        $fromBucket,
-        $fromKey,
-        $destBucket,
-        $destKey,
-        $acl = 'private',
-        array $options = []
+    $fromBucket, $fromKey, $destBucket, $destKey, $acl = 'private', array $options = []
     );
 
     /**
@@ -223,12 +205,7 @@ interface S3ClientInterface extends AwsClientInterface
      *                              with the result of the copy.
      */
     public function copyAsync(
-        $fromBucket,
-        $fromKey,
-        $destBucket,
-        $destKey,
-        $acl = 'private',
-        array $options = []
+    $fromBucket, $fromKey, $destBucket, $destKey, $acl = 'private', array $options = []
     );
 
     /**
@@ -242,10 +219,7 @@ interface S3ClientInterface extends AwsClientInterface
      * @see Aws\S3\Transfer for more options and customization
      */
     public function uploadDirectory(
-        $directory,
-        $bucket,
-        $keyPrefix = null,
-        array $options = []
+    $directory, $bucket, $keyPrefix = null, array $options = []
     );
 
     /**
@@ -262,10 +236,7 @@ interface S3ClientInterface extends AwsClientInterface
      *                          complete.
      */
     public function uploadDirectoryAsync(
-        $directory,
-        $bucket,
-        $keyPrefix = null,
-        array $options = []
+    $directory, $bucket, $keyPrefix = null, array $options = []
     );
 
     /**
@@ -277,10 +248,7 @@ interface S3ClientInterface extends AwsClientInterface
      * @param array  $options   Options available in Aws\S3\Transfer::__construct
      */
     public function downloadBucket(
-        $directory,
-        $bucket,
-        $keyPrefix = '',
-        array $options = []
+    $directory, $bucket, $keyPrefix = '', array $options = []
     );
 
     /**
@@ -295,10 +263,7 @@ interface S3ClientInterface extends AwsClientInterface
      *                          complete.
      */
     public function downloadBucketAsync(
-        $directory,
-        $bucket,
-        $keyPrefix = '',
-        array $options = []
+    $directory, $bucket, $keyPrefix = '', array $options = []
     );
 
     /**

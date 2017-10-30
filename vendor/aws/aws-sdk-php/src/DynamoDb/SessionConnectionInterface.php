@@ -1,12 +1,13 @@
 <?php
+
 namespace Aws\DynamoDb;
 
 /**
  * The session connection provides the underlying logic for interacting with
  * Amazon DynamoDB and performs all of the reading and writing operations.
  */
-interface SessionConnectionInterface
-{
+interface SessionConnectionInterface {
+
     /**
      * Reads session data from DynamoDB
      *

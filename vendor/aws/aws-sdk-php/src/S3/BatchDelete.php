@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\S3;
 
 use Aws\AwsClientInterface;
@@ -34,15 +35,19 @@ use GuzzleHttp\Promise\PromiseInterface;
  *
  * @link http://docs.aws.amazon.com/AmazonS3/latest/API/multiobjectdeleteapi.html
  */
-class BatchDelete implements PromisorInterface
-{
+class BatchDelete implements PromisorInterface {
+
     private $bucket;
+
     /** @var AwsClientInterface */
     private $client;
+
     /** @var callable */
     private $before;
+
     /** @var PromiseInterface */
     private $cachedPromise;
+
     /** @var callable */
     private $promiseCreator;
     private $batchSize = 1000;
@@ -60,24 +65,22 @@ class BatchDelete implements PromisorInterface
      * @return BatchDelete
      */
     public static function fromListObjects(
-        AwsClientInterface $client,
-        array $listObjectsParams,
-        array $options = []
+    AwsClientInterface $client, array $listObjectsParams, array $options = []
     ) {
         $iter = $client->getPaginator('ListObjects', $listObjectsParams);
         $bucket = $listObjectsParams['Bucket'];
         $fn = function (BatchDelete $that) use ($iter) {
             return $iter->each(function ($result) use ($that) {
-                $promises = [];
-                if (is_array($result['Contents'])) {
-                    foreach ($result['Contents'] as $object) {
-                        if ($promise = $that->enqueue($object)) {
-                            $promises[] = $promise;
+                        $promises = [];
+                        if (is_array($result['Contents'])) {
+                            foreach ($result['Contents'] as $object) {
+                                if ($promise = $that->enqueue($object)) {
+                                    $promises[] = $promise;
+                                }
+                            }
                         }
-                    }
-                }
-                return $promises ? Promise\all($promises) : null;
-            });
+                        return $promises ? Promise\all($promises) : null;
+                    });
         };
 
         return new self($client, $bucket, $fn, $options);
@@ -94,10 +97,7 @@ class BatchDelete implements PromisorInterface
      * @return BatchDelete
      */
     public static function fromIterator(
-        AwsClientInterface $client,
-        $bucket,
-        \Iterator $iter,
-        array $options = []
+    AwsClientInterface $client, $bucket, \Iterator $iter, array $options = []
     ) {
         $fn = function (BatchDelete $that) use ($iter) {
             return \GuzzleHttp\Promise\coroutine(function () use ($that, $iter) {
@@ -112,8 +112,7 @@ class BatchDelete implements PromisorInterface
         return new self($client, $bucket, $fn, $options);
     }
 
-    public function promise()
-    {
+    public function promise() {
         if (!$this->cachedPromise) {
             $this->cachedPromise = $this->createPromise();
         }
@@ -126,8 +125,7 @@ class BatchDelete implements PromisorInterface
      *
      * @throws DeleteMultipleObjectsException on error.
      */
-    public function delete()
-    {
+    public function delete() {
         $this->promise()->wait();
     }
 
@@ -140,10 +138,7 @@ class BatchDelete implements PromisorInterface
      * @throws \InvalidArgumentException if the provided batch_size is <= 0
      */
     private function __construct(
-        AwsClientInterface $client,
-        $bucket,
-        callable $promiseFn,
-        array $options = []
+    AwsClientInterface $client, $bucket, callable $promiseFn, array $options = []
     ) {
         $this->client = $client;
         $this->bucket = $bucket;
@@ -164,16 +159,12 @@ class BatchDelete implements PromisorInterface
         }
     }
 
-    private function enqueue(array $obj)
-    {
+    private function enqueue(array $obj) {
         $this->queue[] = $obj;
-        return count($this->queue) >= $this->batchSize
-            ? $this->flushQueue()
-            : null;
+        return count($this->queue) >= $this->batchSize ? $this->flushQueue() : null;
     }
 
-    private function flushQueue()
-    {
+    private function flushQueue() {
         static $validKeys = ['Key' => true, 'VersionId' => true];
 
         if (count($this->queue) === 0) {
@@ -195,15 +186,14 @@ class BatchDelete implements PromisorInterface
         }
 
         return $this->client->executeAsync($command)
-            ->then(function ($result) {
-                if (!empty($result['Errors'])) {
-                    throw new DeleteMultipleObjectsException(
-                        $result['Deleted'] ?: [],
-                        $result['Errors']
-                    );
-                }
-                return $result;
-            });
+                        ->then(function ($result) {
+                            if (!empty($result['Errors'])) {
+                                throw new DeleteMultipleObjectsException(
+                                $result['Deleted'] ?: [], $result['Errors']
+                                );
+                            }
+                            return $result;
+                        });
     }
 
     /**
@@ -211,8 +201,7 @@ class BatchDelete implements PromisorInterface
      *
      * @return PromiseInterface
      */
-    private function createPromise()
-    {
+    private function createPromise() {
         // Create the promise
         $promise = call_user_func($this->promiseCreator, $this);
         $this->promiseCreator = null;
@@ -224,14 +213,14 @@ class BatchDelete implements PromisorInterface
 
         // When done, ensure cleanup and that any remaining are processed.
         return $promise->then(
-            function () use ($cleanup)  {
-                return Promise\promise_for($this->flushQueue())
-                    ->then($cleanup);
-            },
-            function ($reason) use ($cleanup)  {
-                $cleanup();
-                return Promise\rejection_for($reason);
-            }
+                        function () use ($cleanup) {
+                    return Promise\promise_for($this->flushQueue())
+                                    ->then($cleanup);
+                }, function ($reason) use ($cleanup) {
+                    $cleanup();
+                    return Promise\rejection_for($reason);
+                }
         );
     }
+
 }

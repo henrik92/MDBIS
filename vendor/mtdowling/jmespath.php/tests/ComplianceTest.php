@@ -1,22 +1,21 @@
 <?php
+
 namespace JmesPath\Tests;
 
 use JmesPath\AstRuntime;
 use JmesPath\CompilerRuntime;
 use JmesPath\SyntaxErrorException;
 
-class ComplianceTest extends \PHPUnit_Framework_TestCase
-{
+class ComplianceTest extends \PHPUnit_Framework_TestCase {
+
     private static $path;
 
-    public static function setUpBeforeClass()
-    {
+    public static function setUpBeforeClass() {
         self::$path = __DIR__ . '/../../compiled';
         array_map('unlink', glob(self::$path . '/jmespath_*.php'));
     }
 
-    public static function tearDownAfterClass()
-    {
+    public static function tearDownAfterClass() {
         array_map('unlink', glob(self::$path . '/jmespath_*.php'));
     }
 
@@ -24,15 +23,7 @@ class ComplianceTest extends \PHPUnit_Framework_TestCase
      * @dataProvider complianceProvider
      */
     public function testPassesCompliance(
-        $data,
-        $expression,
-        $result,
-        $error,
-        $file,
-        $suite,
-        $case,
-        $compiled,
-        $asAssoc
+    $data, $expression, $result, $error, $file, $suite, $case, $compiled, $asAssoc
     ) {
         $evalResult = null;
         $failed = false;
@@ -51,16 +42,13 @@ class ComplianceTest extends \PHPUnit_Framework_TestCase
         } catch (\Exception $e) {
             $failed = $e instanceof SyntaxErrorException ? 'syntax' : 'runtime';
             $failureMsg = sprintf(
-                '%s (%s line %d)',
-                $e->getMessage(),
-                $e->getFile(),
-                $e->getLine()
+                    '%s (%s line %d)', $e->getMessage(), $e->getFile(), $e->getLine()
             );
         }
 
         $file = __DIR__ . '/compliance/' . $file . '.json';
         $failure .= "\n{$compiledStr}php bin/jp.php --file {$file} --suite {$suite} --case {$case}\n\n"
-            . "Expected: " . $this->prettyJson($result) . "\n\n";
+                . "Expected: " . $this->prettyJson($result) . "\n\n";
         $failure .= 'Associative? ' . var_export($asAssoc, true) . "\n\n";
 
         if (!$error && $failed) {
@@ -70,14 +58,11 @@ class ComplianceTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->assertEquals(
-            $this->convertAssoc($result),
-            $this->convertAssoc($evalResult),
-            $failure
+                $this->convertAssoc($result), $this->convertAssoc($evalResult), $failure
         );
     }
 
-    public function complianceProvider()
-    {
+    public function complianceProvider() {
         $cases = [];
 
         $files = array_map(function ($f) {
@@ -114,8 +99,7 @@ class ComplianceTest extends \PHPUnit_Framework_TestCase
         return $cases;
     }
 
-    private function convertAssoc($data)
-    {
+    private function convertAssoc($data) {
         if ($data instanceof \stdClass) {
             return $this->convertAssoc((array) $data);
         } elseif (is_array($data)) {
@@ -125,12 +109,12 @@ class ComplianceTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    private function prettyJson($json)
-    {
+    private function prettyJson($json) {
         if (defined('JSON_PRETTY_PRINT')) {
             return json_encode($json, JSON_PRETTY_PRINT);
         }
 
         return json_encode($json);
     }
+
 }

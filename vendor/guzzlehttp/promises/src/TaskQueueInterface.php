@@ -1,8 +1,9 @@
 <?php
+
 namespace GuzzleHttp\Promise;
 
-interface TaskQueueInterface
-{
+interface TaskQueueInterface {
+
     /**
      * Returns true if the queue is empty.
      *

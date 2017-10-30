@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Waf;
 
 use Aws\AwsClient;
@@ -125,4 +126,6 @@ use Aws\AwsClient;
  * @method \Aws\Result updateXssMatchSet(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateXssMatchSetAsync(array $args = [])
  */
-class WafClient extends AwsClient {}
+class WafClient extends AwsClient {
+    
+}

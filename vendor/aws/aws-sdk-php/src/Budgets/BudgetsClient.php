@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Budgets;
 
 use Aws\AwsClient;
@@ -32,4 +33,6 @@ use Aws\AwsClient;
  * @method \Aws\Result updateSubscriber(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateSubscriberAsync(array $args = [])
  */
-class BudgetsClient extends AwsClient {}
+class BudgetsClient extends AwsClient {
+    
+}

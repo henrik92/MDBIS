@@ -1,11 +1,12 @@
 <?php
+
 namespace Aws;
 
 /**
  * Incremental hashing using PHP's hash functions.
  */
-class PhpHash implements HashInterface
-{
+class PhpHash implements HashInterface {
+
     /** @var resource */
     private $context;
 
@@ -25,14 +26,12 @@ class PhpHash implements HashInterface
      *     - key: Secret key used with the hashing algorithm.
      *     - base64: Set to true to base64 encode the value when complete.
      */
-    public function __construct($algo, array $options = [])
-    {
+    public function __construct($algo, array $options = []) {
         $this->algo = $algo;
         $this->options = $options;
     }
 
-    public function update($data)
-    {
+    public function update($data) {
         if ($this->hash !== null) {
             $this->reset();
         }
@@ -40,8 +39,7 @@ class PhpHash implements HashInterface
         hash_update($this->getContext(), $data);
     }
 
-    public function complete()
-    {
+    public function complete() {
         if ($this->hash) {
             return $this->hash;
         }
@@ -55,8 +53,7 @@ class PhpHash implements HashInterface
         return $this->hash;
     }
 
-    public function reset()
-    {
+    public function reset() {
         $this->context = $this->hash = null;
     }
 
@@ -65,17 +62,15 @@ class PhpHash implements HashInterface
      *
      * @return resource
      */
-    private function getContext()
-    {
+    private function getContext() {
         if (!$this->context) {
             $key = isset($this->options['key']) ? $this->options['key'] : null;
             $this->context = hash_init(
-                $this->algo,
-                $key ? HASH_HMAC : 0,
-                $key
+                    $this->algo, $key ? HASH_HMAC : 0, $key
             );
         }
 
         return $this->context;
     }
+
 }

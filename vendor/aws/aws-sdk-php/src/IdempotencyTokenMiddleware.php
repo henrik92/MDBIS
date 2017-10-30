@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws;
 
 use Aws\Api\Service;
@@ -7,12 +8,14 @@ use Psr\Http\Message\RequestInterface;
 /**
  * @internal Middleware that auto fills parameters with `idempotencyToken` trait
  */
-class IdempotencyTokenMiddleware
-{
+class IdempotencyTokenMiddleware {
+
     /** @var Service */
     private $service;
+
     /** @var string */
     private $bytesGenerator;
+
     /** @var callable */
     private $nextHandler;
 
@@ -36,8 +39,7 @@ class IdempotencyTokenMiddleware
      * @return callable
      */
     public static function wrap(
-        Service $service,
-        callable $bytesGenerator = null
+    Service $service, callable $bytesGenerator = null
     ) {
         return function (callable $handler) use ($service, $bytesGenerator) {
             return new self($handler, $service, $bytesGenerator);
@@ -45,19 +47,15 @@ class IdempotencyTokenMiddleware
     }
 
     public function __construct(
-        callable $nextHandler,
-        Service $service,
-        callable $bytesGenerator = null
+    callable $nextHandler, Service $service, callable $bytesGenerator = null
     ) {
-        $this->bytesGenerator = $bytesGenerator
-            ?: $this->findCompatibleRandomSource();
+        $this->bytesGenerator = $bytesGenerator ?: $this->findCompatibleRandomSource();
         $this->service = $service;
         $this->nextHandler = $nextHandler;
     }
 
     public function __invoke(
-        CommandInterface $command,
-        RequestInterface $request = null
+    CommandInterface $command, RequestInterface $request = null
     ) {
         $handler = $this->nextHandler;
         if ($this->bytesGenerator) {
@@ -67,8 +65,7 @@ class IdempotencyTokenMiddleware
                 if ($value['idempotencyToken']) {
                     $bytes = call_user_func($this->bytesGenerator, 16);
                     // populating UUIDv4 only when the parameter is not set
-                    $command[$member] = $command[$member]
-                        ?: $this->getUuidV4($bytes);
+                    $command[$member] = $command[$member] ?: $this->getUuidV4($bytes);
                     // only one member could have the trait enabled
                     break;
                 }
@@ -87,8 +84,7 @@ class IdempotencyTokenMiddleware
      * https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_.28random.29
      * https://tools.ietf.org/html/rfc4122#page-14
      */
-    private static function getUuidV4($bytes)
-    {
+    private static function getUuidV4($bytes) {
         // set version to 0100
         $bytes[6] = chr(ord($bytes[6]) & 0x0f | 0x40);
         // set bits 6-7 to 10
@@ -101,8 +97,7 @@ class IdempotencyTokenMiddleware
      *
      * @return callable|null
      */
-    private function findCompatibleRandomSource()
-    {
+    private function findCompatibleRandomSource() {
         if (function_exists('random_bytes')) {
             return 'random_bytes';
         } elseif (function_exists('openssl_random_pseudo_bytes')) {
@@ -111,4 +106,5 @@ class IdempotencyTokenMiddleware
             return 'mcrypt_create_iv';
         }
     }
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\S3;
 
 use Aws\CommandInterface;
@@ -15,8 +16,8 @@ use Psr\Http\Message\RequestInterface;
  *
  * @internal
  */
-class S3EndpointMiddleware
-{
+class S3EndpointMiddleware {
+
     private static $exclusions = [
         'CreateBucket' => true,
         'DeleteBucket' => true,
@@ -32,12 +33,16 @@ class S3EndpointMiddleware
 
     /** @var bool */
     private $accelerateByDefault;
+
     /** @var bool */
     private $dualStackByDefault;
+
     /** @var bool */
     private $pathStyleByDefault;
+
     /** @var string */
     private $region;
+
     /** @var callable */
     private $nextHandler;
 
@@ -49,30 +54,23 @@ class S3EndpointMiddleware
      *
      * @return callable
      */
-    public static function wrap($region, array $options)
-    {
+    public static function wrap($region, array $options) {
         return function (callable $handler) use ($region, $options) {
             return new self($handler, $region, $options);
         };
     }
 
     public function __construct(
-        callable $nextHandler,
-        $region,
-        array $options
+    callable $nextHandler, $region, array $options
     ) {
-        $this->pathStyleByDefault = isset($options['path_style'])
-            ? (bool) $options['path_style'] : false;
-        $this->dualStackByDefault = isset($options['dual_stack'])
-            ? (bool) $options['dual_stack'] : false;
-        $this->accelerateByDefault = isset($options['accelerate'])
-            ? (bool) $options['accelerate'] : false;
+        $this->pathStyleByDefault = isset($options['path_style']) ? (bool) $options['path_style'] : false;
+        $this->dualStackByDefault = isset($options['dual_stack']) ? (bool) $options['dual_stack'] : false;
+        $this->accelerateByDefault = isset($options['accelerate']) ? (bool) $options['accelerate'] : false;
         $this->region = (string) $region;
         $this->nextHandler = $nextHandler;
     }
 
-    public function __invoke(CommandInterface $command, RequestInterface $request)
-    {
+    public function __invoke(CommandInterface $command, RequestInterface $request) {
         switch ($this->endpointPatternDecider($command, $request)) {
             case self::HOST_STYLE:
                 $request = $this->applyHostStyleEndpoint($command, $request);
@@ -85,16 +83,12 @@ class S3EndpointMiddleware
                 break;
             case self::ACCELERATE:
                 $request = $this->applyAccelerateEndpoint(
-                    $command,
-                    $request,
-                    's3-accelerate'
+                        $command, $request, 's3-accelerate'
                 );
                 break;
             case self::ACCELERATE_DUALSTACK:
                 $request = $this->applyAccelerateEndpoint(
-                    $command,
-                    $request,
-                    's3-accelerate.dualstack'
+                        $command, $request, 's3-accelerate.dualstack'
                 );
                 break;
         }
@@ -104,39 +98,29 @@ class S3EndpointMiddleware
     }
 
     private static function isRequestHostStyleCompatible(
-        CommandInterface $command,
-        RequestInterface $request
+    CommandInterface $command, RequestInterface $request
     ) {
-        return S3Client::isBucketDnsCompatible($command['Bucket'])
-            && (
-                $request->getUri()->getScheme() === 'http'
-                || strpos($command['Bucket'], '.') === false
-            );
+        return S3Client::isBucketDnsCompatible($command['Bucket']) && (
+                $request->getUri()->getScheme() === 'http' || strpos($command['Bucket'], '.') === false
+                );
     }
 
     private function endpointPatternDecider(
-        CommandInterface $command,
-        RequestInterface $request
+    CommandInterface $command, RequestInterface $request
     ) {
-        $accelerate = isset($command['@use_accelerate_endpoint'])
-            ? $command['@use_accelerate_endpoint'] : $this->accelerateByDefault;
-        $dualStack = isset($command['@use_dual_stack_endpoint'])
-            ? $command['@use_dual_stack_endpoint'] : $this->dualStackByDefault;
-        $pathStyle = isset($command['@use_path_style_endpoint'])
-            ? $command['@use_path_style_endpoint'] : $this->pathStyleByDefault;
+        $accelerate = isset($command['@use_accelerate_endpoint']) ? $command['@use_accelerate_endpoint'] : $this->accelerateByDefault;
+        $dualStack = isset($command['@use_dual_stack_endpoint']) ? $command['@use_dual_stack_endpoint'] : $this->dualStackByDefault;
+        $pathStyle = isset($command['@use_path_style_endpoint']) ? $command['@use_path_style_endpoint'] : $this->pathStyleByDefault;
 
         if ($accelerate && $dualStack) {
             // When try to enable both for operations excluded from s3-accelerate,
             // only dualstack endpoints will be enabled.
-            return $this->canAccelerate($command)
-                ? self::ACCELERATE_DUALSTACK
-                : self::DUALSTACK;
+            return $this->canAccelerate($command) ? self::ACCELERATE_DUALSTACK : self::DUALSTACK;
         } elseif ($accelerate && $this->canAccelerate($command)) {
             return self::ACCELERATE;
         } elseif ($dualStack) {
             return self::DUALSTACK;
-        } elseif (!$pathStyle
-            && self::isRequestHostStyleCompatible($command, $request)
+        } elseif (!$pathStyle && self::isRequestHostStyleCompatible($command, $request)
         ) {
             return self::HOST_STYLE;
         } else {
@@ -144,14 +128,11 @@ class S3EndpointMiddleware
         }
     }
 
-    private function canAccelerate(CommandInterface $command)
-    {
-        return empty(self::$exclusions[$command->getName()])
-            && S3Client::isBucketDnsCompatible($command['Bucket']);
+    private function canAccelerate(CommandInterface $command) {
+        return empty(self::$exclusions[$command->getName()]) && S3Client::isBucketDnsCompatible($command['Bucket']);
     }
 
-    private function getBucketStyleHost(CommandInterface $command, $host)
-    {
+    private function getBucketStyleHost(CommandInterface $command, $host) {
         // For operations on the base host (e.g. ListBuckets)
         if (!isset($command['Bucket'])) {
             return $host;
@@ -161,69 +142,58 @@ class S3EndpointMiddleware
     }
 
     private function applyHostStyleEndpoint(
-        CommandInterface $command,
-        RequestInterface $request
+    CommandInterface $command, RequestInterface $request
     ) {
         $uri = $request->getUri();
         $request = $request->withUri(
-            $uri->withHost($this->getBucketStyleHost(
-                    $command,
-                    $uri->getHost()
-                ))
-                ->withPath($this->getBucketlessPath(
-                    $uri->getPath(),
-                    $command
-                ))
+                $uri->withHost($this->getBucketStyleHost(
+                                        $command, $uri->getHost()
+                        ))
+                        ->withPath($this->getBucketlessPath(
+                                        $uri->getPath(), $command
+                        ))
         );
         return $request;
     }
 
     private function applyDualStackEndpoint(
-        CommandInterface $command,
-        RequestInterface $request
+    CommandInterface $command, RequestInterface $request
     ) {
         $request = $request->withUri(
-            $request->getUri()
-                ->withHost($this->getDualStackHost())
+                $request->getUri()
+                        ->withHost($this->getDualStackHost())
         );
-        if (empty($command['@use_path_style_endpoint'])
-            && !$this->pathStyleByDefault
-            && self::isRequestHostStyleCompatible($command, $request)
+        if (empty($command['@use_path_style_endpoint']) && !$this->pathStyleByDefault && self::isRequestHostStyleCompatible($command, $request)
         ) {
             $request = $this->applyHostStyleEndpoint($command, $request);
         }
         return $request;
     }
 
-    private function getDualStackHost()
-    {
+    private function getDualStackHost() {
         return "s3.dualstack.{$this->region}.amazonaws.com";
     }
 
     private function applyAccelerateEndpoint(
-        CommandInterface $command,
-        RequestInterface $request,
-        $pattern
+    CommandInterface $command, RequestInterface $request, $pattern
     ) {
         $request = $request->withUri(
-            $request->getUri()
-                ->withHost($this->getAccelerateHost($command, $pattern))
-                ->withPath($this->getBucketlessPath(
-                    $request->getUri()->getPath(),
-                    $command
-                ))
+                $request->getUri()
+                        ->withHost($this->getAccelerateHost($command, $pattern))
+                        ->withPath($this->getBucketlessPath(
+                                        $request->getUri()->getPath(), $command
+                        ))
         );
         return $request;
     }
 
-    private function getAccelerateHost(CommandInterface $command, $pattern)
-    {
+    private function getAccelerateHost(CommandInterface $command, $pattern) {
         return "{$command['Bucket']}.{$pattern}.amazonaws.com";
     }
 
-    private function getBucketlessPath($path, CommandInterface $command)
-    {
+    private function getBucketlessPath($path, CommandInterface $command) {
         $pattern = '/^\\/' . preg_quote($command['Bucket'], '/') . '/';
         return preg_replace($pattern, '', $path) ?: '/';
     }
+
 }

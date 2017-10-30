@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\MachineLearning;
 
 use Aws\AwsClient;
@@ -66,10 +67,9 @@ use Psr\Http\Message\RequestInterface;
  * @method \Aws\Result updateMLModel(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateMLModelAsync(array $args = [])
  */
-class MachineLearningClient extends AwsClient
-{
-    public function __construct(array $config)
-    {
+class MachineLearningClient extends AwsClient {
+
+    public function __construct(array $config) {
         parent::__construct($config);
         $list = $this->getHandlerList();
         $list->appendBuild($this->predictEndpoint(), 'ml.predict_endpoint');
@@ -80,13 +80,12 @@ class MachineLearningClient extends AwsClient
      *
      * @return callable
      */
-    private function predictEndpoint()
-    {
+    private function predictEndpoint() {
         return static function (callable $handler) {
             return function (
-                CommandInterface $command,
-                RequestInterface $request = null
-            ) use ($handler) {
+                    CommandInterface $command,
+                    RequestInterface $request = null
+                    ) use ($handler) {
                 if ($command->getName() === 'Predict') {
                     $request = $request->withUri(new Uri($command['PredictEndpoint']));
                 }
@@ -94,4 +93,5 @@ class MachineLearningClient extends AwsClient
             };
         };
     }
+
 }

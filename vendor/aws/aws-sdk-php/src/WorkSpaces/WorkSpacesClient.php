@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\WorkSpaces;
 
 use Aws\AwsClient;
@@ -35,4 +36,6 @@ use Aws\AwsClient;
  * @method \Aws\Result terminateWorkspaces(array $args = [])
  * @method \GuzzleHttp\Promise\Promise terminateWorkspacesAsync(array $args = [])
  */
-class WorkSpacesClient extends AwsClient {}
+class WorkSpacesClient extends AwsClient {
+    
+}

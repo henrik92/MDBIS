@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\CloudSearchDomain;
 
 use Aws\AwsClient;
@@ -17,17 +18,15 @@ use GuzzleHttp\Psr7;
  * @method \Aws\Result uploadDocuments(array $args = [])
  * @method \GuzzleHttp\Promise\Promise uploadDocumentsAsync(array $args = [])
  */
-class CloudSearchDomainClient extends AwsClient
-{
-    public function __construct(array $args)
-    {
+class CloudSearchDomainClient extends AwsClient {
+
+    public function __construct(array $args) {
         parent::__construct($args);
         $list = $this->getHandlerList();
         $list->appendBuild($this->searchByPost(), 'cloudsearchdomain.search_by_POST');
     }
 
-    public static function getArguments()
-    {
+    public static function getArguments() {
         $args = parent::getArguments();
         $args['endpoint']['required'] = true;
         $args['region']['default'] = function (array $args) {
@@ -44,13 +43,12 @@ class CloudSearchDomainClient extends AwsClient
      *
      * Useful when query string is too long
      */
-    private function searchByPost()
-    {
+    private function searchByPost() {
         return static function (callable $handler) {
             return function (
-                CommandInterface $c,
-                RequestInterface $r = null
-            ) use ($handler) {
+                    CommandInterface $c,
+                    RequestInterface $r = null
+                    ) use ($handler) {
                 if ($c->getName() !== 'Search') {
                     return $handler($c, $r);
                 }
@@ -67,18 +65,18 @@ class CloudSearchDomainClient extends AwsClient
      * @param RequestInterface $r GET request to be converted
      * @return RequestInterface $req converted POST request
      */
-    public static function convertGetToPost(RequestInterface $r)
-    {
+    public static function convertGetToPost(RequestInterface $r) {
         if ($r->getMethod() === 'POST') {
             return $r;
         }
 
         $query = $r->getUri()->getQuery();
         $req = $r->withMethod('POST')
-            ->withBody(Psr7\stream_for($query))
-            ->withHeader('Content-Length', strlen($query))
-            ->withHeader('Content-Type', 'application/x-www-form-urlencoded')
-            ->withUri($r->getUri()->withQuery(''));
+                ->withBody(Psr7\stream_for($query))
+                ->withHeader('Content-Length', strlen($query))
+                ->withHeader('Content-Type', 'application/x-www-form-urlencoded')
+                ->withUri($r->getUri()->withQuery(''));
         return $req;
     }
+
 }

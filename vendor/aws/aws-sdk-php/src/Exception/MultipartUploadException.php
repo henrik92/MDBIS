@@ -1,10 +1,11 @@
 <?php
+
 namespace Aws\Exception;
 
 use Aws\Multipart\UploadState;
 
-class MultipartUploadException extends \RuntimeException
-{
+class MultipartUploadException extends \RuntimeException {
+
     /** @var UploadState State of the erroneous transfer */
     private $state;
 
@@ -20,7 +21,7 @@ class MultipartUploadException extends \RuntimeException
             $msg .= ". The following parts had errors:\n";
             /** @var $error AwsException */
             foreach ($prev as $part => $error) {
-                $msg .= "- Part {$part}: " . $error->getMessage(). "\n";
+                $msg .= "- Part {$part}: " . $error->getMessage() . "\n";
             }
         } elseif ($prev instanceof AwsException) {
             switch ($prev->getCommand()->getName()) {
@@ -51,8 +52,8 @@ class MultipartUploadException extends \RuntimeException
      *
      * @return UploadState
      */
-    public function getState()
-    {
+    public function getState() {
         return $this->state;
     }
+
 }

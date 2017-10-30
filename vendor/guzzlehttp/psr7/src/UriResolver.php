@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp\Psr7;
 
 use Psr\Http\Message\UriInterface;
@@ -10,8 +11,8 @@ use Psr\Http\Message\UriInterface;
  *
  * @link https://tools.ietf.org/html/rfc3986#section-5
  */
-final class UriResolver
-{
+final class UriResolver {
+
     /**
      * Removes dot segments from a path and returns the new path.
      *
@@ -20,8 +21,7 @@ final class UriResolver
      * @return string
      * @link http://tools.ietf.org/html/rfc3986#section-5.2.4
      */
-    public static function removeDotSegments($path)
-    {
+    public static function removeDotSegments($path) {
         if ($path === '' || $path === '/') {
             return $path;
         }
@@ -59,8 +59,7 @@ final class UriResolver
      * @return UriInterface
      * @link http://tools.ietf.org/html/rfc3986#section-5.2
      */
-    public static function resolve(UriInterface $base, UriInterface $rel)
-    {
+    public static function resolve(UriInterface $base, UriInterface $rel) {
         if ((string) $rel === '') {
             // we can simply return the same base URI instance for this same-document reference
             return $base;
@@ -100,11 +99,7 @@ final class UriResolver
         }
 
         return new Uri(Uri::composeComponents(
-            $base->getScheme(),
-            $targetAuthority,
-            $targetPath,
-            $targetQuery,
-            $rel->getFragment()
+                        $base->getScheme(), $targetAuthority, $targetPath, $targetQuery, $rel->getFragment()
         ));
     }
 
@@ -134,10 +129,9 @@ final class UriResolver
      *
      * @return UriInterface The relative URI reference
      */
-    public static function relativize(UriInterface $base, UriInterface $target)
-    {
+    public static function relativize(UriInterface $base, UriInterface $target) {
         if ($target->getScheme() !== '' &&
-            ($base->getScheme() !== $target->getScheme() || $target->getAuthority() === '' && $base->getAuthority() !== '')
+                ($base->getScheme() !== $target->getScheme() || $target->getAuthority() === '' && $base->getAuthority() !== '')
         ) {
             return $target;
         }
@@ -179,8 +173,7 @@ final class UriResolver
         return $emptyPathUri;
     }
 
-    private static function getRelativePath(UriInterface $base, UriInterface $target)
-    {
+    private static function getRelativePath(UriInterface $base, UriInterface $target) {
         $sourceSegments = explode('/', $base->getPath());
         $targetSegments = explode('/', $target->getPath());
         array_pop($sourceSegments);
@@ -212,8 +205,8 @@ final class UriResolver
         return $relativePath;
     }
 
-    private function __construct()
-    {
+    private function __construct() {
         // cannot be instantiated
     }
+
 }

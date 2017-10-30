@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\CloudWatch;
 
 use Aws\AwsClient;
@@ -37,4 +38,6 @@ use Aws\AwsClient;
  * @method \Aws\Result setAlarmState(array $args = [])
  * @method \GuzzleHttp\Promise\Promise setAlarmStateAsync(array $args = [])
  */
-class CloudWatchClient extends AwsClient {}
+class CloudWatchClient extends AwsClient {
+    
+}

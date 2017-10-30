@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp\Promise;
 
 /**
@@ -6,8 +7,8 @@ namespace GuzzleHttp\Promise;
  *
  * @link https://promisesaplus.com/
  */
-class Promise implements PromiseInterface
-{
+class Promise implements PromiseInterface {
+
     private $state = self::PENDING;
     private $result;
     private $cancelFn;
@@ -20,16 +21,14 @@ class Promise implements PromiseInterface
      * @param callable $cancelFn Fn that when invoked cancels the promise.
      */
     public function __construct(
-        callable $waitFn = null,
-        callable $cancelFn = null
+    callable $waitFn = null, callable $cancelFn = null
     ) {
         $this->waitFn = $waitFn;
         $this->cancelFn = $cancelFn;
     }
 
     public function then(
-        callable $onFulfilled = null,
-        callable $onRejected = null
+    callable $onFulfilled = null, callable $onRejected = null
     ) {
         if ($this->state === self::PENDING) {
             $p = new Promise(null, [$this, 'cancel']);
@@ -41,9 +40,7 @@ class Promise implements PromiseInterface
 
         // Return a fulfilled promise and immediately invoke any callbacks.
         if ($this->state === self::FULFILLED) {
-            return $onFulfilled
-                ? promise_for($this->result)->then($onFulfilled)
-                : promise_for($this->result);
+            return $onFulfilled ? promise_for($this->result)->then($onFulfilled) : promise_for($this->result);
         }
 
         // It's either cancelled or rejected, so return a rejected promise
@@ -52,22 +49,17 @@ class Promise implements PromiseInterface
         return $onRejected ? $rejection->then(null, $onRejected) : $rejection;
     }
 
-    public function otherwise(callable $onRejected)
-    {
+    public function otherwise(callable $onRejected) {
         return $this->then(null, $onRejected);
     }
 
-    public function wait($unwrap = true)
-    {
+    public function wait($unwrap = true) {
         $this->waitIfPending();
 
-        $inner = $this->result instanceof PromiseInterface
-            ? $this->result->wait($unwrap)
-            : $this->result;
+        $inner = $this->result instanceof PromiseInterface ? $this->result->wait($unwrap) : $this->result;
 
         if ($unwrap) {
-            if ($this->result instanceof PromiseInterface
-                || $this->state === self::FULFILLED
+            if ($this->result instanceof PromiseInterface || $this->state === self::FULFILLED
             ) {
                 return $inner;
             } else {
@@ -77,13 +69,11 @@ class Promise implements PromiseInterface
         }
     }
 
-    public function getState()
-    {
+    public function getState() {
         return $this->state;
     }
 
-    public function cancel()
-    {
+    public function cancel() {
         if ($this->state !== self::PENDING) {
             return;
         }
@@ -108,26 +98,21 @@ class Promise implements PromiseInterface
         }
     }
 
-    public function resolve($value)
-    {
+    public function resolve($value) {
         $this->settle(self::FULFILLED, $value);
     }
 
-    public function reject($reason)
-    {
+    public function reject($reason) {
         $this->settle(self::REJECTED, $reason);
     }
 
-    private function settle($state, $value)
-    {
+    private function settle($state, $value) {
         if ($this->state !== self::PENDING) {
             // Ignore calls with the same resolution.
             if ($state === $this->state && $value === $this->result) {
                 return;
             }
-            throw $this->state === $state
-                ? new \LogicException("The promise is already {$state}.")
-                : new \LogicException("Cannot change a {$this->state} promise to {$state}");
+            throw $this->state === $state ? new \LogicException("The promise is already {$state}.") : new \LogicException("Cannot change a {$this->state} promise to {$state}");
         }
 
         if ($value === $this) {
@@ -156,24 +141,22 @@ class Promise implements PromiseInterface
                     self::callHandler($id, $value, $handler);
                 }
             });
-        } elseif ($value instanceof Promise
-            && $value->getState() === self::PENDING
+        } elseif ($value instanceof Promise && $value->getState() === self::PENDING
         ) {
             // We can just merge our handlers onto the next promise.
             $value->handlers = array_merge($value->handlers, $handlers);
         } else {
             // Resolve the handlers when the forwarded promise is resolved.
             $value->then(
-                static function ($value) use ($handlers) {
-                    foreach ($handlers as $handler) {
-                        self::callHandler(1, $value, $handler);
-                    }
-                },
-                static function ($reason) use ($handlers) {
-                    foreach ($handlers as $handler) {
-                        self::callHandler(2, $reason, $handler);
-                    }
+                    static function ($value) use ($handlers) {
+                foreach ($handlers as $handler) {
+                    self::callHandler(1, $value, $handler);
                 }
+            }, static function ($reason) use ($handlers) {
+                foreach ($handlers as $handler) {
+                    self::callHandler(2, $reason, $handler);
+                }
+            }
             );
         }
     }
@@ -187,8 +170,7 @@ class Promise implements PromiseInterface
      *
      * @return array Returns the next group to resolve.
      */
-    private static function callHandler($index, $value, array $handler)
-    {
+    private static function callHandler($index, $value, array $handler) {
         /** @var PromiseInterface $promise */
         $promise = $handler[0];
 
@@ -215,8 +197,7 @@ class Promise implements PromiseInterface
         }
     }
 
-    private function waitIfPending()
-    {
+    private function waitIfPending() {
         if ($this->state !== self::PENDING) {
             return;
         } elseif ($this->waitFn) {
@@ -226,9 +207,9 @@ class Promise implements PromiseInterface
         } else {
             // If there's not wait function, then reject the promise.
             $this->reject('Cannot wait on a promise that has '
-                . 'no internal wait function. You must provide a wait '
-                . 'function when constructing the promise to be able to '
-                . 'wait on a promise.');
+                    . 'no internal wait function. You must provide a wait '
+                    . 'function when constructing the promise to be able to '
+                    . 'wait on a promise.');
         }
 
         queue()->run();
@@ -238,8 +219,7 @@ class Promise implements PromiseInterface
         }
     }
 
-    private function invokeWaitFn()
-    {
+    private function invokeWaitFn() {
         try {
             $wfn = $this->waitFn;
             $this->waitFn = null;
@@ -257,8 +237,7 @@ class Promise implements PromiseInterface
         }
     }
 
-    private function invokeWaitList()
-    {
+    private function invokeWaitList() {
         $waitList = $this->waitList;
         $this->waitList = null;
 
@@ -277,4 +256,5 @@ class Promise implements PromiseInterface
             }
         }
     }
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\DynamoDb;
 
 use Psr\Http\Message\StreamInterface;
@@ -6,13 +7,13 @@ use Psr\Http\Message\StreamInterface;
 /**
  * Marshals and unmarshals JSON documents and PHP arrays into DynamoDB items.
  */
-class Marshaler
-{
+class Marshaler {
+
     /** @var array Default options to merge into provided options. */
     private static $defaultOptions = [
-        'ignore_invalid'  => false,
+        'ignore_invalid' => false,
         'nullify_invalid' => false,
-        'wrap_numbers'    => false,
+        'wrap_numbers' => false,
     ];
 
     /** @var array Marshaler options. */
@@ -32,8 +33,7 @@ class Marshaler
      *
      * @param array $options Marshaler options
      */
-    public function __construct(array $options = [])
-    {
+    public function __construct(array $options = []) {
         $this->options = $options + self::$defaultOptions;
     }
 
@@ -47,8 +47,7 @@ class Marshaler
      * @return BinaryValue
      * @see GuzzleHttp\Stream\Stream::factory
      */
-    public function binary($value)
-    {
+    public function binary($value) {
         return new BinaryValue($value);
     }
 
@@ -61,8 +60,7 @@ class Marshaler
      *
      * @return NumberValue
      */
-    public function number($value)
-    {
+    public function number($value) {
         return new NumberValue($value);
     }
 
@@ -76,8 +74,7 @@ class Marshaler
      * @return SetValue
      *
      */
-    public function set(array $values)
-    {
+    public function set(array $values) {
         return new SetValue($values);
     }
 
@@ -92,12 +89,11 @@ class Marshaler
      * @return array Item formatted for DynamoDB.
      * @throws \InvalidArgumentException if the JSON is invalid.
      */
-    public function marshalJson($json)
-    {
+    public function marshalJson($json) {
         $data = json_decode($json);
         if (!($data instanceof \stdClass)) {
             throw new \InvalidArgumentException(
-                'The JSON document must be valid and be an object at its root.'
+            'The JSON document must be valid and be an object at its root.'
             );
         }
 
@@ -114,8 +110,7 @@ class Marshaler
      *
      * @return array Item formatted for DynamoDB.
      */
-    public function marshalItem($item)
-    {
+    public function marshalItem($item) {
         return current($this->marshalValue($item));
     }
 
@@ -130,8 +125,7 @@ class Marshaler
      * @return array Attribute formatted for DynamoDB.
      * @throws \UnexpectedValueException if the value cannot be marshaled.
      */
-    public function marshalValue($value)
-    {
+    public function marshalValue($value) {
         $type = gettype($value);
 
         // Handle string values.
@@ -144,9 +138,7 @@ class Marshaler
         }
 
         // Handle number values.
-        if ($type === 'integer'
-            || $type === 'double'
-            || $value instanceof NumberValue
+        if ($type === 'integer' || $type === 'double' || $value instanceof NumberValue
         ) {
             return ['N' => (string) $value];
         }
@@ -223,11 +215,9 @@ class Marshaler
      *
      * @return string
      */
-    public function unmarshalJson(array $data, $jsonEncodeFlags = 0)
-    {
+    public function unmarshalJson(array $data, $jsonEncodeFlags = 0) {
         return json_encode(
-            $this->unmarshalValue(['M' => $data], true),
-            $jsonEncodeFlags
+                $this->unmarshalValue(['M' => $data], true), $jsonEncodeFlags
         );
     }
 
@@ -241,8 +231,7 @@ class Marshaler
      *
      * @return array|\stdClass
      */
-    public function unmarshalItem(array $data, $mapAsObject = false)
-    {
+    public function unmarshalItem(array $data, $mapAsObject = false) {
         return $this->unmarshalValue(['M' => $data], $mapAsObject);
     }
 
@@ -257,8 +246,7 @@ class Marshaler
      * @return mixed
      * @throws \UnexpectedValueException
      */
-    public function unmarshalValue(array $value, $mapAsObject = false)
-    {
+    public function unmarshalValue(array $value, $mapAsObject = false) {
         list($type, $value) = each($value);
         switch ($type) {
             case 'S':
@@ -281,7 +269,7 @@ class Marshaler
                     }
                     return $data;
                 }
-                // NOBREAK: Unmarshal M the same way as L, for arrays.
+            // NOBREAK: Unmarshal M the same way as L, for arrays.
             case 'L':
                 foreach ($value as $k => $v) {
                     $value[$k] = $this->unmarshalValue($v, $mapAsObject);
@@ -308,8 +296,7 @@ class Marshaler
      *
      * @return array|null
      */
-    private function handleInvalid($message)
-    {
+    private function handleInvalid($message) {
         if ($this->options['ignore_invalid']) {
             return null;
         } elseif ($this->options['nullify_invalid']) {
@@ -318,4 +305,5 @@ class Marshaler
 
         throw new \UnexpectedValueException("Marshaling error: {$message}.");
     }
+
 }

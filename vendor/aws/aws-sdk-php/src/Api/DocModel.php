@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Api;
 
 /**
@@ -6,8 +7,8 @@ namespace Aws\Api;
  * provides methods for extracting the desired parts related to a service,
  * operation, error, or shape (i.e., parameter).
  */
-class DocModel
-{
+class DocModel {
+
     /** @var array */
     private $docs;
 
@@ -16,8 +17,7 @@ class DocModel
      *
      * @throws \RuntimeException
      */
-    public function __construct(array $docs)
-    {
+    public function __construct(array $docs) {
         if (!extension_loaded('tidy')) {
             throw new \RuntimeException('The "tidy" PHP extension is required.');
         }
@@ -30,8 +30,7 @@ class DocModel
      *
      * @return array
      */
-    public function toArray()
-    {
+    public function toArray() {
         return $this->docs;
     }
 
@@ -40,8 +39,7 @@ class DocModel
      *
      * @return null|string
      */
-    public function getServiceDocs()
-    {
+    public function getServiceDocs() {
         return isset($this->docs['service']) ? $this->docs['service'] : null;
     }
 
@@ -52,11 +50,8 @@ class DocModel
      *
      * @return null|string
      */
-    public function getOperationDocs($operation)
-    {
-        return isset($this->docs['operations'][$operation])
-            ? $this->docs['operations'][$operation]
-            : null;
+    public function getOperationDocs($operation) {
+        return isset($this->docs['operations'][$operation]) ? $this->docs['operations'][$operation] : null;
     }
 
     /**
@@ -66,11 +61,8 @@ class DocModel
      *
      * @return null|string
      */
-    public function getErrorDocs($error)
-    {
-        return isset($this->docs['shapes'][$error]['base'])
-            ? $this->docs['shapes'][$error]['base']
-            : null;
+    public function getErrorDocs($error) {
+        return isset($this->docs['shapes'][$error]['base']) ? $this->docs['shapes'][$error]['base'] : null;
     }
 
     /**
@@ -82,8 +74,7 @@ class DocModel
      *
      * @return null|string
      */
-    public function getShapeDocs($shapeName, $parentName, $ref)
-    {
+    public function getShapeDocs($shapeName, $parentName, $ref) {
         if (!isset($this->docs['shapes'][$shapeName])) {
             return '';
         }
@@ -103,8 +94,7 @@ class DocModel
         return $this->clean($result);
     }
 
-    private function clean($content)
-    {
+    private function clean($content) {
         if (!$content) {
             return '';
         }
@@ -125,4 +115,5 @@ class DocModel
 
         return (string) $content;
     }
+
 }

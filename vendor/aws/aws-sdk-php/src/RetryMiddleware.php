@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws;
 
 use Aws\Exception\AwsException;
@@ -11,36 +12,31 @@ use GuzzleHttp\Psr7;
 /**
  * @internal Middleware that retries failures.
  */
-class RetryMiddleware
-{
+class RetryMiddleware {
+
     private static $retryStatusCodes = [
         500 => true,
         502 => true,
         503 => true,
         504 => true
     ];
-
     private static $retryCodes = [
         // Throttling error
-        'RequestLimitExceeded'                   => true,
-        'Throttling'                             => true,
-        'ThrottlingException'                    => true,
-        'ThrottledException'                     => true,
+        'RequestLimitExceeded' => true,
+        'Throttling' => true,
+        'ThrottlingException' => true,
+        'ThrottledException' => true,
         'ProvisionedThroughputExceededException' => true,
-        'RequestThrottled'                       => true,
-        'BandwidthLimitExceeded'                 => true,
+        'RequestThrottled' => true,
+        'BandwidthLimitExceeded' => true,
     ];
-
     private $decider;
     private $delay;
     private $nextHandler;
     private $collectStats;
 
     public function __construct(
-        callable $decider,
-        callable $delay,
-        callable $nextHandler,
-        $collectStats = false
+    callable $decider, callable $delay, callable $nextHandler, $collectStats = false
     ) {
         $this->decider = $decider;
         $this->delay = $delay;
@@ -55,19 +51,17 @@ class RetryMiddleware
      *
      * @return callable
      */
-    public static function createDefaultDecider($maxRetries = 3)
-    {
+    public static function createDefaultDecider($maxRetries = 3) {
         return function (
-            $retries,
-            CommandInterface $command,
-            RequestInterface $request,
-            ResultInterface $result = null,
-            $error = null
-        ) use ($maxRetries) {
+                $retries,
+                CommandInterface $command,
+                RequestInterface $request,
+                ResultInterface $result = null,
+                $error = null
+                ) use ($maxRetries) {
             // Allow command-level options to override this value
             $maxRetries = null !== $command['@retries'] ?
-                $command['@retries']
-                : $maxRetries;
+                    $command['@retries'] : $maxRetries;
 
             if ($retries >= $maxRetries) {
                 return false;
@@ -96,8 +90,7 @@ class RetryMiddleware
      *
      * @return int
      */
-    public static function exponentialDelay($retries)
-    {
+    public static function exponentialDelay($retries) {
         return mt_rand(0, (int) min(20000, (int) pow(2, $retries) * 100));
     }
 
@@ -108,8 +101,7 @@ class RetryMiddleware
      * @return PromiseInterface
      */
     public function __invoke(
-        CommandInterface $command,
-        RequestInterface $request = null
+    CommandInterface $command, RequestInterface $request = null
     ) {
         $retries = 0;
         $requestStats = [];
@@ -120,25 +112,24 @@ class RetryMiddleware
         $request = $this->addRetryHeader($request, 0, 0);
 
         $g = function ($value) use (
-            $handler,
-            $decider,
-            $delay,
-            $command,
-            $request,
-            &$retries,
-            &$requestStats,
-            &$g
-        ) {
+                $handler,
+                $decider,
+                $delay,
+                $command,
+                $request,
+                &$retries,
+                &$requestStats,
+                &$g
+                ) {
             $this->updateHttpStats($value, $requestStats);
 
             if ($value instanceof \Exception || $value instanceof \Throwable) {
                 if (!$decider($retries, $command, $request, null, $value)) {
                     return \GuzzleHttp\Promise\rejection_for(
-                        $this->bindStatsToReturn($value, $requestStats)
+                            $this->bindStatsToReturn($value, $requestStats)
                     );
                 }
-            } elseif ($value instanceof ResultInterface
-                && !$decider($retries, $command, $request, $value, null)
+            } elseif ($value instanceof ResultInterface && !$decider($retries, $command, $request, $value, null)
             ) {
                 return $this->bindStatsToReturn($value, $requestStats);
             }
@@ -159,13 +150,11 @@ class RetryMiddleware
         return $handler($command, $request)->then($g, $g);
     }
 
-    private function addRetryHeader($request, $retries, $delayBy)
-    {
+    private function addRetryHeader($request, $retries, $delayBy) {
         return $request->withHeader('aws-sdk-retry', "{$retries}/{$delayBy}");
     }
 
-    private function updateStats($retries, $delay, array &$stats)
-    {
+    private function updateStats($retries, $delay, array &$stats) {
         if (!isset($stats['total_retry_delay'])) {
             $stats['total_retry_delay'] = 0;
         }
@@ -174,27 +163,21 @@ class RetryMiddleware
         $stats['retries_attempted'] = $retries;
     }
 
-    private function updateHttpStats($value, array &$stats)
-    {
+    private function updateHttpStats($value, array &$stats) {
         if (empty($stats['http'])) {
             $stats['http'] = [];
         }
 
         if ($value instanceof AwsException) {
-            $resultStats = isset($value->getTransferInfo('http')[0])
-                ? $value->getTransferInfo('http')[0]
-                : [];
-            $stats['http'] []= $resultStats;
+            $resultStats = isset($value->getTransferInfo('http')[0]) ? $value->getTransferInfo('http')[0] : [];
+            $stats['http'] [] = $resultStats;
         } elseif ($value instanceof ResultInterface) {
-            $resultStats = isset($value['@metadata']['transferStats']['http'][0])
-                ? $value['@metadata']['transferStats']['http'][0]
-                : [];
-            $stats['http'] []= $resultStats;
+            $resultStats = isset($value['@metadata']['transferStats']['http'][0]) ? $value['@metadata']['transferStats']['http'][0] : [];
+            $stats['http'] [] = $resultStats;
         }
     }
 
-    private function bindStatsToReturn($return, array $stats)
-    {
+    private function bindStatsToReturn($return, array $stats) {
         if ($return instanceof ResultInterface) {
             if (!isset($return['@metadata'])) {
                 $return['@metadata'] = [];
@@ -207,4 +190,5 @@ class RetryMiddleware
 
         return $return;
     }
+
 }

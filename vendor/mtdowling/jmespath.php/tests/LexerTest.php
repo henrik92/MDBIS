@@ -1,4 +1,5 @@
 <?php
+
 namespace JmesPath\Tests;
 
 use JmesPath\Lexer;
@@ -7,10 +8,9 @@ use JmesPath\SyntaxErrorException;
 /**
  * @covers JmesPath\Lexer
  */
-class LexerTest extends \PHPUnit_Framework_TestCase
-{
-    public function inputProvider()
-    {
+class LexerTest extends \PHPUnit_Framework_TestCase {
+
+    public function inputProvider() {
         return array(
             array('0', 'number'),
             array('1', 'number'),
@@ -46,18 +46,16 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider inputProvider
      */
-    public function testTokenizesInput($input, $type)
-    {
+    public function testTokenizesInput($input, $type) {
         $l = new Lexer();
         $tokens = $l->tokenize($input);
         $this->assertEquals($tokens[0]['type'], $type);
     }
 
-    public function testTokenizesJsonLiterals()
-    {
+    public function testTokenizesJsonLiterals() {
         $l = new Lexer();
         $tokens = $l->tokenize('`null`, `false`, `true`, `"abc"`, `"ab\\"c"`,'
-            . '`0`, `0.45`, `-0.5`');
+                . '`0`, `0.45`, `-0.5`');
         $this->assertNull($tokens[0]['value']);
         $this->assertFalse($tokens[2]['value']);
         $this->assertTrue($tokens[4]['value']);
@@ -68,8 +66,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(-0.5, $tokens[14]['value']);
     }
 
-    public function testTokenizesJsonNumbers()
-    {
+    public function testTokenizesJsonNumbers() {
         $l = new Lexer();
         $tokens = $l->tokenize('`10`, `1.2`, `-10.20e-10`, `1.2E+2`');
         $this->assertEquals(10, $tokens[0]['value']);
@@ -78,11 +75,11 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(120, $tokens[6]['value']);
     }
 
-    public function testCanWorkWithElidedJsonLiterals()
-    {
+    public function testCanWorkWithElidedJsonLiterals() {
         $l = new Lexer();
         $tokens = $l->tokenize('`foo`');
         $this->assertEquals('foo', $tokens[0]['value']);
         $this->assertEquals('literal', $tokens[0]['type']);
     }
+
 }

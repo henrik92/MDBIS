@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\CloudDirectory;
 
 use Aws\AwsClient;
@@ -124,4 +125,6 @@ use Aws\AwsClient;
  * @method \Aws\Result updateTypedLinkFacet(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateTypedLinkFacetAsync(array $args = [])
  */
-class CloudDirectoryClient extends AwsClient {}
+class CloudDirectoryClient extends AwsClient {
+    
+}

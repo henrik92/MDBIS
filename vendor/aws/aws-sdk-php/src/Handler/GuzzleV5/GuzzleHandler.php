@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Handler\GuzzleV5;
 
 use Aws\Sdk;
@@ -24,17 +25,17 @@ use Psr\Http\Message\StreamInterface as Psr7StreamInterface;
  *
  * @codeCoverageIgnore
  */
-class GuzzleHandler
-{
+class GuzzleHandler {
+
     private static $validOptions = [
-        'proxy'           => true,
-        'verify'          => true,
-        'timeout'         => true,
-        'debug'           => true,
+        'proxy' => true,
+        'verify' => true,
+        'timeout' => true,
+        'debug' => true,
         'connect_timeout' => true,
-        'stream'          => true,
-        'delay'           => true,
-        'sink'            => true,
+        'stream' => true,
+        'delay' => true,
+        'sink' => true,
     ];
 
     /** @var ClientInterface */
@@ -43,8 +44,7 @@ class GuzzleHandler
     /**
      * @param ClientInterface $client
      */
-    public function __construct(ClientInterface $client = null)
-    {
+    public function __construct(ClientInterface $client = null) {
         $this->client = $client ?: new Client();
     }
 
@@ -54,59 +54,53 @@ class GuzzleHandler
      *
      * @return Promise\Promise
      */
-    public function __invoke(Psr7Request $request, array $options = [])
-    {
+    public function __invoke(Psr7Request $request, array $options = []) {
         // Create and send a Guzzle 5 request
         $guzzlePromise = $this->client->send(
-            $this->createGuzzleRequest($request, $options)
+                $this->createGuzzleRequest($request, $options)
         );
 
         $promise = new Promise\Promise(
-            function () use ($guzzlePromise) {
-                try {
-                    $guzzlePromise->wait();
-                } catch (\Exception $e) {
-                    // The promise is already delivered when the exception is
-                    // thrown, so don't rethrow it.
-                }
-            },
-            [$guzzlePromise, 'cancel']
+                function () use ($guzzlePromise) {
+            try {
+                $guzzlePromise->wait();
+            } catch (\Exception $e) {
+                // The promise is already delivered when the exception is
+                // thrown, so don't rethrow it.
+            }
+        }, [$guzzlePromise, 'cancel']
         );
 
         $guzzlePromise->then([$promise, 'resolve'], [$promise, 'reject']);
 
         return $promise->then(
-            function (GuzzleResponse $response) {
-                // Adapt the Guzzle 5 Future to a Guzzle 6 ResponsePromise.
-                return $this->createPsr7Response($response);
-            },
-            function (Exception $exception) use ($options) {
-                // If we got a 'sink' that's a path, set the response body to
-                // the contents of the file. This will build the resulting
-                // exception with more information.
-                if ($exception instanceof RequestException) {
-                    if (isset($options['sink'])) {
-                        if (!($options['sink'] instanceof Psr7StreamInterface)) {
-                            $exception->getResponse()->setBody(
-                                Stream::factory(
-                                    file_get_contents($options['sink'])
-                                )
-                            );
+                        function (GuzzleResponse $response) {
+                    // Adapt the Guzzle 5 Future to a Guzzle 6 ResponsePromise.
+                    return $this->createPsr7Response($response);
+                }, function (Exception $exception) use ($options) {
+                    // If we got a 'sink' that's a path, set the response body to
+                    // the contents of the file. This will build the resulting
+                    // exception with more information.
+                    if ($exception instanceof RequestException) {
+                        if (isset($options['sink'])) {
+                            if (!($options['sink'] instanceof Psr7StreamInterface)) {
+                                $exception->getResponse()->setBody(
+                                        Stream::factory(
+                                                file_get_contents($options['sink'])
+                                        )
+                                );
+                            }
                         }
                     }
+                    // Reject with information about the error.
+                    return new Promise\RejectedPromise($this->prepareErrorData($exception));
                 }
-                // Reject with information about the error.
-                return new Promise\RejectedPromise($this->prepareErrorData($exception));
-            }
         );
     }
 
-    private function createGuzzleRequest(Psr7Request $psrRequest, array $options)
-    {
+    private function createGuzzleRequest(Psr7Request $psrRequest, array $options) {
         $ringConfig = [];
-        $statsCallback = isset($options['http_stats_receiver'])
-            ? $options['http_stats_receiver']
-            : null;
+        $statsCallback = isset($options['http_stats_receiver']) ? $options['http_stats_receiver'] : null;
         unset($options['http_stats_receiver']);
 
         // Remove unsupported options.
@@ -124,9 +118,7 @@ class GuzzleHandler
 
         // Prepare sink option.
         if (isset($options['sink'])) {
-            $ringConfig['save_to'] = ($options['sink'] instanceof Psr7StreamInterface)
-                ? new GuzzleStream($options['sink'])
-                : $options['sink'];
+            $ringConfig['save_to'] = ($options['sink'] instanceof Psr7StreamInterface) ? new GuzzleStream($options['sink']) : $options['sink'];
             unset($options['sink']);
         }
 
@@ -135,17 +127,14 @@ class GuzzleHandler
 
         // Create the Guzzle 5 request from the provided PSR7 request.
         $request = $this->client->createRequest(
-            $psrRequest->getMethod(),
-            $psrRequest->getUri(),
-            $options
+                $psrRequest->getMethod(), $psrRequest->getUri(), $options
         );
 
         if (is_callable($statsCallback)) {
             $request->getEmitter()->on(
-                'end',
-                function (EndEvent $event) use ($statsCallback) {
-                    $statsCallback($event->getTransferInfo());
-                }
+                    'end', function (EndEvent $event) use ($statsCallback) {
+                $statsCallback($event->getTransferInfo());
+            }
             );
         }
 
@@ -160,8 +149,7 @@ class GuzzleHandler
         $request->setHeaders($psrRequest->getHeaders());
 
         $request->setHeader(
-            'User-Agent',
-            $request->getHeader('User-Agent')
+                'User-Agent', $request->getHeader('User-Agent')
                 . ' ' . Client::getDefaultUserAgent()
         );
 
@@ -175,26 +163,21 @@ class GuzzleHandler
         return $request;
     }
 
-    private function createPsr7Response(GuzzleResponse $response)
-    {
+    private function createPsr7Response(GuzzleResponse $response) {
         if ($body = $response->getBody()) {
             $body = new PsrStream($body);
         }
 
         return new Psr7Response(
-            $response->getStatusCode(),
-            $response->getHeaders(),
-            $body,
-            $response->getReasonPhrase()
+                $response->getStatusCode(), $response->getHeaders(), $body, $response->getReasonPhrase()
         );
     }
 
-    private function prepareErrorData(Exception $e)
-    {
+    private function prepareErrorData(Exception $e) {
         $error = [
-            'exception'        => $e,
+            'exception' => $e,
             'connection_error' => false,
-            'response'         => null,
+            'response' => null,
         ];
 
         if ($e instanceof ConnectException) {
@@ -207,4 +190,5 @@ class GuzzleHandler
 
         return $error;
     }
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp;
 
 use GuzzleHttp\Handler\CurlHandler;
@@ -14,8 +15,7 @@ use GuzzleHttp\Handler\StreamHandler;
  *
  * @return string
  */
-function uri_template($template, array $variables)
-{
+function uri_template($template, array $variables) {
     if (extension_loaded('uri_template')) {
         // @codeCoverageIgnoreStart
         return \uri_template($template, $variables);
@@ -38,8 +38,7 @@ function uri_template($template, array $variables)
  * @return string Returns a string containing the type of the variable and
  *                if a class is provided, the class name.
  */
-function describe_type($input)
-{
+function describe_type($input) {
     switch (gettype($input)) {
         case 'object':
             return 'object(' . get_class($input) . ')';
@@ -60,15 +59,12 @@ function describe_type($input)
  *                     format: "Name: Value"
  * @return array
  */
-function headers_from_lines($lines)
-{
+function headers_from_lines($lines) {
     $headers = [];
 
     foreach ($lines as $line) {
         $parts = explode(':', $line, 2);
-        $headers[trim($parts[0])][] = isset($parts[1])
-            ? trim($parts[1])
-            : null;
+        $headers[trim($parts[0])][] = isset($parts[1]) ? trim($parts[1]) : null;
     }
 
     return $headers;
@@ -81,8 +77,7 @@ function headers_from_lines($lines)
  *
  * @return resource
  */
-function debug_resource($value = null)
-{
+function debug_resource($value = null) {
     if (is_resource($value)) {
         return $value;
     } elseif (defined('STDOUT')) {
@@ -100,8 +95,7 @@ function debug_resource($value = null)
  * @throws \RuntimeException if no viable Handler is available.
  * @return callable Returns the best handler for the given system.
  */
-function choose_handler()
-{
+function choose_handler() {
     $handler = null;
     if (function_exists('curl_multi_exec') && function_exists('curl_exec')) {
         $handler = Proxy::wrapSync(new CurlMultiHandler(), new CurlHandler());
@@ -112,12 +106,10 @@ function choose_handler()
     }
 
     if (ini_get('allow_url_fopen')) {
-        $handler = $handler
-            ? Proxy::wrapStreaming($handler, new StreamHandler())
-            : new StreamHandler();
+        $handler = $handler ? Proxy::wrapStreaming($handler, new StreamHandler()) : new StreamHandler();
     } elseif (!$handler) {
         throw new \RuntimeException('GuzzleHttp requires cURL, the '
-            . 'allow_url_fopen ini setting, or a custom HTTP handler.');
+        . 'allow_url_fopen ini setting, or a custom HTTP handler.');
     }
 
     return $handler;
@@ -128,8 +120,7 @@ function choose_handler()
  *
  * @return string
  */
-function default_user_agent()
-{
+function default_user_agent() {
     static $defaultAgent = '';
 
     if (!$defaultAgent) {
@@ -157,8 +148,7 @@ function default_user_agent()
  * @return string
  * @throws \RuntimeException if no bundle can be found.
  */
-function default_ca_bundle()
-{
+function default_ca_bundle() {
     static $cached = null;
     static $cafiles = [
         // Red Hat, CentOS, Fedora (provided by the ca-certificates package)
@@ -221,8 +211,7 @@ EOT
  *
  * @return array
  */
-function normalize_header_keys(array $headers)
-{
+function normalize_header_keys(array $headers) {
     $result = [];
     foreach (array_keys($headers) as $key) {
         $result[strtolower($key)] = $key;
@@ -250,8 +239,7 @@ function normalize_header_keys(array $headers)
  *
  * @return bool
  */
-function is_host_in_noproxy($host, array $noProxyArray)
-{
+function is_host_in_noproxy($host, array $noProxyArray) {
     if (strlen($host) === 0) {
         throw new \InvalidArgumentException('Empty host provided');
     }
@@ -297,12 +285,11 @@ function is_host_in_noproxy($host, array $noProxyArray)
  * @throws \InvalidArgumentException if the JSON cannot be decoded.
  * @link http://www.php.net/manual/en/function.json-decode.php
  */
-function json_decode($json, $assoc = false, $depth = 512, $options = 0)
-{
+function json_decode($json, $assoc = false, $depth = 512, $options = 0) {
     $data = \json_decode($json, $assoc, $depth, $options);
     if (JSON_ERROR_NONE !== json_last_error()) {
         throw new \InvalidArgumentException(
-            'json_decode error: ' . json_last_error_msg());
+        'json_decode error: ' . json_last_error_msg());
     }
 
     return $data;
@@ -319,12 +306,11 @@ function json_decode($json, $assoc = false, $depth = 512, $options = 0)
  * @throws \InvalidArgumentException if the JSON cannot be encoded.
  * @link http://www.php.net/manual/en/function.json-encode.php
  */
-function json_encode($value, $options = 0, $depth = 512)
-{
+function json_encode($value, $options = 0, $depth = 512) {
     $json = \json_encode($value, $options, $depth);
     if (JSON_ERROR_NONE !== json_last_error()) {
         throw new \InvalidArgumentException(
-            'json_encode error: ' . json_last_error_msg());
+        'json_encode error: ' . json_last_error_msg());
     }
 
     return $json;

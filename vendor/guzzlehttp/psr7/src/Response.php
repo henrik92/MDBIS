@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp\Psr7;
 
 use Psr\Http\Message\ResponseInterface;
@@ -7,8 +8,8 @@ use Psr\Http\Message\StreamInterface;
 /**
  * PSR-7 response implementation.
  */
-class Response implements ResponseInterface
-{
+class Response implements ResponseInterface {
+
     use MessageTrait;
 
     /** @var array Map of standard HTTP status code/reason phrases */
@@ -87,11 +88,7 @@ class Response implements ResponseInterface
      * @param string|null                          $reason  Reason phrase (when empty a default will be used based on the status code)
      */
     public function __construct(
-        $status = 200,
-        array $headers = [],
-        $body = null,
-        $version = '1.1',
-        $reason = null
+    $status = 200, array $headers = [], $body = null, $version = '1.1', $reason = null
     ) {
         $this->statusCode = (int) $status;
 
@@ -109,18 +106,15 @@ class Response implements ResponseInterface
         $this->protocol = $version;
     }
 
-    public function getStatusCode()
-    {
+    public function getStatusCode() {
         return $this->statusCode;
     }
 
-    public function getReasonPhrase()
-    {
+    public function getReasonPhrase() {
         return $this->reasonPhrase;
     }
 
-    public function withStatus($code, $reasonPhrase = '')
-    {
+    public function withStatus($code, $reasonPhrase = '') {
         $new = clone $this;
         $new->statusCode = (int) $code;
         if ($reasonPhrase == '' && isset(self::$phrases[$new->statusCode])) {
@@ -129,4 +123,5 @@ class Response implements ResponseInterface
         $new->reasonPhrase = $reasonPhrase;
         return $new;
     }
+
 }

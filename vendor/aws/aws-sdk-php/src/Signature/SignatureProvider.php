@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Signature;
 
 use Aws\Exception\UnresolvedSignatureException;
@@ -38,8 +39,8 @@ use Aws\Exception\UnresolvedSignatureException;
  *     $signer = $c('foo', 'abc', '123');    // $b handles this.
  *     $nullValue = $c('???', 'abc', '123'); // Neither can handle this.
  */
-class SignatureProvider
-{
+class SignatureProvider {
+
     /**
      * Resolves and signature provider and ensures a non-null return value.
      *
@@ -51,16 +52,15 @@ class SignatureProvider
      * @return SignatureInterface
      * @throws UnresolvedSignatureException
      */
-    public static function resolve(callable $provider, $version, $service, $region)
-    {
+    public static function resolve(callable $provider, $version, $service, $region) {
         $result = $provider($version, $service, $region);
         if ($result instanceof SignatureInterface) {
             return $result;
         }
 
         throw new UnresolvedSignatureException(
-            "Unable to resolve a signature for $version/$service/$region.\n"
-            . "Valid signature versions include v4 and anonymous."
+        "Unable to resolve a signature for $version/$service/$region.\n"
+        . "Valid signature versions include v4 and anonymous."
         );
     }
 
@@ -69,8 +69,7 @@ class SignatureProvider
      *
      * @return callable
      */
-    public static function defaultProvider()
-    {
+    public static function defaultProvider() {
         return self::memoize(self::version());
     }
 
@@ -83,8 +82,7 @@ class SignatureProvider
      *
      * @return callable
      */
-    public static function memoize(callable $provider)
-    {
+    public static function memoize(callable $provider) {
         $cache = [];
         return function ($version, $service, $region) use (&$cache, $provider) {
             $key = "($version)($service)($region)";
@@ -105,15 +103,12 @@ class SignatureProvider
      *
      * @return callable
      */
-    public static function version()
-    {
+    public static function version() {
         return function ($version, $service, $region) {
             switch ($version) {
                 case 's3v4':
                 case 'v4':
-                    return $service === 's3'
-                        ? new S3SignatureV4($service, $region)
-                        : new SignatureV4($service, $region);
+                    return $service === 's3' ? new S3SignatureV4($service, $region) : new SignatureV4($service, $region);
                 case 'v4-unsigned-body':
                     return new SignatureV4($service, $region, ['unsigned-body' => 'true']);
                 case 'anonymous':
@@ -123,4 +118,5 @@ class SignatureProvider
             }
         };
     }
+
 }

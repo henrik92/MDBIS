@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp;
 
 use Psr\Http\Message\RequestInterface;
@@ -7,8 +8,8 @@ use Psr\Http\Message\RequestInterface;
  * Creates a composed Guzzle handler function by stacking middlewares on top of
  * an HTTP handler function.
  */
-class HandlerStack
-{
+class HandlerStack {
+
     /** @var callable */
     private $handler;
 
@@ -35,8 +36,7 @@ class HandlerStack
      *
      * @return HandlerStack
      */
-    public static function create(callable $handler = null)
-    {
+    public static function create(callable $handler = null) {
         $stack = new self($handler ?: choose_handler());
         $stack->push(Middleware::httpErrors(), 'http_errors');
         $stack->push(Middleware::redirect(), 'allow_redirects');
@@ -49,8 +49,7 @@ class HandlerStack
     /**
      * @param callable $handler Underlying HTTP handler.
      */
-    public function __construct(callable $handler = null)
-    {
+    public function __construct(callable $handler = null) {
         $this->handler = $handler;
     }
 
@@ -60,8 +59,7 @@ class HandlerStack
      * @param RequestInterface $request
      * @param array            $options
      */
-    public function __invoke(RequestInterface $request, array $options)
-    {
+    public function __invoke(RequestInterface $request, array $options) {
         $handler = $this->resolve();
 
         return $handler($request, $options);
@@ -72,8 +70,7 @@ class HandlerStack
      *
      * @return string
      */
-    public function __toString()
-    {
+    public function __toString() {
         $depth = 0;
         $stack = [];
         if ($this->handler) {
@@ -102,8 +99,7 @@ class HandlerStack
      * @param callable $handler Accepts a request and array of options and
      *                          returns a Promise.
      */
-    public function setHandler(callable $handler)
-    {
+    public function setHandler(callable $handler) {
         $this->handler = $handler;
         $this->cached = null;
     }
@@ -113,8 +109,7 @@ class HandlerStack
      *
      * @return bool
      */
-    public function hasHandler()
-    {
+    public function hasHandler() {
         return (bool) $this->handler;
     }
 
@@ -124,8 +119,7 @@ class HandlerStack
      * @param callable $middleware Middleware function
      * @param string   $name       Name to register for this middleware.
      */
-    public function unshift(callable $middleware, $name = null)
-    {
+    public function unshift(callable $middleware, $name = null) {
         array_unshift($this->stack, [$middleware, $name]);
         $this->cached = null;
     }
@@ -136,8 +130,7 @@ class HandlerStack
      * @param callable $middleware Middleware function
      * @param string   $name       Name to register for this middleware.
      */
-    public function push(callable $middleware, $name = '')
-    {
+    public function push(callable $middleware, $name = '') {
         $this->stack[] = [$middleware, $name];
         $this->cached = null;
     }
@@ -149,8 +142,7 @@ class HandlerStack
      * @param callable $middleware Middleware function
      * @param string   $withName   Name to register for this middleware.
      */
-    public function before($findName, callable $middleware, $withName = '')
-    {
+    public function before($findName, callable $middleware, $withName = '') {
         $this->splice($findName, $withName, $middleware, true);
     }
 
@@ -161,8 +153,7 @@ class HandlerStack
      * @param callable $middleware Middleware function
      * @param string   $withName   Name to register for this middleware.
      */
-    public function after($findName, callable $middleware, $withName = '')
-    {
+    public function after($findName, callable $middleware, $withName = '') {
         $this->splice($findName, $withName, $middleware, false);
     }
 
@@ -171,15 +162,13 @@ class HandlerStack
      *
      * @param callable|string $remove Middleware to remove by instance or name.
      */
-    public function remove($remove)
-    {
+    public function remove($remove) {
         $this->cached = null;
         $idx = is_callable($remove) ? 0 : 1;
         $this->stack = array_values(array_filter(
-            $this->stack,
-            function ($tuple) use ($idx, $remove) {
-                return $tuple[$idx] !== $remove;
-            }
+                        $this->stack, function ($tuple) use ($idx, $remove) {
+                    return $tuple[$idx] !== $remove;
+                }
         ));
     }
 
@@ -188,8 +177,7 @@ class HandlerStack
      *
      * @return callable
      */
-    public function resolve()
-    {
+    public function resolve() {
         if (!$this->cached) {
             if (!($prev = $this->handler)) {
                 throw new \LogicException('No handler has been specified');
@@ -209,8 +197,7 @@ class HandlerStack
      * @param $name
      * @return int
      */
-    private function findByName($name)
-    {
+    private function findByName($name) {
         foreach ($this->stack as $k => $v) {
             if ($v[1] === $name) {
                 return $k;
@@ -228,8 +215,7 @@ class HandlerStack
      * @param callable $middleware
      * @param          $before
      */
-    private function splice($findName, $withName, callable $middleware, $before)
-    {
+    private function splice($findName, $withName, callable $middleware, $before) {
         $this->cached = null;
         $idx = $this->findByName($findName);
         $tuple = [$middleware, $withName];
@@ -256,18 +242,16 @@ class HandlerStack
      *
      * @return string
      */
-    private function debugCallable($fn)
-    {
+    private function debugCallable($fn) {
         if (is_string($fn)) {
             return "callable({$fn})";
         }
 
         if (is_array($fn)) {
-            return is_string($fn[0])
-                ? "callable({$fn[0]}::{$fn[1]})"
-                : "callable(['" . get_class($fn[0]) . "', '{$fn[1]}'])";
+            return is_string($fn[0]) ? "callable({$fn[0]}::{$fn[1]})" : "callable(['" . get_class($fn[0]) . "', '{$fn[1]}'])";
         }
 
         return 'callable(' . spl_object_hash($fn) . ')';
     }
+
 }

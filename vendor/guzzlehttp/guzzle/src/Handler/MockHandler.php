@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp\Handler;
 
 use GuzzleHttp\Exception\RequestException;
@@ -12,8 +13,8 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Handler that returns responses or throw exceptions from a queue.
  */
-class MockHandler implements \Countable
-{
+class MockHandler implements \Countable {
+
     private $queue = [];
     private $lastRequest;
     private $lastOptions;
@@ -31,9 +32,7 @@ class MockHandler implements \Countable
      * @return HandlerStack
      */
     public static function createWithMiddleware(
-        array $queue = null,
-        callable $onFulfilled = null,
-        callable $onRejected = null
+    array $queue = null, callable $onFulfilled = null, callable $onRejected = null
     ) {
         return HandlerStack::create(new self($queue, $onFulfilled, $onRejected));
     }
@@ -48,9 +47,7 @@ class MockHandler implements \Countable
      * @param callable $onRejected  Callback to invoke when the return value is rejected.
      */
     public function __construct(
-        array $queue = null,
-        callable $onFulfilled = null,
-        callable $onRejected = null
+    array $queue = null, callable $onFulfilled = null, callable $onRejected = null
     ) {
         $this->onFulfilled = $onFulfilled;
         $this->onRejected = $onRejected;
@@ -60,8 +57,7 @@ class MockHandler implements \Countable
         }
     }
 
-    public function __invoke(RequestInterface $request, array $options)
-    {
+    public function __invoke(RequestInterface $request, array $options) {
         if (!$this->queue) {
             throw new \OutOfBoundsException('Mock queue is empty');
         }
@@ -90,38 +86,35 @@ class MockHandler implements \Countable
             $response = call_user_func($response, $request, $options);
         }
 
-        $response = $response instanceof \Exception
-            ? \GuzzleHttp\Promise\rejection_for($response)
-            : \GuzzleHttp\Promise\promise_for($response);
+        $response = $response instanceof \Exception ? \GuzzleHttp\Promise\rejection_for($response) : \GuzzleHttp\Promise\promise_for($response);
 
         return $response->then(
-            function ($value) use ($request, $options) {
-                $this->invokeStats($request, $options, $value);
-                if ($this->onFulfilled) {
-                    call_user_func($this->onFulfilled, $value);
-                }
-                if (isset($options['sink'])) {
-                    $contents = (string) $value->getBody();
-                    $sink = $options['sink'];
-
-                    if (is_resource($sink)) {
-                        fwrite($sink, $contents);
-                    } elseif (is_string($sink)) {
-                        file_put_contents($sink, $contents);
-                    } elseif ($sink instanceof \Psr\Http\Message\StreamInterface) {
-                        $sink->write($contents);
+                        function ($value) use ($request, $options) {
+                    $this->invokeStats($request, $options, $value);
+                    if ($this->onFulfilled) {
+                        call_user_func($this->onFulfilled, $value);
                     }
-                }
+                    if (isset($options['sink'])) {
+                        $contents = (string) $value->getBody();
+                        $sink = $options['sink'];
 
-                return $value;
-            },
-            function ($reason) use ($request, $options) {
-                $this->invokeStats($request, $options, null, $reason);
-                if ($this->onRejected) {
-                    call_user_func($this->onRejected, $reason);
+                        if (is_resource($sink)) {
+                            fwrite($sink, $contents);
+                        } elseif (is_string($sink)) {
+                            file_put_contents($sink, $contents);
+                        } elseif ($sink instanceof \Psr\Http\Message\StreamInterface) {
+                            $sink->write($contents);
+                        }
+                    }
+
+                    return $value;
+                }, function ($reason) use ($request, $options) {
+                    $this->invokeStats($request, $options, null, $reason);
+                    if ($this->onRejected) {
+                        call_user_func($this->onRejected, $reason);
+                    }
+                    return \GuzzleHttp\Promise\rejection_for($reason);
                 }
-                return \GuzzleHttp\Promise\rejection_for($reason);
-            }
         );
     }
 
@@ -129,18 +122,14 @@ class MockHandler implements \Countable
      * Adds one or more variadic requests, exceptions, callables, or promises
      * to the queue.
      */
-    public function append()
-    {
+    public function append() {
         foreach (func_get_args() as $value) {
-            if ($value instanceof ResponseInterface
-                || $value instanceof \Exception
-                || $value instanceof PromiseInterface
-                || is_callable($value)
+            if ($value instanceof ResponseInterface || $value instanceof \Exception || $value instanceof PromiseInterface || is_callable($value)
             ) {
                 $this->queue[] = $value;
             } else {
                 throw new \InvalidArgumentException('Expected a response or '
-                    . 'exception. Found ' . \GuzzleHttp\describe_type($value));
+                . 'exception. Found ' . \GuzzleHttp\describe_type($value));
             }
         }
     }
@@ -150,8 +139,7 @@ class MockHandler implements \Countable
      *
      * @return RequestInterface
      */
-    public function getLastRequest()
-    {
+    public function getLastRequest() {
         return $this->lastRequest;
     }
 
@@ -160,8 +148,7 @@ class MockHandler implements \Countable
      *
      * @return array
      */
-    public function getLastOptions()
-    {
+    public function getLastOptions() {
         return $this->lastOptions;
     }
 
@@ -170,20 +157,17 @@ class MockHandler implements \Countable
      *
      * @return int
      */
-    public function count()
-    {
+    public function count() {
         return count($this->queue);
     }
 
     private function invokeStats(
-        RequestInterface $request,
-        array $options,
-        ResponseInterface $response = null,
-        $reason = null
+    RequestInterface $request, array $options, ResponseInterface $response = null, $reason = null
     ) {
         if (isset($options['on_stats'])) {
             $stats = new TransferStats($request, $response, 0, $reason);
             call_user_func($options['on_stats'], $stats);
         }
     }
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\CloudTrail;
 
 use Aws\S3\S3Client;
@@ -12,16 +13,15 @@ use Aws\S3\S3Client;
  * format. This class will automatically ungzip and decode the data, and return
  * the data as a array of log records
  */
-class LogFileReader
-{
+class LogFileReader {
+
     /** @var S3Client S3 client used to perform GetObject operations */
     private $s3Client;
 
     /**
      * @param S3Client $s3Client S3 client used to retrieve objects
      */
-    public function __construct(S3Client $s3Client)
-    {
+    public function __construct(S3Client $s3Client) {
         $this->s3Client = $s3Client;
     }
 
@@ -33,8 +33,7 @@ class LogFileReader
      *
      * @return array
      */
-    public function read($s3BucketName, $logFileKey)
-    {
+    public function read($s3BucketName, $logFileKey) {
         // Create a command for getting the log file object
         $command = $this->s3Client->getCommand('GetObject', [
             'Bucket' => (string) $s3BucketName,
@@ -52,4 +51,5 @@ class LogFileReader
 
         return isset($logData['Records']) ? $logData['Records'] : [];
     }
+
 }

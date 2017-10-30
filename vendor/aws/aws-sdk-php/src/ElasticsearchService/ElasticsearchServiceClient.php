@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\ElasticsearchService;
 
 use Aws\AwsClient;
@@ -35,4 +36,6 @@ use Aws\AwsClient;
  * @method \Aws\Result updateElasticsearchDomainConfig(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateElasticsearchDomainConfigAsync(array $args = [])
  */
-class ElasticsearchServiceClient extends AwsClient {}
+class ElasticsearchServiceClient extends AwsClient {
+    
+}

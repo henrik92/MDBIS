@@ -1,4 +1,5 @@
 <?php
+
 namespace JmesPath;
 
 /**
@@ -10,8 +11,8 @@ namespace JmesPath;
  * be cached to the system's temp directory. Set the environment variable to
  * a string to cache expressions to a specific directory.
  */
-final class Env
-{
+final class Env {
+
     const COMPILE_DIR = 'JP_PHP_COMPILE';
 
     /**
@@ -22,8 +23,7 @@ final class Env
      *
      * @return mixed|null Returns the matching data or null
      */
-    public static function search($expression, $data)
-    {
+    public static function search($expression, $data) {
         static $runtime;
         if (!$runtime) {
             $runtime = Env::createRuntime();
@@ -37,8 +37,7 @@ final class Env
      *
      * @return callable
      */
-    public static function createRuntime()
-    {
+    public static function createRuntime() {
         switch ($compileDir = getenv(self::COMPILE_DIR)) {
             case false: return new AstRuntime();
             case 'on': return new CompilerRuntime();
@@ -52,8 +51,7 @@ final class Env
      *
      * @return int Returns the number of deleted files.
      */
-    public static function cleanCompileDir()
-    {
+    public static function cleanCompileDir() {
         $total = 0;
         $compileDir = getenv(self::COMPILE_DIR) ?: sys_get_temp_dir();
         foreach (glob("{$compileDir}/jmespath_*.php") as $file) {
@@ -63,4 +61,5 @@ final class Env
 
         return $total;
     }
+
 }

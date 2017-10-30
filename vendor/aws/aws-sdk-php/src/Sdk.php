@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws;
 
 /**
@@ -213,8 +214,8 @@ namespace Aws;
  * @method \Aws\XRay\XRayClient createXRay(array $args = [])
  * @method \Aws\MultiRegionClient createMultiRegionXRay(array $args = [])
  */
-class Sdk
-{
+class Sdk {
+
     const VERSION = '3.36.30';
 
     /** @var array Arguments for creating clients */
@@ -229,8 +230,7 @@ class Sdk
      * @throws \InvalidArgumentException
      * @see Aws\AwsClient::__construct for a list of available options.
      */
-    public function __construct(array $args = [])
-    {
+    public function __construct(array $args = []) {
         $this->args = $args;
 
         if (!isset($args['handler']) && !isset($args['http_handler'])) {
@@ -238,8 +238,7 @@ class Sdk
         }
     }
 
-    public function __call($name, array $args)
-    {
+    public function __call($name, array $args) {
         $args = isset($args[0]) ? $args[0] : [];
         if (strpos($name, 'createMultiRegion') === 0) {
             return $this->createMultiRegionClient(substr($name, 17), $args);
@@ -261,8 +260,7 @@ class Sdk
      *                                   the service is not supported.
      * @see Aws\AwsClient::__construct for a list of available options for args.
      */
-    public function createClient($name, array $args = [])
-    {
+    public function createClient($name, array $args = []) {
         // Get information about the service from the manifest file.
         $service = manifest($name);
         $namespace = $service['namespace'];
@@ -272,8 +270,7 @@ class Sdk
         return new $client($this->mergeArgs($namespace, $service, $args));
     }
 
-    public function createMultiRegionClient($name, array $args = [])
-    {
+    public function createMultiRegionClient($name, array $args = []) {
         // Get information about the service from the manifest file.
         $service = manifest($name);
         $namespace = $service['namespace'];
@@ -284,8 +281,7 @@ class Sdk
         return new $klass($this->mergeArgs($namespace, $service, $args));
     }
 
-    private function mergeArgs($namespace, array $manifest, array $args = [])
-    {
+    private function mergeArgs($namespace, array $manifest, array $args = []) {
         // Merge provided args with stored, service-specific args.
         if (isset($this->args[$namespace])) {
             $args += $this->args[$namespace];
@@ -308,8 +304,8 @@ class Sdk
      * @internal
      * @deprecated Use the `\Aws\manifest()` function instead.
      */
-    public static function getEndpointPrefix($name)
-    {
+    public static function getEndpointPrefix($name) {
         return manifest($name)['endpoint'];
     }
+
 }

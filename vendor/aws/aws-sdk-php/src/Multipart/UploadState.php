@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Multipart;
 
 /**
@@ -7,8 +8,8 @@ namespace Aws\Multipart;
  * This object keeps track of the state of the upload, including the status and
  * which parts have been uploaded.
  */
-class UploadState
-{
+class UploadState {
+
     const CREATED = 0;
     const INITIATED = 1;
     const COMPLETED = 2;
@@ -28,8 +29,7 @@ class UploadState
     /**
      * @param array $id Params used to identity the upload.
      */
-    public function __construct(array $id)
-    {
+    public function __construct(array $id) {
         $this->id = $id;
     }
 
@@ -39,8 +39,7 @@ class UploadState
      *
      * @return array
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -51,8 +50,7 @@ class UploadState
      * @param string $key   The param key of the upload_id.
      * @param string $value The param value of the upload_id.
      */
-    public function setUploadId($key, $value)
-    {
+    public function setUploadId($key, $value) {
         $this->id[$key] = $value;
     }
 
@@ -61,8 +59,7 @@ class UploadState
      *
      * @return int
      */
-    public function getPartSize()
-    {
+    public function getPartSize() {
         return $this->partSize;
     }
 
@@ -71,8 +68,7 @@ class UploadState
      *
      * @param $partSize int Size of upload parts.
      */
-    public function setPartSize($partSize)
-    {
+    public function setPartSize($partSize) {
         $this->partSize = $partSize;
     }
 
@@ -83,8 +79,7 @@ class UploadState
      * @param array $partData   Data from the upload operation that needs to be
      *                          recalled during the complete operation.
      */
-    public function markPartAsUploaded($partNumber, array $partData = [])
-    {
+    public function markPartAsUploaded($partNumber, array $partData = []) {
         $this->uploadedParts[$partNumber] = $partData;
     }
 
@@ -95,8 +90,7 @@ class UploadState
      *
      * @return bool
      */
-    public function hasPartBeenUploaded($partNumber)
-    {
+    public function hasPartBeenUploaded($partNumber) {
         return isset($this->uploadedParts[$partNumber]);
     }
 
@@ -105,8 +99,7 @@ class UploadState
      *
      * @return array
      */
-    public function getUploadedParts()
-    {
+    public function getUploadedParts() {
         ksort($this->uploadedParts);
 
         return $this->uploadedParts;
@@ -118,8 +111,7 @@ class UploadState
      * @param int $status Status is an integer code defined by the constants
      *                    CREATED, INITIATED, and COMPLETED on this class.
      */
-    public function setStatus($status)
-    {
+    public function setStatus($status) {
         $this->status = $status;
     }
 
@@ -128,8 +120,7 @@ class UploadState
      *
      * @return bool
      */
-    public function isInitiated()
-    {
+    public function isInitiated() {
         return $this->status === self::INITIATED;
     }
 
@@ -138,8 +129,8 @@ class UploadState
      *
      * @return bool
      */
-    public function isCompleted()
-    {
+    public function isCompleted() {
         return $this->status === self::COMPLETED;
     }
+
 }

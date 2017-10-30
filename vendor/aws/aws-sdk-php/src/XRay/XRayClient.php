@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\XRay;
 
 use Aws\AwsClient;
@@ -18,4 +19,6 @@ use Aws\AwsClient;
  * @method \Aws\Result putTraceSegments(array $args = [])
  * @method \GuzzleHttp\Promise\Promise putTraceSegmentsAsync(array $args = [])
  */
-class XRayClient extends AwsClient {}
+class XRayClient extends AwsClient {
+    
+}

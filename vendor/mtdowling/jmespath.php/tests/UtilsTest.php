@@ -1,12 +1,12 @@
 <?php
+
 namespace JmesPath\Tests;
 
 use JmesPath\Utils;
 
-class UtilsTest extends \PHPUnit_Framework_TestCase
-{
-    public function typeProvider()
-    {
+class UtilsTest extends \PHPUnit_Framework_TestCase {
+
+    public function typeProvider() {
         return [
             ['a', 'string'],
             [10, 'number'],
@@ -17,7 +17,9 @@ class UtilsTest extends \PHPUnit_Framework_TestCase
             [[1, 2], 'array'],
             [['a' => 1], 'object'],
             [new \stdClass(), 'object'],
-            [function () {}, 'expression'],
+            [function () {
+                    
+                }, 'expression'],
             [new \ArrayObject(), 'array'],
             [new \ArrayObject([1, 2]), 'array'],
             [new \ArrayObject(['foo' => 'bar']), 'object'],
@@ -28,21 +30,18 @@ class UtilsTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider typeProvider
      */
-    public function testGetsTypes($given, $type)
-    {
+    public function testGetsTypes($given, $type) {
         $this->assertEquals($type, Utils::type($given));
     }
 
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testThrowsForInvalidArg()
-    {
+    public function testThrowsForInvalidArg() {
         Utils::type(new _TestClass());
     }
 
-    public function isArrayProvider()
-    {
+    public function isArrayProvider() {
         return [
             [[], true],
             [[1, 2], true],
@@ -57,13 +56,11 @@ class UtilsTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider isArrayProvider
      */
-    public function testChecksIfArray($given, $result)
-    {
+    public function testChecksIfArray($given, $result) {
         $this->assertSame($result, Utils::isArray($given));
     }
 
-    public function isObjectProvider()
-    {
+    public function isObjectProvider() {
         return [
             [[], true],
             [[1, 2], false],
@@ -78,19 +75,17 @@ class UtilsTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider isObjectProvider
      */
-    public function testChecksIfObject($given, $result)
-    {
+    public function testChecksIfObject($given, $result) {
         $this->assertSame($result, Utils::isObject($given));
     }
 
-    public function testHasStableSort()
-    {
+    public function testHasStableSort() {
         $data = [new _TestStr(), new _TestStr(), 0, 10, 2];
         $result = Utils::stableSort($data, function ($a, $b) {
-            $a = (int) (string) $a;
-            $b = (int) (string) $b;
-            return $a > $b ? -1 : ($a == $b ? 0 : 1);
-        });
+                    $a = (int) (string) $a;
+                    $b = (int) (string) $b;
+                    return $a > $b ? -1 : ($a == $b ? 0 : 1);
+                });
         $this->assertSame($data[0], $result[0]);
         $this->assertSame($data[1], $result[1]);
         $this->assertEquals(10, $result[2]);
@@ -98,33 +93,44 @@ class UtilsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $result[4]);
     }
 
-    public function testSlicesArrays()
-    {
+    public function testSlicesArrays() {
         $this->assertEquals([3, 2, 1], Utils::slice([1, 2, 3], null, null, -1));
         $this->assertEquals([1, 3], Utils::slice([1, 2, 3], null, null, 2));
         $this->assertEquals([2, 3], Utils::slice([1, 2, 3], 1));
     }
 
-    public function testSlicesStrings()
-    {
+    public function testSlicesStrings() {
         $this->assertEquals('cba', Utils::slice('abc', null, null, -1));
         $this->assertEquals('ac', Utils::slice('abc', null, null, 2));
         $this->assertEquals('bc', Utils::slice('abc', 1));
     }
+
 }
 
-class _TestClass implements \ArrayAccess
-{
-    public function offsetExists($offset) {}
-    public function offsetGet($offset) {}
-    public function offsetSet($offset, $value) {}
-    public function offsetUnset($offset) {}
+class _TestClass implements \ArrayAccess {
+
+    public function offsetExists($offset) {
+        
+    }
+
+    public function offsetGet($offset) {
+        
+    }
+
+    public function offsetSet($offset, $value) {
+        
+    }
+
+    public function offsetUnset($offset) {
+        
+    }
+
 }
 
-class _TestStr
-{
-    public function __toString()
-    {
+class _TestStr {
+
+    public function __toString() {
         return '100';
     }
+
 }

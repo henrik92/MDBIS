@@ -22,8 +22,8 @@ use Psr\Http\Message\UploadedFileInterface;
  * implemented such that they retain the internal state of the current
  * message and return a new instance that contains the changed state.
  */
-class ServerRequest extends Request implements ServerRequestInterface
-{
+class ServerRequest extends Request implements ServerRequestInterface {
+
     /**
      * @var array
      */
@@ -63,12 +63,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      * @param array                                $serverParams Typically the $_SERVER superglobal
      */
     public function __construct(
-        $method,
-        $uri,
-        array $headers = [],
-        $body = null,
-        $version = '1.1',
-        array $serverParams = []
+    $method, $uri, array $headers = [], $body = null, $version = '1.1', array $serverParams = []
     ) {
         $this->serverParams = $serverParams;
 
@@ -82,8 +77,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      * @throws InvalidArgumentException for unrecognized values
      * @return array
      */
-    public static function normalizeFiles(array $files)
-    {
+    public static function normalizeFiles(array $files) {
         $normalized = [];
 
         foreach ($files as $key => $value) {
@@ -111,18 +105,13 @@ class ServerRequest extends Request implements ServerRequestInterface
      * @param array $value $_FILES struct
      * @return array|UploadedFileInterface
      */
-    private static function createUploadedFileFromSpec(array $value)
-    {
+    private static function createUploadedFileFromSpec(array $value) {
         if (is_array($value['tmp_name'])) {
             return self::normalizeNestedFileSpec($value);
         }
 
         return new UploadedFile(
-            $value['tmp_name'],
-            (int) $value['size'],
-            (int) $value['error'],
-            $value['name'],
-            $value['type']
+                $value['tmp_name'], (int) $value['size'], (int) $value['error'], $value['name'], $value['type']
         );
     }
 
@@ -135,17 +124,16 @@ class ServerRequest extends Request implements ServerRequestInterface
      * @param array $files
      * @return UploadedFileInterface[]
      */
-    private static function normalizeNestedFileSpec(array $files = [])
-    {
+    private static function normalizeNestedFileSpec(array $files = []) {
         $normalizedFiles = [];
 
         foreach (array_keys($files['tmp_name']) as $key) {
             $spec = [
                 'tmp_name' => $files['tmp_name'][$key],
-                'size'     => $files['size'][$key],
-                'error'    => $files['error'][$key],
-                'name'     => $files['name'][$key],
-                'type'     => $files['type'][$key],
+                'size' => $files['size'][$key],
+                'error' => $files['error'][$key],
+                'name' => $files['name'][$key],
+                'type' => $files['type'][$key],
             ];
             $normalizedFiles[$key] = self::createUploadedFileFromSpec($spec);
         }
@@ -163,8 +151,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      *
      * @return ServerRequestInterface
      */
-    public static function fromGlobals()
-    {
+    public static function fromGlobals() {
         $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
         $headers = function_exists('getallheaders') ? getallheaders() : [];
         $uri = self::getUriFromGlobals();
@@ -174,10 +161,10 @@ class ServerRequest extends Request implements ServerRequestInterface
         $serverRequest = new ServerRequest($method, $uri, $headers, $body, $protocol, $_SERVER);
 
         return $serverRequest
-            ->withCookieParams($_COOKIE)
-            ->withQueryParams($_GET)
-            ->withParsedBody($_POST)
-            ->withUploadedFiles(self::normalizeFiles($_FILES));
+                        ->withCookieParams($_COOKIE)
+                        ->withQueryParams($_GET)
+                        ->withParsedBody($_POST)
+                        ->withUploadedFiles(self::normalizeFiles($_FILES));
     }
 
     /**
@@ -225,28 +212,24 @@ class ServerRequest extends Request implements ServerRequestInterface
         return $uri;
     }
 
-
     /**
      * {@inheritdoc}
      */
-    public function getServerParams()
-    {
+    public function getServerParams() {
         return $this->serverParams;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getUploadedFiles()
-    {
+    public function getUploadedFiles() {
         return $this->uploadedFiles;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function withUploadedFiles(array $uploadedFiles)
-    {
+    public function withUploadedFiles(array $uploadedFiles) {
         $new = clone $this;
         $new->uploadedFiles = $uploadedFiles;
 
@@ -256,16 +239,14 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getCookieParams()
-    {
+    public function getCookieParams() {
         return $this->cookieParams;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function withCookieParams(array $cookies)
-    {
+    public function withCookieParams(array $cookies) {
         $new = clone $this;
         $new->cookieParams = $cookies;
 
@@ -275,16 +256,14 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getQueryParams()
-    {
+    public function getQueryParams() {
         return $this->queryParams;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function withQueryParams(array $query)
-    {
+    public function withQueryParams(array $query) {
         $new = clone $this;
         $new->queryParams = $query;
 
@@ -294,16 +273,14 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getParsedBody()
-    {
+    public function getParsedBody() {
         return $this->parsedBody;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function withParsedBody($data)
-    {
+    public function withParsedBody($data) {
         $new = clone $this;
         $new->parsedBody = $data;
 
@@ -313,16 +290,14 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getAttributes()
-    {
+    public function getAttributes() {
         return $this->attributes;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getAttribute($attribute, $default = null)
-    {
+    public function getAttribute($attribute, $default = null) {
         if (false === array_key_exists($attribute, $this->attributes)) {
             return $default;
         }
@@ -333,8 +308,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withAttribute($attribute, $value)
-    {
+    public function withAttribute($attribute, $value) {
         $new = clone $this;
         $new->attributes[$attribute] = $value;
 
@@ -344,8 +318,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withoutAttribute($attribute)
-    {
+    public function withoutAttribute($attribute) {
         if (false === array_key_exists($attribute, $this->attributes)) {
             return $this;
         }
@@ -355,4 +328,5 @@ class ServerRequest extends Request implements ServerRequestInterface
 
         return $new;
     }
+
 }

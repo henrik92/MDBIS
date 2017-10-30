@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp\Exception;
 
 use Psr\Http\Message\RequestInterface;
@@ -9,8 +10,8 @@ use Psr\Http\Message\UriInterface;
 /**
  * HTTP Request exception
  */
-class RequestException extends TransferException
-{
+class RequestException extends TransferException {
+
     /** @var RequestInterface */
     private $request;
 
@@ -21,16 +22,10 @@ class RequestException extends TransferException
     private $handlerContext;
 
     public function __construct(
-        $message,
-        RequestInterface $request,
-        ResponseInterface $response = null,
-        \Exception $previous = null,
-        array $handlerContext = []
+    $message, RequestInterface $request, ResponseInterface $response = null, \Exception $previous = null, array $handlerContext = []
     ) {
         // Set the code of the exception if the response is set and not future.
-        $code = $response && !($response instanceof PromiseInterface)
-            ? $response->getStatusCode()
-            : 0;
+        $code = $response && !($response instanceof PromiseInterface) ? $response->getStatusCode() : 0;
         parent::__construct($message, $code, $previous);
         $this->request = $request;
         $this->response = $response;
@@ -45,11 +40,8 @@ class RequestException extends TransferException
      *
      * @return RequestException
      */
-    public static function wrapException(RequestInterface $request, \Exception $e)
-    {
-        return $e instanceof RequestException
-            ? $e
-            : new RequestException($e->getMessage(), $request, null, $e);
+    public static function wrapException(RequestInterface $request, \Exception $e) {
+        return $e instanceof RequestException ? $e : new RequestException($e->getMessage(), $request, null, $e);
     }
 
     /**
@@ -63,18 +55,11 @@ class RequestException extends TransferException
      * @return self
      */
     public static function create(
-        RequestInterface $request,
-        ResponseInterface $response = null,
-        \Exception $previous = null,
-        array $ctx = []
+    RequestInterface $request, ResponseInterface $response = null, \Exception $previous = null, array $ctx = []
     ) {
         if (!$response) {
             return new self(
-                'Error completing request',
-                $request,
-                null,
-                $previous,
-                $ctx
+                    'Error completing request', $request, null, $previous, $ctx
             );
         }
 
@@ -96,12 +81,7 @@ class RequestException extends TransferException
         // Client Error: `GET /` resulted in a `404 Not Found` response:
         // <html> ... (truncated)
         $message = sprintf(
-            '%s: `%s %s` resulted in a `%s %s` response',
-            $label,
-            $request->getMethod(),
-            $uri,
-            $response->getStatusCode(),
-            $response->getReasonPhrase()
+                '%s: `%s %s` resulted in a `%s %s` response', $label, $request->getMethod(), $uri, $response->getStatusCode(), $response->getReasonPhrase()
         );
 
         $summary = static::getResponseBodySummary($response);
@@ -122,8 +102,7 @@ class RequestException extends TransferException
      *
      * @return string|null
      */
-    public static function getResponseBodySummary(ResponseInterface $response)
-    {
+    public static function getResponseBodySummary(ResponseInterface $response) {
         $body = $response->getBody();
 
         if (!$body->isSeekable()) {
@@ -159,8 +138,7 @@ class RequestException extends TransferException
      *
      * @return UriInterface
      */
-    private static function obfuscateUri($uri)
-    {
+    private static function obfuscateUri($uri) {
         $userInfo = $uri->getUserInfo();
 
         if (false !== ($pos = strpos($userInfo, ':'))) {
@@ -175,8 +153,7 @@ class RequestException extends TransferException
      *
      * @return RequestInterface
      */
-    public function getRequest()
-    {
+    public function getRequest() {
         return $this->request;
     }
 
@@ -185,8 +162,7 @@ class RequestException extends TransferException
      *
      * @return ResponseInterface|null
      */
-    public function getResponse()
-    {
+    public function getResponse() {
         return $this->response;
     }
 
@@ -195,8 +171,7 @@ class RequestException extends TransferException
      *
      * @return bool
      */
-    public function hasResponse()
-    {
+    public function hasResponse() {
         return $this->response !== null;
     }
 
@@ -210,8 +185,8 @@ class RequestException extends TransferException
      *
      * @return array
      */
-    public function getHandlerContext()
-    {
+    public function getHandlerContext() {
         return $this->handlerContext;
     }
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Sts;
 
 use Aws\AwsClient;
@@ -23,8 +24,8 @@ use Aws\Credentials\Credentials;
  * @method \Aws\Result getSessionToken(array $args = [])
  * @method \GuzzleHttp\Promise\Promise getSessionTokenAsync(array $args = [])
  */
-class StsClient extends AwsClient
-{
+class StsClient extends AwsClient {
+
     /**
      * Creates credentials from the result of an STS operations
      *
@@ -33,8 +34,7 @@ class StsClient extends AwsClient
      * @return Credentials
      * @throws \InvalidArgumentException if the result contains no credentials
      */
-    public function createCredentials(Result $result)
-    {
+    public function createCredentials(Result $result) {
         if (!$result->hasKey('Credentials')) {
             throw new \InvalidArgumentException('Result contains no credentials');
         }
@@ -42,12 +42,8 @@ class StsClient extends AwsClient
         $c = $result['Credentials'];
 
         return new Credentials(
-            $c['AccessKeyId'],
-            $c['SecretAccessKey'],
-            isset($c['SessionToken']) ? $c['SessionToken'] : null,
-            isset($c['Expiration']) && $c['Expiration'] instanceof \DateTimeInterface
-                ? (int) $c['Expiration']->format('U')
-                : null
+                $c['AccessKeyId'], $c['SecretAccessKey'], isset($c['SessionToken']) ? $c['SessionToken'] : null, isset($c['Expiration']) && $c['Expiration'] instanceof \DateTimeInterface ? (int) $c['Expiration']->format('U') : null
         );
     }
+
 }

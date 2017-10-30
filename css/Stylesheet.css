@@ -10,7 +10,7 @@ and open the template in the editor.
 
 
 body {
-    background-color: lightgrey;
+    background-color: grey;
     color: black;
 }
 /*CONTAINER*/
@@ -41,6 +41,10 @@ ul{
 }
 .movie-view-rating {
     float: left;
-    width: 30%;
+    width: 20%;
     text-align: center;
+}
+.top-distance {
+    margin-top: 10%;
+    padding: 10px; 
 }

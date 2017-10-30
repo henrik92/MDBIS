@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws;
 
 /**
@@ -29,8 +30,8 @@ namespace Aws;
  * middleware before or after another middleware by name. This also allows you
  * to remove a middleware by name (in addition to removing by instance).
  */
-class HandlerList implements \Countable
-{
+class HandlerList implements \Countable {
+
     const INIT = 'init';
     const VALIDATE = 'validate';
     const BUILD = 'build';
@@ -50,17 +51,16 @@ class HandlerList implements \Countable
 
     /** @var array Steps (in reverse order) */
     private $steps = [
-        self::SIGN     => [],
-        self::BUILD    => [],
+        self::SIGN => [],
+        self::BUILD => [],
         self::VALIDATE => [],
-        self::INIT     => [],
+        self::INIT => [],
     ];
 
     /**
      * @param callable $handler HTTP handler.
      */
-    public function __construct(callable $handler = null)
-    {
+    public function __construct(callable $handler = null) {
         $this->handler = $handler;
     }
 
@@ -69,8 +69,7 @@ class HandlerList implements \Countable
      *
      * @return string
      */
-    public function __toString()
-    {
+    public function __toString() {
         $str = '';
         $i = 0;
 
@@ -98,8 +97,7 @@ class HandlerList implements \Countable
      * @param callable $handler Function that accepts a request and array of
      *                          options and returns a Promise.
      */
-    public function setHandler(callable $handler)
-    {
+    public function setHandler(callable $handler) {
         $this->handler = $handler;
     }
 
@@ -108,8 +106,7 @@ class HandlerList implements \Countable
      *
      * @return bool
      */
-    public function hasHandler()
-    {
+    public function hasHandler() {
         return (bool) $this->handler;
     }
 
@@ -119,8 +116,7 @@ class HandlerList implements \Countable
      * @param callable $middleware Middleware function to add.
      * @param string   $name       Name of the middleware.
      */
-    public function appendInit(callable $middleware, $name = null)
-    {
+    public function appendInit(callable $middleware, $name = null) {
         $this->add(self::INIT, $name, $middleware);
     }
 
@@ -130,8 +126,7 @@ class HandlerList implements \Countable
      * @param callable $middleware Middleware function to add.
      * @param string   $name       Name of the middleware.
      */
-    public function prependInit(callable $middleware, $name = null)
-    {
+    public function prependInit(callable $middleware, $name = null) {
         $this->add(self::INIT, $name, $middleware, true);
     }
 
@@ -141,8 +136,7 @@ class HandlerList implements \Countable
      * @param callable $middleware Middleware function to add.
      * @param string   $name       Name of the middleware.
      */
-    public function appendValidate(callable $middleware, $name = null)
-    {
+    public function appendValidate(callable $middleware, $name = null) {
         $this->add(self::VALIDATE, $name, $middleware);
     }
 
@@ -152,8 +146,7 @@ class HandlerList implements \Countable
      * @param callable $middleware Middleware function to add.
      * @param string   $name       Name of the middleware.
      */
-    public function prependValidate(callable $middleware, $name = null)
-    {
+    public function prependValidate(callable $middleware, $name = null) {
         $this->add(self::VALIDATE, $name, $middleware, true);
     }
 
@@ -163,8 +156,7 @@ class HandlerList implements \Countable
      * @param callable $middleware Middleware function to add.
      * @param string   $name       Name of the middleware.
      */
-    public function appendBuild(callable $middleware, $name = null)
-    {
+    public function appendBuild(callable $middleware, $name = null) {
         $this->add(self::BUILD, $name, $middleware);
     }
 
@@ -174,8 +166,7 @@ class HandlerList implements \Countable
      * @param callable $middleware Middleware function to add.
      * @param string   $name       Name of the middleware.
      */
-    public function prependBuild(callable $middleware, $name = null)
-    {
+    public function prependBuild(callable $middleware, $name = null) {
         $this->add(self::BUILD, $name, $middleware, true);
     }
 
@@ -185,8 +176,7 @@ class HandlerList implements \Countable
      * @param callable $middleware Middleware function to add.
      * @param string   $name       Name of the middleware.
      */
-    public function appendSign(callable $middleware, $name = null)
-    {
+    public function appendSign(callable $middleware, $name = null) {
         $this->add(self::SIGN, $name, $middleware);
     }
 
@@ -196,8 +186,7 @@ class HandlerList implements \Countable
      * @param callable $middleware Middleware function to add.
      * @param string   $name       Name of the middleware.
      */
-    public function prependSign(callable $middleware, $name = null)
-    {
+    public function prependSign(callable $middleware, $name = null) {
         $this->add(self::SIGN, $name, $middleware, true);
     }
 
@@ -208,8 +197,7 @@ class HandlerList implements \Countable
      * @param string          $withName   Optional name to give the middleware
      * @param callable        $middleware Middleware to add.
      */
-    public function before($findName, $withName, callable $middleware)
-    {
+    public function before($findName, $withName, callable $middleware) {
         $this->splice($findName, $withName, $middleware, true);
     }
 
@@ -220,8 +208,7 @@ class HandlerList implements \Countable
      * @param string          $withName   Optional name to give the middleware
      * @param callable        $middleware Middleware to add.
      */
-    public function after($findName, $withName, callable $middleware)
-    {
+    public function after($findName, $withName, callable $middleware) {
         $this->splice($findName, $withName, $middleware, false);
     }
 
@@ -230,8 +217,7 @@ class HandlerList implements \Countable
      *
      * @param string|callable $nameOrInstance Middleware to remove.
      */
-    public function remove($nameOrInstance)
-    {
+    public function remove($nameOrInstance) {
         if (is_callable($nameOrInstance)) {
             $this->removeByInstance($nameOrInstance);
         } elseif (is_string($nameOrInstance)) {
@@ -253,8 +239,7 @@ class HandlerList implements \Countable
      *
      * @param callable|null $fn Pass null to remove any previously set function
      */
-    public function interpose(callable $fn = null)
-    {
+    public function interpose(callable $fn = null) {
         $this->sorted = null;
         $this->interposeFn = $fn;
     }
@@ -264,8 +249,7 @@ class HandlerList implements \Countable
      *
      * @return callable
      */
-    public function resolve()
-    {
+    public function resolve() {
         if (!($prev = $this->handler)) {
             throw new \LogicException('No handler has been specified');
         }
@@ -281,12 +265,8 @@ class HandlerList implements \Countable
         return $prev;
     }
 
-    public function count()
-    {
-        return count($this->steps[self::INIT])
-            + count($this->steps[self::VALIDATE])
-            + count($this->steps[self::BUILD])
-            + count($this->steps[self::SIGN]);
+    public function count() {
+        return count($this->steps[self::INIT]) + count($this->steps[self::VALIDATE]) + count($this->steps[self::BUILD]) + count($this->steps[self::SIGN]);
     }
 
     /**
@@ -297,8 +277,7 @@ class HandlerList implements \Countable
      * @param callable $middleware
      * @param          $before
      */
-    private function splice($findName, $withName, callable $middleware, $before)
-    {
+    private function splice($findName, $withName, callable $middleware, $before) {
         if (!isset($this->named[$findName])) {
             throw new \InvalidArgumentException("$findName not found");
         }
@@ -317,9 +296,7 @@ class HandlerList implements \Countable
             }
         }
 
-        $replacement = $before
-            ? [$this->steps[$step][$idx], [$middleware, $withName]]
-            : [[$middleware, $withName], $this->steps[$step][$idx]];
+        $replacement = $before ? [$this->steps[$step][$idx], [$middleware, $withName]] : [[$middleware, $withName], $this->steps[$step][$idx]];
         array_splice($this->steps[$step], $idx, 1, $replacement);
     }
 
@@ -330,8 +307,7 @@ class HandlerList implements \Countable
      *
      * @return string
      */
-    private function debugCallable($fn)
-    {
+    private function debugCallable($fn) {
         if (is_string($fn)) {
             return "callable({$fn})";
         } elseif (is_array($fn)) {
@@ -345,8 +321,7 @@ class HandlerList implements \Countable
     /**
      * Sort the middleware, and interpose if needed in the sorted list.
      */
-    private function sortMiddleware()
-    {
+    private function sortMiddleware() {
         $this->sorted = [];
 
         if (!$this->interposeFn) {
@@ -368,8 +343,7 @@ class HandlerList implements \Countable
         }
     }
 
-    private function removeByName($name)
-    {
+    private function removeByName($name) {
         if (!isset($this->named[$name])) {
             return;
         }
@@ -377,17 +351,15 @@ class HandlerList implements \Countable
         $this->sorted = null;
         $step = $this->named[$name];
         $this->steps[$step] = array_values(
-            array_filter(
-                $this->steps[$step],
-                function ($tuple) use ($name) {
+                array_filter(
+                        $this->steps[$step], function ($tuple) use ($name) {
                     return $tuple[1] !== $name;
                 }
-            )
+                )
         );
     }
 
-    private function removeByInstance(callable $fn)
-    {
+    private function removeByInstance(callable $fn) {
         foreach ($this->steps as $k => $step) {
             foreach ($step as $j => $tuple) {
                 if ($tuple[0] === $fn) {
@@ -407,8 +379,7 @@ class HandlerList implements \Countable
      * @param callable $middleware Middleware function to add.
      * @param bool     $prepend    Prepend instead of append.
      */
-    private function add($step, $name, callable $middleware, $prepend = false)
-    {
+    private function add($step, $name, callable $middleware, $prepend = false) {
         $this->sorted = null;
 
         if ($prepend) {
@@ -421,4 +392,5 @@ class HandlerList implements \Countable
             $this->named[$name] = $step;
         }
     }
+
 }
