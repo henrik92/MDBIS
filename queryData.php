@@ -7,16 +7,15 @@ $tableName = 'Movies';
 
 $eav = $marshaler->marshalJson('
     {
-        ":letter1": "A",
-        ":letter2": "L"
+      ":t": "Iron"
     }
 ');
 
 $params = [
     'TableName' => $tableName,
-    'ProjectionExpression' => 'title, info.genres, info.actors[0]',
     'KeyConditionExpression' =>
-    'title between :letter1 and :letter2',
+    'title',
+    'FilterExpression' => 'contains(title, :t)',
     'ExpressionAttributeValues' => $eav
 ];
 

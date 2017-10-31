@@ -3,12 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/nav.php</file>
-            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/search.php</file>
-            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/info.php</file>
-            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/top10.php</file>
-            <file>file:/C:/Users/Henrik/Documents/MDBIS/index.php</file>
-            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/all.php</file>
+            <file>file:/Users/henrik/MDBIS/scanData.php</file>
+            <file>file:/Users/henrik/MDBIS/src/view/top10.php</file>
+            <file>file:/Users/henrik/MDBIS/src/view/search.php</file>
+            <file>file:/Users/henrik/MDBIS/queryData.php</file>
         </group>
     </open-files>
 </project-private>
