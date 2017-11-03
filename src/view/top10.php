@@ -15,7 +15,7 @@ $top = json_decode($json, true);
   $error = "File not found.";
 }
 /*Read JSON Top 10 File*/
-
+$iterator = 1;
 foreach ((array)$top as $key => $item){ 
     ?>
 
@@ -28,7 +28,7 @@ foreach ((array)$top as $key => $item){
         <div class="movie-view-description" > 
             <br>
             <ul>
-                <li><h1><?php echo $item['title']; ?></h1></li>
+                <li><h1><?php echo $iterator;?>. <?php echo $item['title']; ?></h1></li>
                 <li><p><?php echo $item['year']; ?></p></li>
                 <li><p><?php echo implode(" , ", $item['info']['actors']); ?></p></li>
                 <li><p><?php echo implode(" , ", $item['info']['genres']); ?></p></li>
@@ -38,7 +38,12 @@ foreach ((array)$top as $key => $item){
         </div>
         <div class="movie-view-rating"> 
             <br>
-            <h3>Rating: <b><?php echo $item['info']['rating']; ?></b> Stars</h3>
+            <h3>Rating: <?php if($item['info']['rating'] == NULL) {
+                echo 'Not rated.';
+            }else{
+                echo $item['info']['rating']; 
+            }
+            $iterator++;?></h3>
             <br>
             <hr>
 
