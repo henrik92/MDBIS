@@ -1,7 +1,16 @@
+<script> 
+        // wait for the DOM to be loaded 
+        $(document).ready(function() { 
+            // bind 'myForm' and provide a simple callback function 
+            $('#rating').ajaxForm(function() { 
+                alert("Thank you for your comment!"); 
+            }); 
+        }); 
+    </script>
 <!--SEARCH-->
 <div class="container text-center top-distance">
     <h2>Rate your favourite movie</h2><br>
-    <form action="" method="post">
+    <form id="search" action="" method="post">
         <input class="input-lg" style="width: 40%" name="title" type="text" placeholder="Enter your title here...">
         <button name="submit" type="submit" class="btn btn-success">Search</button>
     </form>
@@ -79,21 +88,57 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     <h1>Rating: <b><?php echo $data['info']['rating']; ?> / 10 </b></h1>
                     <br>
                     <hr>
-                    <form action="" method="post">
-                        <input class="input-sm" style="width: 10%" name="rating" type="text"/>/10
+                    <form id="rating" action="" method="post">
+                        <input class="input-sm" style="width: 10%" name="movie_rating" type="text" />/10
                         <br><br>
+                        <input type="hidden" name="movie_title" value="<?php echo $data['title']?>">
                         <button name="submit" type="submit" class="btn btn-success">Submit my Rating</button>
                     </form>
                 </div>
             </div>
-        <?php } else { ?>
-            <div class="container text-center">
-                <br>
-                 <h3 style="color: darkred;"<b><?php echo $error; ?></b></h3>
-                <br>
-            </div>
+                <?php   
+                
+                /* SUBMIT MOVIE RATING */
+                $input_err;
+                   if ($_SERVER["REQUEST_METHOD"] == "POST"){
+                       if(empty($_POST['movie_rating'])){
+                           $input_err = "Please enter a rating.";
+                       } else {
+                           if (isset ($_POST['movie_rating'])){
+                            $rating = $_POST['movie_rating'];
+                            $title = $_POST['movie_title'];
+                             if (filter_var($int, FILTER_VALIDATE_FLOAT) === 0 || !filter_var($int, FILTER_VALIDATE_FLOAT) === false){
+                               /*TODO*/
+                                 $rating_item = array(
+                                     'title' => $title,
+                                     'rating' => $rating
+                                 );
+                                 $json_rating = json_encode($rating_item);
+                                 
+                                 $tableName = "Rating";
+                                 $params = [
+                                    'TableName' => $tableName,
+                                    'Item' => $marshaler->marshalJson($json_rating)
+                                   ];
+                                 
+                            try {
+                                 $result = $dynamodb->putItem($params);
+                                 echo "Added item: $title\n";
+                            } catch (DynamoDbException $e) {
+                                echo "Unable to add item:\n";
+                                echo $e->getMessage() . "\n";
+                                }
+                             } else {
+                                 $input_err = "Invalid input.";
+                             }
+                           }
+                       }
+                      }
+                  ?>  
+                <div>
+    <p><?php if($input_err != "") echo $input_err; ?></p>
+                </div>
         <?php
-        }
     } else {
         ?>
         <div class="container text-center">
@@ -102,10 +147,3 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <?php }
 }
 ?>
-
-
-<!-- TO - DO:
-    Query DB
-    Autocompleten
-    Show Movie Title Overview
--->

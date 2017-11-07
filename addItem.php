@@ -23,28 +23,26 @@ $marshaler = new Marshaler();
 
 $tableName = 'Movies';
 
-$title = 'The Big New Movie';
+$title = 'Avatar';
+$rating = 5.6;
 
-$item = $marshaler->marshalJson('
-    {
-        "title": "' . $title . '",        
-        "year": "2008",
-        "info": {
-            "plot": "Nothing happens at all.",
-            "rating": 0
-        }
-    }
-');
+$rating_item = array(
+                                     'title' => $title,
+                                     'rating' => $rating
+                                 );
+                                 $json_rating = json_encode($rating_item);
+
+$item = $marshaler->marshalJson($json_rating);
 
 $params = [
-    'TableName' => 'Movies',
+    'TableName' => 'Rating',
     'Item' => $item
 ];
 
 
 try {
     $result = $dynamodb->putItem($params);
-    echo "Added item: $title\n";
+    echo "Added item: $title with Rating: $rating\n";
 } catch (DynamoDbException $e) {
     echo "Unable to add item:\n";
     echo $e->getMessage() . "\n";

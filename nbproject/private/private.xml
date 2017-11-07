@@ -3,11 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/henrik/MDBIS/css/Stylesheet.css</file>
-            <file>file:/Users/henrik/MDBIS/scanData.php</file>
+            <file>file:/Users/henrik/MDBIS/addItem.php</file>
+            <file>file:/Users/henrik/MDBIS/fetchData.php</file>
+            <file>file:/Users/henrik/MDBIS/createRatingTable.php</file>
+            <file>file:/Users/henrik/MDBIS/createMovieV2Table.php</file>
+            <file>file:/Users/henrik/MDBIS/src/view/submitted.php</file>
             <file>file:/Users/henrik/MDBIS/src/view/top10.php</file>
             <file>file:/Users/henrik/MDBIS/src/view/search.php</file>
-            <file>file:/Users/henrik/MDBIS/queryData.php</file>
         </group>
     </open-files>
 </project-private>
