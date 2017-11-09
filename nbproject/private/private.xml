@@ -3,13 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/henrik/MDBIS/addItem.php</file>
-            <file>file:/Users/henrik/MDBIS/fetchData.php</file>
-            <file>file:/Users/henrik/MDBIS/createRatingTable.php</file>
-            <file>file:/Users/henrik/MDBIS/createMovieV2Table.php</file>
-            <file>file:/Users/henrik/MDBIS/src/view/submitted.php</file>
-            <file>file:/Users/henrik/MDBIS/src/view/top10.php</file>
-            <file>file:/Users/henrik/MDBIS/src/view/search.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/nav.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/search.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/index.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/lib/aws_config.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/js/search_submit_rating.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/js/submit_rating.js</file>
         </group>
     </open-files>
 </project-private>

@@ -38,9 +38,14 @@ foreach ((array)$top as $key => $item){
         </div>
         <div class="movie-view-rating"> 
             <br>
-            <h3>Rating: <?php if($item['info']['rating'] == NULL) {
-                echo 'Not rated.';
-            }else{
+            <h3> <?php 
+            if(empty($item['info']['rating'])) {
+                echo 'No rating found.';
+            } elseif($item['info']['rating'] === NULL){
+                 echo 'Not rated yet.';
+            }
+            else{
+                ?>Rating: <?php
                 echo $item['info']['rating']; 
             }
             $iterator++;?></h3>

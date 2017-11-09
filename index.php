@@ -19,6 +19,10 @@ and open the template in the editor.
 
         <!-- Latest compiled JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        
+        <!-- Custom JS Scripts -->
+        <script src="js/submit_rating.js"></script>
+
 
         <link rel="stylesheet" type="text/css" href="css/Stylesheet.css">
     </head>
@@ -27,13 +31,14 @@ and open the template in the editor.
         include_once 'src/view/nav.php';
 
         $incFile = "src/view/search.php";
-
+        $site = "";
+                
         if (isset($_GET["site"])) {
             $site = $_GET["site"];
             if (strlen($site) != 0) {
                 if ($site == "top10")
                     $incFile = "src/view/top10.php";
-
+                
                 if ($site == "all")
                     $incFile = "src/view/all.php";
 
