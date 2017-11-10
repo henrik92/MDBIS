@@ -15,19 +15,14 @@ $(document).ready(
                         movie_rating: rating
                     },
                     success: function (response) {
-                     if (response.search(/success/) !== -1){
+                       /* if (response.search(/success/) !== -1)*/
+                     if (response === "success"){
                             $('#result').html("Success!");
                         } else if (response === "invalid"){
                              $('#result').html("No valid input"); 
                         } else {
-                            $('#result').html("No Input");
+                            $('#result').html("No Input"+response);
                         }
-                        /*else if (response === "invalid") {
-                            $('#result').html("Your input is not a number");
-                        } else if (response === "none") {
-                            $('#result').html("No rating set.");
-
-                        }*/
                     }
                 });
             });

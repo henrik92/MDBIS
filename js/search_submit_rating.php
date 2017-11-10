@@ -1,5 +1,21 @@
 <?php
 
+require $_SERVER["DOCUMENT_ROOT"] . '/vendor/autoload.php';
+
+date_default_timezone_set('Europe/Berlin');
+
+use Aws\DynamoDb\Exception\DynamoDbException;
+use Aws\DynamoDb\Marshaler;
+
+    $sdk = new Aws\Sdk([
+    'endpoint' => 'http://localhost:8002',
+    'region' => 'eu-central-1',
+    'version' => 'latest'
+        ]);
+    
+$dynamodb = $sdk->createDynamoDb();  
+$marshaler = new Marshaler();
+
 if (isset($_POST['movie_rating']) and isset($_POST['movie_title'])) {
         $rating = $_POST['movie_rating'];
         $title = $_POST['movie_title'];
@@ -9,7 +25,6 @@ if (isset($_POST['movie_rating']) and isset($_POST['movie_title'])) {
         } else {
         
         if (filter_var($rating, FILTER_VALIDATE_INT) && ($rating <= 10 && $rating > 0)) {
-             echo "success";
             /* TODO */
             $rating_item = array(
                 'title' => $title,
@@ -25,7 +40,6 @@ if (isset($_POST['movie_rating']) and isset($_POST['movie_title'])) {
 
             try {
                 $result = $dynamodb->putItem($params);
-                echo "Added item: $title\n";
             } catch (DynamoDbException $e) {
                 echo "Unable to add item:\n";
                 echo $e->getMessage() . "\n";

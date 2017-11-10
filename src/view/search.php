@@ -90,7 +90,7 @@ if (!empty($_POST['title']) and isset($_POST["submit_search"])) {
                     <button id="submitrating" onclick="submitrating();" name="submit_rating" type="submit" value="rating" class="btn btn-success">Submit my Rating</button>
                 </form>
                 <br>
-                <b><p style="color:red;" id="result"></p></b>
+                <b><h5 style="color:red;" id="result"></h5></b>
             </div>
         </div>
         <?php
