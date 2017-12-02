@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\CloudTrail;
 
 use Aws\S3\S3Client;
@@ -17,12 +16,13 @@ use Aws\CloudTrail\Exception\CloudTrailException;
  *
  * Yields an array containing the Amazon S3 bucket and key of the log file.
  */
-class LogFileIterator extends \IteratorIterator {
-
+class LogFileIterator extends \IteratorIterator
+{
     // For internal use
     const DEFAULT_TRAIL_NAME = 'Default';
     const PREFIX_TEMPLATE = 'prefix/AWSLogs/account/CloudTrail/region/date/';
     const PREFIX_WILDCARD = '*';
+
     // Option names used internally or externally
     const TRAIL_NAME = 'trail_name';
     const KEY_PREFIX = 'key_prefix';
@@ -53,9 +53,13 @@ class LogFileIterator extends \IteratorIterator {
      * @see LogRecordIterator::__contruct
      */
     public static function forTrail(
-    S3Client $s3Client, CloudTrailClient $cloudTrailClient, array $options = []
+        S3Client $s3Client,
+        CloudTrailClient $cloudTrailClient,
+        array $options = []
     ) {
-        $trailName = isset($options[self::TRAIL_NAME]) ? $options[self::TRAIL_NAME] : self::DEFAULT_TRAIL_NAME;
+        $trailName = isset($options[self::TRAIL_NAME])
+            ? $options[self::TRAIL_NAME]
+            : self::DEFAULT_TRAIL_NAME;
 
         $s3BucketName = null;
 
@@ -67,7 +71,7 @@ class LogFileIterator extends \IteratorIterator {
             ]);
             $s3BucketName = $result->search('trailList[0].S3BucketName');
             $options[self::KEY_PREFIX] = $result->search(
-                    'trailList[0].S3KeyPrefix'
+                'trailList[0].S3KeyPrefix'
             );
         } catch (CloudTrailException $e) {
             // There was an error describing the trail
@@ -77,7 +81,7 @@ class LogFileIterator extends \IteratorIterator {
         if (!$s3BucketName) {
             $prev = isset($e) ? $e : null;
             throw new \InvalidArgumentException('The bucket name could not '
-            . 'be determined from the trail.', 0, $prev);
+                . 'be determined from the trail.', 0, $prev);
         }
 
         return new self($s3Client, $s3BucketName, $options);
@@ -108,7 +112,9 @@ class LogFileIterator extends \IteratorIterator {
      * @param array    $options
      */
     public function __construct(
-    S3Client $s3Client, $s3BucketName, array $options = []
+        S3Client $s3Client,
+        $s3BucketName,
+        array $options = []
     ) {
         $this->s3Client = $s3Client;
         $this->s3BucketName = $s3BucketName;
@@ -121,11 +127,12 @@ class LogFileIterator extends \IteratorIterator {
      *
      * @return array|bool
      */
-    public function current() {
+    public function current()
+    {
         if ($object = parent::current()) {
             return [
                 'Bucket' => $this->s3BucketName,
-                'Key' => $object['Key']
+                'Key'    => $object['Key']
             ];
         }
 
@@ -140,16 +147,27 @@ class LogFileIterator extends \IteratorIterator {
      *
      * @return \Iterator
      */
-    private function buildListObjectsIterator(array $options) {
+    private function buildListObjectsIterator(array $options)
+    {
         // Extract and normalize the date values from the options
-        $startDate = isset($options[self::START_DATE]) ? $this->normalizeDateValue($options[self::START_DATE]) : null;
-        $endDate = isset($options[self::END_DATE]) ? $this->normalizeDateValue($options[self::END_DATE]) : null;
+        $startDate = isset($options[self::START_DATE])
+            ? $this->normalizeDateValue($options[self::START_DATE])
+            : null;
+        $endDate = isset($options[self::END_DATE])
+            ? $this->normalizeDateValue($options[self::END_DATE])
+            : null;
 
         // Determine the parts of the key prefix of the log files being read
         $parts = [
-            'prefix' => isset($options[self::KEY_PREFIX]) ? $options[self::KEY_PREFIX] : null,
-            'account' => isset($options[self::ACCOUNT_ID]) ? $options[self::ACCOUNT_ID] : self::PREFIX_WILDCARD,
-            'region' => isset($options[self::LOG_REGION]) ? $options[self::LOG_REGION] : self::PREFIX_WILDCARD,
+            'prefix' => isset($options[self::KEY_PREFIX])
+                    ? $options[self::KEY_PREFIX]
+                    : null,
+            'account' => isset($options[self::ACCOUNT_ID])
+                    ? $options[self::ACCOUNT_ID]
+                    : self::PREFIX_WILDCARD,
+            'region' => isset($options[self::LOG_REGION])
+                    ? $options[self::LOG_REGION]
+                    : self::PREFIX_WILDCARD,
             'date' => $this->determineDateForPrefix($startDate, $endDate),
         ];
 
@@ -173,11 +191,15 @@ class LogFileIterator extends \IteratorIterator {
         // Apply regex and/or date filters to the objects iterator to emit only
         // log files matching the options.
         $objectsIterator = $this->applyRegexFilter(
-                $objectsIterator, $logKeyPrefix, $candidatePrefix
+            $objectsIterator,
+            $logKeyPrefix,
+            $candidatePrefix
         );
 
         $objectsIterator = $this->applyDateFilter(
-                $objectsIterator, $startDate, $endDate
+            $objectsIterator,
+            $startDate,
+            $endDate
         );
 
         return $objectsIterator;
@@ -192,14 +214,15 @@ class LogFileIterator extends \IteratorIterator {
      * @throws \InvalidArgumentException if the value cannot be converted to
      *     a timestamp
      */
-    private function normalizeDateValue($date) {
+    private function normalizeDateValue($date)
+    {
         if (is_string($date)) {
             $date = strtotime($date);
         } elseif ($date instanceof \DateTime) {
             $date = $date->format('U');
         } elseif (!is_int($date)) {
             throw new \InvalidArgumentException('Date values must be a '
-            . 'string, an int, or a DateTime object.');
+                . 'string, an int, or a DateTime object.');
         }
 
         return $date;
@@ -208,7 +231,8 @@ class LogFileIterator extends \IteratorIterator {
     /**
      * Uses the provided date values to determine the date portion of the prefix
      */
-    private function determineDateForPrefix($startDate, $endDate) {
+    private function determineDateForPrefix($startDate, $endDate)
+    {
         // The default date value should look like "*/*/*" after joining
         $dateParts = array_fill_keys(['Y', 'm', 'd'], self::PREFIX_WILDCARD);
 
@@ -239,7 +263,9 @@ class LogFileIterator extends \IteratorIterator {
      * @return \Iterator
      */
     private function applyRegexFilter(
-    $objectsIterator, $logKeyPrefix, $candidatePrefix
+        $objectsIterator,
+        $logKeyPrefix,
+        $candidatePrefix
     ) {
         // If the prefix and candidate prefix are not the same, then there were
         // WILDCARDs.
@@ -255,9 +281,10 @@ class LogFileIterator extends \IteratorIterator {
                 // Apply a regex filter iterator to remove files that don't
                 // match the provided options.
                 $objectsIterator = new \CallbackFilterIterator(
-                        $objectsIterator, function ($object) use ($regex) {
-                    return preg_match("#{$regex}#", $object['Key']);
-                }
+                    $objectsIterator,
+                    function ($object) use ($regex) {
+                        return preg_match("#{$regex}#", $object['Key']);
+                    }
                 );
             }
         }
@@ -275,7 +302,8 @@ class LogFileIterator extends \IteratorIterator {
      *
      * @return \Iterator
      */
-    private function applyDateFilter($objectsIterator, $startDate, $endDate) {
+    private function applyDateFilter($objectsIterator, $startDate, $endDate)
+    {
         // If either a start or end date was provided, filter out dates that
         // don't match the date range.
         if ($startDate || $endDate) {
@@ -285,12 +313,12 @@ class LogFileIterator extends \IteratorIterator {
                 }
                 $date = strtotime($m[0]);
 
-                return (!$startDate || $date >= $startDate) && (!$endDate || $date <= $endDate);
+                return (!$startDate || $date >= $startDate)
+                    && (!$endDate || $date <= $endDate);
             };
             $objectsIterator = new \CallbackFilterIterator($objectsIterator, $fn);
         }
 
         return $objectsIterator;
     }
-
 }

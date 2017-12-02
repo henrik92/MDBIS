@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Emr;
 
 use Aws\AwsClient;
@@ -62,6 +61,4 @@ use Aws\AwsClient;
  * @method \Aws\Result terminateJobFlows(array $args = [])
  * @method \GuzzleHttp\Promise\Promise terminateJobFlowsAsync(array $args = [])
  */
-class EmrClient extends AwsClient {
-    
-}
+class EmrClient extends AwsClient {}

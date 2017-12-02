@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\S3;
 
 use Aws\HashingStream;
@@ -13,8 +12,8 @@ use Aws\S3\Exception\S3MultipartUploadException;
 /**
  * Encapsulates the execution of a multipart upload to S3 or Glacier.
  */
-class MultipartUploader extends AbstractUploader {
-
+class MultipartUploader extends AbstractUploader
+{
     use MultipartUploadingTrait;
 
     const PART_MIN_SIZE = 5242880;
@@ -59,32 +58,36 @@ class MultipartUploader extends AbstractUploader {
      * @param array             $config Configuration used to perform the upload.
      */
     public function __construct(
-    S3ClientInterface $client, $source, array $config = []
+        S3ClientInterface $client,
+        $source,
+        array $config = []
     ) {
         parent::__construct($client, $source, array_change_key_case($config) + [
             'bucket' => null,
-            'key' => null,
+            'key'    => null,
             'exception_class' => S3MultipartUploadException::class,
         ]);
     }
 
-    protected function loadUploadWorkflowInfo() {
+    protected function loadUploadWorkflowInfo()
+    {
         return [
             'command' => [
                 'initiate' => 'CreateMultipartUpload',
-                'upload' => 'UploadPart',
+                'upload'   => 'UploadPart',
                 'complete' => 'CompleteMultipartUpload',
             ],
             'id' => [
-                'bucket' => 'Bucket',
-                'key' => 'Key',
+                'bucket'    => 'Bucket',
+                'key'       => 'Key',
                 'upload_id' => 'UploadId',
             ],
             'part_num' => 'PartNumber',
         ];
     }
 
-    protected function createPart($seekable, $number) {
+    protected function createPart($seekable, $number)
+    {
         // Initialize the array of part data that will be returned.
         $data = [];
 
@@ -101,7 +104,7 @@ class MultipartUploader extends AbstractUploader {
         if ($seekable) {
             // Case 1: Source is seekable, use lazy stream to defer work.
             $body = $this->limitPartStream(
-                    new Psr7\LazyOpenStream($this->source->getMetadata('uri'), 'r')
+                new Psr7\LazyOpenStream($this->source->getMetadata('uri'), 'r')
             );
         } else {
             // Case 2: Stream is not seekable; must store in temp stream.
@@ -125,17 +128,21 @@ class MultipartUploader extends AbstractUploader {
         return $data;
     }
 
-    protected function extractETag(ResultInterface $result) {
+    protected function extractETag(ResultInterface $result)
+    {
         return $result['ETag'];
     }
 
-    protected function getSourceMimeType() {
+    protected function getSourceMimeType()
+    {
         if ($uri = $this->source->getMetadata('uri')) {
-            return Psr7\mimetype_from_filename($uri) ?: 'application/octet-stream';
+            return Psr7\mimetype_from_filename($uri)
+                ?: 'application/octet-stream';
         }
     }
 
-    protected function getSourceSize() {
+    protected function getSourceSize()
+    {
         return $this->source->getSize();
     }
 
@@ -147,12 +154,12 @@ class MultipartUploader extends AbstractUploader {
      *
      * @return Stream
      */
-    private function decorateWithHashes(Stream $stream, array &$data) {
+    private function decorateWithHashes(Stream $stream, array &$data)
+    {
         // Decorate source with a hashing stream
         $hash = new PhpHash('sha256');
         return new HashingStream($stream, $hash, function ($result) use (&$data) {
             $data['ContentSHA256'] = bin2hex($result);
         });
     }
-
 }

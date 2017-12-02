@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\AutoScaling;
 
 use Aws\AwsClient;
@@ -112,6 +111,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateAutoScalingGroup(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateAutoScalingGroupAsync(array $args = [])
  */
-class AutoScalingClient extends AwsClient {
-    
-}
+class AutoScalingClient extends AwsClient {}

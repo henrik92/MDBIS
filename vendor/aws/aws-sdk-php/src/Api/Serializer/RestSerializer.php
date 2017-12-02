@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Api\Serializer;
 
 use Aws\Api\MapShape;
@@ -18,8 +17,8 @@ use Psr\Http\Message\RequestInterface;
  * Serializes HTTP locations like header, uri, payload, etc...
  * @internal
  */
-abstract class RestSerializer {
-
+abstract class RestSerializer
+{
     /** @var Service */
     private $api;
 
@@ -30,7 +29,8 @@ abstract class RestSerializer {
      * @param Service $api      Service API description
      * @param string  $endpoint Endpoint to connect to
      */
-    public function __construct(Service $api, $endpoint) {
+    public function __construct(Service $api, $endpoint)
+    {
         $this->api = $api;
         $this->endpoint = Psr7\uri_for($endpoint);
     }
@@ -40,14 +40,18 @@ abstract class RestSerializer {
      *
      * @return RequestInterface
      */
-    public function __invoke(CommandInterface $command) {
+    public function __invoke(CommandInterface $command)
+    {
         $operation = $this->api->getOperation($command->getName());
         $args = $command->toArray();
         $opts = $this->serialize($operation, $args);
         $uri = $this->buildEndpoint($operation, $args, $opts);
 
         return new Psr7\Request(
-                $operation['http']['method'], $uri, isset($opts['headers']) ? $opts['headers'] : [], isset($opts['body']) ? $opts['body'] : null
+            $operation['http']['method'],
+            $uri,
+            isset($opts['headers']) ? $opts['headers'] : [],
+            isset($opts['body']) ? $opts['body'] : null
         );
     }
 
@@ -59,10 +63,13 @@ abstract class RestSerializer {
      * @param array            $opts    Request options to modify.
      */
     abstract protected function payload(
-    StructureShape $member, array $value, array &$opts
+        StructureShape $member,
+        array $value,
+        array &$opts
     );
 
-    private function serialize(Operation $operation, array $args) {
+    private function serialize(Operation $operation, array $args)
+    {
         $opts = [];
         $input = $operation->getInput();
 
@@ -94,7 +101,8 @@ abstract class RestSerializer {
         return $opts;
     }
 
-    private function applyPayload(StructureShape $input, $name, array $args, array &$opts) {
+    private function applyPayload(StructureShape $input, $name, array $args, array &$opts)
+    {
         if (!isset($args[$name])) {
             return;
         }
@@ -102,7 +110,7 @@ abstract class RestSerializer {
         $m = $input->getMember($name);
 
         if ($m['streaming'] ||
-                ($m['type'] == 'string' || $m['type'] == 'blob')
+           ($m['type'] == 'string' || $m['type'] == 'blob')
         ) {
             // Streaming bodies or payloads that are strings are
             // always just a stream of data.
@@ -113,7 +121,8 @@ abstract class RestSerializer {
         $this->payload($m, $args[$name], $opts);
     }
 
-    private function applyHeader($name, Shape $member, $value, array &$opts) {
+    private function applyHeader($name, Shape $member, $value, array &$opts)
+    {
         if ($member->getType() == 'timestamp') {
             $value = TimestampShape::format($value, 'rfc822');
         }
@@ -121,7 +130,7 @@ abstract class RestSerializer {
             $value = json_encode($value);
             if (empty($value) && JSON_ERROR_NONE !== json_last_error()) {
                 throw new \InvalidArgumentException('Unable to encode the provided value'
-                . ' with \'json_encode\'. ' . json_last_error_msg());
+                    . ' with \'json_encode\'. ' . json_last_error_msg());
             }
 
             $value = base64_encode($value);
@@ -133,16 +142,20 @@ abstract class RestSerializer {
     /**
      * Note: This is currently only present in the Amazon S3 model.
      */
-    private function applyHeaderMap($name, Shape $member, array $value, array &$opts) {
+    private function applyHeaderMap($name, Shape $member, array $value, array &$opts)
+    {
         $prefix = $member['locationName'];
         foreach ($value as $k => $v) {
             $opts['headers'][$prefix . $k] = $v;
         }
     }
 
-    private function applyQuery($name, Shape $member, $value, array &$opts) {
+    private function applyQuery($name, Shape $member, $value, array &$opts)
+    {
         if ($member instanceof MapShape) {
-            $opts['query'] = isset($opts['query']) && is_array($opts['query']) ? $opts['query'] + $value : $value;
+            $opts['query'] = isset($opts['query']) && is_array($opts['query'])
+                ? $opts['query'] + $value
+                : $value;
         } elseif ($value !== null) {
             if ($member->getType() === 'boolean') {
                 $value = $value ? 'true' : 'false';
@@ -152,28 +165,34 @@ abstract class RestSerializer {
         }
     }
 
-    private function buildEndpoint(Operation $operation, array $args, array $opts) {
+    private function buildEndpoint(Operation $operation, array $args, array $opts)
+    {
         $varspecs = [];
 
         // Create an associative array of varspecs used in expansions
         foreach ($operation->getInput()->getMembers() as $name => $member) {
             if ($member['location'] == 'uri') {
-                $varspecs[$member['locationName'] ?: $name] = isset($args[$name]) ? $args[$name] : null;
+                $varspecs[$member['locationName'] ?: $name] =
+                    isset($args[$name])
+                        ? $args[$name]
+                        : null;
             }
         }
 
         $relative = preg_replace_callback(
-                '/\{([^\}]+)\}/', function (array $matches) use ($varspecs) {
-            $isGreedy = substr($matches[1], -1, 1) == '+';
-            $k = $isGreedy ? substr($matches[1], 0, -1) : $matches[1];
-            if (!isset($varspecs[$k])) {
-                return '';
-            } elseif ($isGreedy) {
-                return str_replace('%2F', '/', rawurlencode($varspecs[$k]));
-            } else {
-                return rawurlencode($varspecs[$k]);
-            }
-        }, $operation['http']['requestUri']
+            '/\{([^\}]+)\}/',
+            function (array $matches) use ($varspecs) {
+                $isGreedy = substr($matches[1], -1, 1) == '+';
+                $k = $isGreedy ? substr($matches[1], 0, -1) : $matches[1];
+                if (!isset($varspecs[$k])) {
+                    return '';
+                } elseif ($isGreedy) {
+                    return str_replace('%2F', '/', rawurlencode($varspecs[$k]));
+                } else {
+                    return rawurlencode($varspecs[$k]);
+                }
+            },
+            $operation['http']['requestUri']
         );
 
         // Add the query string variables or appending to one if needed.
@@ -186,5 +205,4 @@ abstract class RestSerializer {
         // template syntax.
         return UriResolver::resolve($this->endpoint, new Uri($relative));
     }
-
 }

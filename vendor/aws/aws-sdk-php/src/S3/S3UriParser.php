@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\S3;
 
 use GuzzleHttp\Psr7;
@@ -8,15 +7,16 @@ use Psr\Http\Message\UriInterface;
 /**
  * Extracts a region, bucket, key, and and if a URI is in path-style
  */
-class S3UriParser {
-
+class S3UriParser
+{
     private $pattern = '/^(.+\\.)?s3[.-]([A-Za-z0-9-]+)\\./';
     private $streamWrapperScheme = 's3';
+
     private static $defaultResult = [
         'path_style' => true,
-        'bucket' => null,
-        'key' => null,
-        'region' => null
+        'bucket'     => null,
+        'key'        => null,
+        'region'     => null
     ];
 
     /**
@@ -33,7 +33,8 @@ class S3UriParser {
      * @return array
      * @throws \InvalidArgumentException
      */
-    public function parse($uri) {
+    public function parse($uri)
+    {
         $url = Psr7\uri_for($uri);
 
         if ($url->getScheme() == $this->streamWrapperScheme) {
@@ -42,7 +43,7 @@ class S3UriParser {
 
         if (!$url->getHost()) {
             throw new \InvalidArgumentException('No hostname found in URI: '
-            . $uri);
+                . $uri);
         }
 
         if (!preg_match($this->pattern, $url->getHost(), $matches)) {
@@ -50,7 +51,9 @@ class S3UriParser {
         }
 
         // Parse the URI based on the matched format (path / virtual)
-        $result = empty($matches[1]) ? $this->parsePathStyle($url) : $this->parseVirtualHosted($url, $matches);
+        $result = empty($matches[1])
+            ? $this->parsePathStyle($url)
+            : $this->parseVirtualHosted($url, $matches);
 
         // Add the region if one was found and not the classic endpoint
         $result['region'] = $matches[2] == 'amazonaws' ? null : $matches[2];
@@ -58,7 +61,8 @@ class S3UriParser {
         return $result;
     }
 
-    private function parseStreamWrapper(UriInterface $url) {
+    private function parseStreamWrapper(UriInterface $url)
+    {
         $result = self::$defaultResult;
         $result['path_style'] = false;
 
@@ -73,7 +77,8 @@ class S3UriParser {
         return $result;
     }
 
-    private function parseCustomEndpoint(UriInterface $url) {
+    private function parseCustomEndpoint(UriInterface $url)
+    {
         $result = self::$defaultResult;
         $path = ltrim($url->getPath(), '/ ');
         $segments = explode('/', $path, 2);
@@ -88,7 +93,8 @@ class S3UriParser {
         return $result;
     }
 
-    private function parsePathStyle(UriInterface $url) {
+    private function parsePathStyle(UriInterface $url)
+    {
         $result = self::$defaultResult;
 
         if ($url->getPath() != '/') {
@@ -112,7 +118,8 @@ class S3UriParser {
         return $result;
     }
 
-    private function parseVirtualHosted(UriInterface $url, array $matches) {
+    private function parseVirtualHosted(UriInterface $url, array $matches)
+    {
         $result = self::$defaultResult;
         $result['path_style'] = false;
         // Remove trailing "." from the prefix to get the bucket
@@ -123,5 +130,4 @@ class S3UriParser {
 
         return $result;
     }
-
 }

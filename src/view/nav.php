@@ -5,7 +5,7 @@
         </div>
         <ul class="nav navbar-nav">
             <li><a href="index.php?site=rating">Rating</a></li>
-            <li><a href="index.php?site=top10">Top 10</a></li>
+            <li><a href="index.php?site=top_movies">Top Movies</a></li>
             <li><a href="index.php?site=all">All Movies</a></li>
             <li><a href="index.php?site=info">Info</a></li>
         </ul>

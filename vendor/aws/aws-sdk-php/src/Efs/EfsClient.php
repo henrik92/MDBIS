@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Efs;
 
 use Aws\AwsClient;
@@ -30,6 +29,4 @@ use Aws\AwsClient;
  * @method \Aws\Result modifyMountTargetSecurityGroups(array $args = [])
  * @method \GuzzleHttp\Promise\Promise modifyMountTargetSecurityGroupsAsync(array $args = [])
  */
-class EfsClient extends AwsClient {
-    
-}
+class EfsClient extends AwsClient {}

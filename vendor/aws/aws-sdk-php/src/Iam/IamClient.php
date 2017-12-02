@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Iam;
 
 use Aws\AwsClient;
@@ -252,6 +251,4 @@ use Aws\AwsClient;
  * @method \Aws\Result uploadSigningCertificate(array $args = [])
  * @method \GuzzleHttp\Promise\Promise uploadSigningCertificateAsync(array $args = [])
  */
-class IamClient extends AwsClient {
-    
-}
+class IamClient extends AwsClient {}

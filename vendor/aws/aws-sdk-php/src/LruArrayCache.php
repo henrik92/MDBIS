@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws;
 
 /**
@@ -12,8 +11,8 @@ namespace Aws;
  * cache, if the number of cached items exceeds the allowed number, the first
  * N number of items are removed from the array.
  */
-class LruArrayCache implements CacheInterface, \Countable {
-
+class LruArrayCache implements CacheInterface, \Countable
+{
     /** @var int */
     private $maxItems;
 
@@ -23,11 +22,13 @@ class LruArrayCache implements CacheInterface, \Countable {
     /**
      * @param int $maxItems Maximum number of allowed cache items.
      */
-    public function __construct($maxItems = 1000) {
+    public function __construct($maxItems = 1000)
+    {
         $this->maxItems = $maxItems;
     }
 
-    public function get($key) {
+    public function get($key)
+    {
         if (!isset($this->items[$key])) {
             return null;
         }
@@ -46,7 +47,8 @@ class LruArrayCache implements CacheInterface, \Countable {
         return null;
     }
 
-    public function set($key, $value, $ttl = 0) {
+    public function set($key, $value, $ttl = 0)
+    {
         // Only call time() if the TTL is not 0/false/null
         $ttl = $ttl ? time() + $ttl : 0;
         $this->items[$key] = [$value, $ttl];
@@ -65,12 +67,13 @@ class LruArrayCache implements CacheInterface, \Countable {
         }
     }
 
-    public function remove($key) {
+    public function remove($key)
+    {
         unset($this->items[$key]);
     }
 
-    public function count() {
+    public function count()
+    {
         return count($this->items);
     }
-
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws;
 
 use Aws\Exception\AwsException;
@@ -20,8 +19,8 @@ use GuzzleHttp\Promise\RejectedPromise;
  * The configuration for the waiter must include information about the operation
  * and the conditions for wait completion.
  */
-class Waiter implements PromisorInterface {
-
+class Waiter implements PromisorInterface
+{
     /** @var AwsClientInterface Client used to execute each attempt. */
     private $client;
 
@@ -62,7 +61,10 @@ class Waiter implements PromisorInterface {
      * @throws \InvalidArgumentException if the configuration is incomplete.
      */
     public function __construct(
-    AwsClientInterface $client, $name, array $args = [], array $config = []
+        AwsClientInterface $client,
+        $name,
+        array $args = [],
+        array $config = []
     ) {
         $this->client = $client;
         $this->name = $name;
@@ -73,18 +75,19 @@ class Waiter implements PromisorInterface {
         foreach (self::$required as $key) {
             if (!isset($this->config[$key])) {
                 throw new \InvalidArgumentException(
-                'The provided waiter configuration was incomplete.'
+                    'The provided waiter configuration was incomplete.'
                 );
             }
         }
         if ($this->config['before'] && !is_callable($this->config['before'])) {
             throw new \InvalidArgumentException(
-            'The provided "before" callback is not callable.'
+                'The provided "before" callback is not callable.'
             );
         }
     }
 
-    public function promise() {
+    public function promise()
+    {
         return Promise\coroutine(function () {
             $name = $this->config['operation'];
             for ($state = 'retry', $attempt = 1; $state === 'retry'; $attempt++) {
@@ -110,11 +113,12 @@ class Waiter implements PromisorInterface {
                         $msg .= ' Reason: ' . $result->getMessage();
                     }
                     yield new RejectedPromise(new \RuntimeException($msg));
-                } elseif ($state === 'retry' && $attempt >= $this->config['maxAttempts']
+                } elseif ($state === 'retry'
+                    && $attempt >= $this->config['maxAttempts']
                 ) {
                     $state = 'failed';
                     yield new RejectedPromise(new \RuntimeException(
-                            "The {$this->name} waiter failed after attempt #{$attempt}."
+                        "The {$this->name} waiter failed after attempt #{$attempt}."
                     ));
                 }
             }
@@ -128,11 +132,14 @@ class Waiter implements PromisorInterface {
      *
      * @return mixed integer
      */
-    private function getArgsForAttempt($attempt) {
+    private function getArgsForAttempt($attempt)
+    {
         $args = $this->args;
 
         // Determine the delay.
-        $delay = ($attempt === 1) ? $this->config['initDelay'] : $this->config['delay'];
+        $delay = ($attempt === 1)
+            ? $this->config['initDelay']
+            : $this->config['delay'];
         if (is_callable($delay)) {
             $delay = $delay($attempt);
         }
@@ -155,7 +162,8 @@ class Waiter implements PromisorInterface {
      *
      * @return string Will be "success", "failed", or "retry"
      */
-    private function determineState($result) {
+    private function determineState($result)
+    {
         foreach ($this->config['acceptors'] as $acceptor) {
             $matcher = 'matches' . ucfirst($acceptor['matcher']);
             if ($this->{$matcher}($result, $acceptor)) {
@@ -172,8 +180,11 @@ class Waiter implements PromisorInterface {
      *
      * @return bool
      */
-    private function matchesPath($result, array $acceptor) {
-        return !($result instanceof ResultInterface) ? false : $acceptor['expected'] == $result->search($acceptor['argument']);
+    private function matchesPath($result, array $acceptor)
+    {
+        return !($result instanceof ResultInterface)
+            ? false
+            : $acceptor['expected'] == $result->search($acceptor['argument']);
     }
 
     /**
@@ -182,7 +193,8 @@ class Waiter implements PromisorInterface {
      *
      * @return bool
      */
-    private function matchesPathAll($result, array $acceptor) {
+    private function matchesPathAll($result, array $acceptor)
+    {
         if (!($result instanceof ResultInterface)) {
             return false;
         }
@@ -203,7 +215,8 @@ class Waiter implements PromisorInterface {
      *
      * @return bool
      */
-    private function matchesPathAny($result, array $acceptor) {
+    private function matchesPathAny($result, array $acceptor)
+    {
         if (!($result instanceof ResultInterface)) {
             return false;
         }
@@ -224,7 +237,8 @@ class Waiter implements PromisorInterface {
      *
      * @return bool
      */
-    private function matchesStatus($result, array $acceptor) {
+    private function matchesStatus($result, array $acceptor)
+    {
         if ($result instanceof ResultInterface) {
             return $acceptor['expected'] == $result['@metadata']['statusCode'];
         } elseif ($result instanceof AwsException && $response = $result->getResponse()) {
@@ -240,12 +254,13 @@ class Waiter implements PromisorInterface {
      *
      * @return bool
      */
-    private function matchesError($result, array $acceptor) {
+    private function matchesError($result, array $acceptor)
+    {
         if ($result instanceof AwsException) {
-            return $result->isConnectionError() || $result->getAwsErrorCode() == $acceptor['expected'];
+            return $result->isConnectionError()
+                || $result->getAwsErrorCode() == $acceptor['expected'];
         }
 
         return false;
     }
-
 }

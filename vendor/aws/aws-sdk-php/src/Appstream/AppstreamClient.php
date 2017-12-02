@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Appstream;
 
 use Aws\AwsClient;
@@ -65,6 +64,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateStack(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateStackAsync(array $args = [])
  */
-class AppstreamClient extends AwsClient {
-    
-}
+class AppstreamClient extends AwsClient {}

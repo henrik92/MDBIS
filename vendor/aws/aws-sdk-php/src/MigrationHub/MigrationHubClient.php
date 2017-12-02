@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\MigrationHub;
 
 use Aws\AwsClient;
@@ -39,6 +38,4 @@ use Aws\AwsClient;
  * @method \Aws\Result putResourceAttributes(array $args = [])
  * @method \GuzzleHttp\Promise\Promise putResourceAttributesAsync(array $args = [])
  */
-class MigrationHubClient extends AwsClient {
-    
-}
+class MigrationHubClient extends AwsClient {}

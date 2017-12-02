@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Glacier;
 
 use Aws\CommandInterface;
@@ -14,21 +13,21 @@ use Psr\Http\Message\StreamInterface as Stream;
 /**
  * Encapsulates the execution of a multipart upload to Glacier.
  */
-class MultipartUploader extends AbstractUploader {
-
+class MultipartUploader extends AbstractUploader
+{
     const PART_MIN_SIZE = 1048576;
 
     private static $validPartSizes = [
-        1048576, //   1 MB
-        2097152, //   2 MB
-        4194304, //   4 MB
-        8388608, //   8 MB
-        16777216, //  16 MB
-        33554432, //  32 MB
-        67108864, //  64 MB
-        134217728, // 128 MB
-        268435456, // 256 MB
-        536870912, // 512 MB
+        1048576,    //   1 MB
+        2097152,    //   2 MB
+        4194304,    //   4 MB
+        8388608,    //   8 MB
+        16777216,   //  16 MB
+        33554432,   //  32 MB
+        67108864,   //  64 MB
+        134217728,  // 128 MB
+        268435456,  // 256 MB
+        536870912,  // 512 MB
         1073741824, //   1 GB
         2147483648, //   2 GB
         4294967296, //   4 GB
@@ -46,12 +45,15 @@ class MultipartUploader extends AbstractUploader {
      * @return UploadState
      */
     public static function getStateFromService(
-    GlacierClient $client, $vaultName, $uploadId, $accountId = '-'
+        GlacierClient $client,
+        $vaultName,
+        $uploadId,
+        $accountId = '-'
     ) {
         $state = new UploadState([
             'accountId' => $accountId,
             'vaultName' => $vaultName,
-            'uploadId' => $uploadId,
+            'uploadId'  => $uploadId,
         ]);
 
         foreach ($client->getPaginator('ListParts', $state->getId()) as $result) {
@@ -62,10 +64,11 @@ class MultipartUploader extends AbstractUploader {
             // Mark all the parts returned by ListParts as uploaded.
             foreach ($result['Parts'] as $part) {
                 list($rangeIndex, $rangeSize) = self::parseRange(
-                                $part['RangeInBytes'], $state->getPartSize()
+                    $part['RangeInBytes'],
+                    $state->getPartSize()
                 );
                 $state->markPartAsUploaded($rangeIndex, [
-                    'size' => $rangeSize,
+                    'size'     => $rangeSize,
                     'checksum' => $part['SHA256TreeHash'],
                 ]);
             }
@@ -109,43 +112,47 @@ class MultipartUploader extends AbstractUploader {
      * @param mixed         $source Source of the data to upload.
      * @param array         $config Configuration used to perform the upload.
      */
-    public function __construct(GlacierClient $client, $source, array $config = []) {
+    public function __construct(GlacierClient $client, $source, array $config = [])
+    {
         parent::__construct($client, $source, $config + [
             'account_id' => '-',
             'vault_name' => null,
         ]);
     }
 
-    protected function loadUploadWorkflowInfo() {
+    protected function loadUploadWorkflowInfo()
+    {
         return [
             'command' => [
                 'initiate' => 'InitiateMultipartUpload',
-                'upload' => 'UploadMultipartPart',
+                'upload'   => 'UploadMultipartPart',
                 'complete' => 'CompleteMultipartUpload',
             ],
             'id' => [
                 'account_id' => 'accountId',
                 'vault_name' => 'vaultName',
-                'upload_id' => 'uploadId',
+                'upload_id'  => 'uploadId',
             ],
             'part_num' => 'range',
         ];
     }
 
-    protected function determinePartSize() {
+    protected function determinePartSize()
+    {
         // Make sure the part size is set.
         $partSize = $this->config['part_size'] ?: self::PART_MIN_SIZE;
 
         // Ensure that the part size is valid.
         if (!in_array($partSize, self::$validPartSizes)) {
             throw new \InvalidArgumentException('The part_size must be a power '
-            . 'of 2, in megabytes, such that 1 MB <= PART_SIZE <= 4 GB.');
+                . 'of 2, in megabytes, such that 1 MB <= PART_SIZE <= 4 GB.');
         }
 
         return $partSize;
     }
 
-    protected function createPart($seekable, $number) {
+    protected function createPart($seekable, $number)
+    {
         $data = [];
         $firstByte = $this->source->tell();
 
@@ -158,8 +165,7 @@ class MultipartUploader extends AbstractUploader {
             // Create another stream decorated with hashing streams and read
             // through it, so we can get the hash values for the part.
             $decoratedBody = $this->decorateWithHashes($body, $data);
-            while (!$decoratedBody->eof())
-                $decoratedBody->read(1048576);
+            while (!$decoratedBody->eof()) $decoratedBody->read(1048576);
             // Seek the original source forward to the end of the range.
             $this->source->seek($this->source->tell() + $body->getSize());
         } else {
@@ -183,18 +189,21 @@ class MultipartUploader extends AbstractUploader {
         return $data;
     }
 
-    protected function handleResult(CommandInterface $command, ResultInterface $result) {
+    protected function handleResult(CommandInterface $command, ResultInterface $result)
+    {
         list($rangeIndex, $rangeSize) = $this->parseRange(
-                $command['range'], $this->state->getPartSize()
+            $command['range'],
+            $this->state->getPartSize()
         );
 
         $this->state->markPartAsUploaded($rangeIndex, [
-            'size' => $rangeSize,
+            'size'     => $rangeSize,
             'checksum' => $command['checksum']
         ]);
     }
 
-    protected function getInitiateParams() {
+    protected function getInitiateParams()
+    {
         $params = ['partSize' => $this->state->getPartSize()];
         if (isset($this->config['archive_description'])) {
             $params['archiveDescription'] = $this->config['archive_description'];
@@ -203,7 +212,8 @@ class MultipartUploader extends AbstractUploader {
         return $params;
     }
 
-    protected function getCompleteParams() {
+    protected function getCompleteParams()
+    {
         $treeHash = new TreeHash();
         $archiveSize = 0;
         foreach ($this->state->getUploadedParts() as $part) {
@@ -213,7 +223,7 @@ class MultipartUploader extends AbstractUploader {
 
         return [
             'archiveSize' => $archiveSize,
-            'checksum' => bin2hex($treeHash->complete()),
+            'checksum'    => bin2hex($treeHash->complete()),
         ];
     }
 
@@ -225,17 +235,20 @@ class MultipartUploader extends AbstractUploader {
      *
      * @return Stream
      */
-    private function decorateWithHashes(Stream $stream, array &$data) {
+    private function decorateWithHashes(Stream $stream, array &$data)
+    {
         // Make sure that a tree hash is calculated.
-        $stream = new HashingStream($stream, new TreeHash(), function ($result) use (&$data) {
-            $data['checksum'] = bin2hex($result);
-        }
+        $stream = new HashingStream($stream, new TreeHash(),
+            function ($result) use (&$data) {
+                $data['checksum'] = bin2hex($result);
+            }
         );
 
         // Make sure that a linear SHA256 hash is calculated.
-        $stream = new HashingStream($stream, new PhpHash('sha256'), function ($result) use (&$data) {
-            $data['ContentSHA256'] = bin2hex($result);
-        }
+        $stream = new HashingStream($stream, new PhpHash('sha256'),
+            function ($result) use (&$data) {
+                $data['ContentSHA256'] = bin2hex($result);
+            }
         );
 
         return $stream;
@@ -249,7 +262,8 @@ class MultipartUploader extends AbstractUploader {
      *
      * @return array
      */
-    private static function parseRange($range, $partSize) {
+    private static function parseRange($range, $partSize)
+    {
         // Strip away the prefix and suffix.
         if (strpos($range, 'bytes') !== false) {
             $range = substr($range, 6, -2);
@@ -264,5 +278,4 @@ class MultipartUploader extends AbstractUploader {
             $lastByte - $firstByte + 1,
         ];
     }
-
 }

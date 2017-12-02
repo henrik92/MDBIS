@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\DynamoDb;
 
 use Aws\AwsClientInterface;
@@ -15,8 +14,8 @@ use Aws\ResultInterface;
  * to DynamoDB as possible and also re-queues any unprocessed items to ensure
  * that all items are sent.
  */
-class WriteRequestBatch {
-
+class WriteRequestBatch
+{
     /** @var DynamoDbClient DynamoDB client used to perform write operations. */
     private $client;
 
@@ -55,15 +54,16 @@ class WriteRequestBatch {
      *
      * @throws \InvalidArgumentException if the batch size is not between 2 and 25.
      */
-    public function __construct(DynamoDbClient $client, array $config = []) {
+    public function __construct(DynamoDbClient $client, array $config = [])
+    {
         // Apply defaults
         $config += [
-            'table' => null,
+            'table'      => null,
             'batch_size' => 25,
-            'pool_size' => 1,
-            'autoflush' => true,
-            'before' => null,
-            'error' => null
+            'pool_size'  => 1,
+            'autoflush'  => true,
+            'before'     => null,
+            'error'      => null
         ];
 
         // Ensure the batch size is valid
@@ -104,10 +104,11 @@ class WriteRequestBatch {
      *
      * @return $this
      */
-    public function put(array $item, $table = null) {
+    public function put(array $item, $table = null)
+    {
         $this->queue[] = [
             'table' => $this->determineTable($table),
-            'data' => ['PutRequest' => ['Item' => $item]],
+            'data'  => ['PutRequest' => ['Item' => $item]],
         ];
 
         $this->autoFlush();
@@ -129,10 +130,11 @@ class WriteRequestBatch {
      *
      * @return $this
      */
-    public function delete(array $key, $table = null) {
+    public function delete(array $key, $table = null)
+    {
         $this->queue[] = [
             'table' => $this->determineTable($table),
-            'data' => ['DeleteRequest' => ['Key' => $key]],
+            'data'  => ['DeleteRequest' => ['Key' => $key]],
         ];
 
         $this->autoFlush();
@@ -151,7 +153,8 @@ class WriteRequestBatch {
      *
      * @return $this
      */
-    public function flush($untilEmpty = true) {
+    public function flush($untilEmpty = true)
+    {
         // Send BatchWriteItem requests until the queue is empty
         $keepFlushing = true;
         while ($this->queue && $keepFlushing) {
@@ -159,7 +162,7 @@ class WriteRequestBatch {
             $pool = new CommandPool($this->client, $commands, [
                 'before' => $this->config['before'],
                 'concurrency' => $this->config['pool_size'],
-                'fulfilled' => function (ResultInterface $result) {
+                'fulfilled'   => function (ResultInterface $result) {
                     // Re-queue any unprocessed items
                     if ($result->hasKey('UnprocessedItems')) {
                         $this->retryUnprocessed($result['UnprocessedItems']);
@@ -188,7 +191,8 @@ class WriteRequestBatch {
      *
      * @return CommandInterface[]
      */
-    private function prepareCommands() {
+    private function prepareCommands()
+    {
         // Chunk the queue into batches
         $batches = array_chunk($this->queue, $this->config['batch_size']);
         $this->queue = [];
@@ -204,7 +208,8 @@ class WriteRequestBatch {
                 $requests[$item['table']][] = $item['data'];
             }
             $commands[] = $this->client->getCommand(
-                    'BatchWriteItem', ['RequestItems' => $requests]
+                'BatchWriteItem',
+                ['RequestItems' => $requests]
             );
         }
 
@@ -216,12 +221,13 @@ class WriteRequestBatch {
      *
      * @param array $unprocessed Unprocessed items from a result.
      */
-    private function retryUnprocessed(array $unprocessed) {
+    private function retryUnprocessed(array $unprocessed)
+    {
         foreach ($unprocessed as $table => $requests) {
             foreach ($requests as $request) {
                 $this->queue[] = [
                     'table' => $table,
-                    'data' => $request,
+                    'data'  => $request,
                 ];
             }
         }
@@ -230,8 +236,10 @@ class WriteRequestBatch {
     /**
      * If autoflush is enabled and the threshold is met, flush the batch
      */
-    private function autoFlush() {
-        if ($this->config['autoflush'] && count($this->queue) >= $this->config['threshold']
+    private function autoFlush()
+    {
+        if ($this->config['autoflush']
+            && count($this->queue) >= $this->config['threshold']
         ) {
             // Flush only once. Unprocessed items are handled in a later flush.
             $this->flush(false);
@@ -247,7 +255,8 @@ class WriteRequestBatch {
      * @return string
      * @throws \RuntimeException if there was no table specified.
      */
-    private function determineTable($table) {
+    private function determineTable($table)
+    {
         $table = $table ?: $this->config['table'];
         if (!$table) {
             throw new \RuntimeException('There was no table specified.');
@@ -255,5 +264,4 @@ class WriteRequestBatch {
 
         return $table;
     }
-
 }

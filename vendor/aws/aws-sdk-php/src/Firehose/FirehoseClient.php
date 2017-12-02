@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Firehose;
 
 use Aws\AwsClient;
@@ -13,8 +12,6 @@ use Aws\AwsClient;
  * @method \GuzzleHttp\Promise\Promise deleteDeliveryStreamAsync(array $args = [])
  * @method \Aws\Result describeDeliveryStream(array $args = [])
  * @method \GuzzleHttp\Promise\Promise describeDeliveryStreamAsync(array $args = [])
- * @method \Aws\Result getKinesisStream(array $args = [])
- * @method \GuzzleHttp\Promise\Promise getKinesisStreamAsync(array $args = [])
  * @method \Aws\Result listDeliveryStreams(array $args = [])
  * @method \GuzzleHttp\Promise\Promise listDeliveryStreamsAsync(array $args = [])
  * @method \Aws\Result putRecord(array $args = [])
@@ -24,6 +21,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateDestination(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateDestinationAsync(array $args = [])
  */
-class FirehoseClient extends AwsClient {
-    
-}
+class FirehoseClient extends AwsClient {}

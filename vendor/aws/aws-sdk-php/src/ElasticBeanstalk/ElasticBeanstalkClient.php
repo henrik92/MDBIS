@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\ElasticBeanstalk;
 
 use Aws\AwsClient;
@@ -94,6 +93,4 @@ use Aws\AwsClient;
  * @method \Aws\Result validateConfigurationSettings(array $args = [])
  * @method \GuzzleHttp\Promise\Promise validateConfigurationSettingsAsync(array $args = [])
  */
-class ElasticBeanstalkClient extends AwsClient {
-    
-}
+class ElasticBeanstalkClient extends AwsClient {}

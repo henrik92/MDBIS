@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws;
 
 use Psr\Http\Message\RequestInterface;
@@ -9,23 +8,26 @@ use Aws\Exception\AwsException;
  * Represents a history container that is required when using the history
  * middleware.
  */
-class History implements \Countable, \IteratorAggregate {
-
+class History implements \Countable, \IteratorAggregate
+{
     private $maxEntries;
     private $entries = array();
 
     /**
      * @param int $maxEntries Maximum number of entries to store.
      */
-    public function __construct($maxEntries = 10) {
+    public function __construct($maxEntries = 10)
+    {
         $this->maxEntries = $maxEntries;
     }
 
-    public function count() {
+    public function count()
+    {
         return count($this->entries);
     }
 
-    public function getIterator() {
+    public function getIterator()
+    {
         return new \ArrayIterator(array_values($this->entries));
     }
 
@@ -35,7 +37,8 @@ class History implements \Countable, \IteratorAggregate {
      * @return CommandInterface
      * @throws \LogicException if no commands have been seen.
      */
-    public function getLastCommand() {
+    public function getLastCommand()
+    {
         if (!$this->entries) {
             throw new \LogicException('No commands received');
         }
@@ -49,7 +52,8 @@ class History implements \Countable, \IteratorAggregate {
      * @return RequestInterface
      * @throws \LogicException if no requests have been seen.
      */
-    public function getLastRequest() {
+    public function getLastRequest()
+    {
         if (!$this->entries) {
             throw new \LogicException('No requests received');
         }
@@ -63,7 +67,8 @@ class History implements \Countable, \IteratorAggregate {
      * @return ResultInterface|AwsException
      * @throws \LogicException if no return values have been received.
      */
-    public function getLastReturn() {
+    public function getLastReturn()
+    {
         if (!$this->entries) {
             throw new \LogicException('No entries');
         }
@@ -87,12 +92,13 @@ class History implements \Countable, \IteratorAggregate {
      *
      * @return string Returns the ticket used to finish the entry.
      */
-    public function start(CommandInterface $cmd, RequestInterface $req) {
+    public function start(CommandInterface $cmd, RequestInterface $req)
+    {
         $ticket = uniqid();
         $this->entries[$ticket] = [
-            'command' => $cmd,
-            'request' => $req,
-            'result' => null,
+            'command'   => $cmd,
+            'request'   => $req,
+            'result'    => null,
             'exception' => null,
         ];
 
@@ -105,10 +111,12 @@ class History implements \Countable, \IteratorAggregate {
      * @param string $ticket Ticket returned from the start call.
      * @param mixed  $result The result (an exception or AwsResult).
      */
-    public function finish($ticket, $result) {
+    public function finish($ticket, $result)
+    {
         if (!isset($this->entries[$ticket])) {
             throw new \InvalidArgumentException('Invalid history ticket');
-        } elseif (isset($this->entries[$ticket]['result']) || isset($this->entries[$ticket]['exception'])
+        } elseif (isset($this->entries[$ticket]['result'])
+            || isset($this->entries[$ticket]['exception'])
         ) {
             throw new \LogicException('History entry is already finished');
         }
@@ -127,7 +135,8 @@ class History implements \Countable, \IteratorAggregate {
     /**
      * Flush the history
      */
-    public function clear() {
+    public function clear()
+    {
         $this->entries = [];
     }
 
@@ -136,8 +145,8 @@ class History implements \Countable, \IteratorAggregate {
      *
      * @return array
      */
-    public function toArray() {
+    public function toArray()
+    {
         return array_values($this->entries);
     }
-
 }

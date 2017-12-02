@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Lambda;
 
 use Aws\AwsClient;
@@ -64,6 +63,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateFunctionConfiguration(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateFunctionConfigurationAsync(array $args = [])
  */
-class LambdaClient extends AwsClient {
-    
-}
+class LambdaClient extends AwsClient {}

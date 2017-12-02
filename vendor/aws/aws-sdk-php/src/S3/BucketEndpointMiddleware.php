@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\S3;
 
 use Aws\CommandInterface;
@@ -13,8 +12,8 @@ use Psr\Http\Message\RequestInterface;
  *
  * @internal
  */
-class BucketEndpointMiddleware {
-
+class BucketEndpointMiddleware
+{
     private static $exclusions = ['GetBucketLocation' => true];
     private $nextHandler;
 
@@ -23,17 +22,20 @@ class BucketEndpointMiddleware {
      *
      * @return callable
      */
-    public static function wrap() {
+    public static function wrap()
+    {
         return function (callable $handler) {
             return new self($handler);
         };
     }
 
-    public function __construct(callable $nextHandler) {
+    public function __construct(callable $nextHandler)
+    {
         $this->nextHandler = $nextHandler;
     }
 
-    public function __invoke(CommandInterface $command, RequestInterface $request) {
+    public function __invoke(CommandInterface $command, RequestInterface $request)
+    {
         $nextHandler = $this->nextHandler;
         $bucket = $command['Bucket'];
 
@@ -44,7 +46,8 @@ class BucketEndpointMiddleware {
         return $nextHandler($command, $request);
     }
 
-    private function removeBucketFromPath($path, $bucket) {
+    private function removeBucketFromPath($path, $bucket)
+    {
         $len = strlen($bucket) + 1;
         if (substr($path, 0, $len) === "/{$bucket}") {
             $path = substr($path, $len);
@@ -54,7 +57,8 @@ class BucketEndpointMiddleware {
     }
 
     private function modifyRequest(
-    RequestInterface $request, CommandInterface $command
+        RequestInterface $request,
+        CommandInterface $command
     ) {
         $uri = $request->getUri();
         $path = $uri->getPath();
@@ -68,5 +72,4 @@ class BucketEndpointMiddleware {
 
         return $request->withUri($uri->withPath($path));
     }
-
 }

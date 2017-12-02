@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\OpsWorks;
 
 use Aws\AwsClient;
@@ -154,6 +153,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateVolume(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateVolumeAsync(array $args = [])
  */
-class OpsWorksClient extends AwsClient {
-    
-}
+class OpsWorksClient extends AwsClient {}

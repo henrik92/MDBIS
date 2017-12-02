@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Support;
 
 use Aws\AwsClient;
@@ -36,6 +35,4 @@ use Aws\AwsClient;
  * @method \Aws\Result resolveCase(array $args = [])
  * @method \GuzzleHttp\Promise\Promise resolveCaseAsync(array $args = [])
  */
-class SupportClient extends AwsClient {
-    
-}
+class SupportClient extends AwsClient {}

@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Api\Parser;
 
 use Aws\Api\DateTimeResult;
@@ -11,22 +10,24 @@ use Aws\Api\StructureShape;
 /**
  * @internal Implements standard XML parsing for REST-XML and Query protocols.
  */
-class XmlParser {
-
-    public function parse(StructureShape $shape, \SimpleXMLElement $value) {
+class XmlParser
+{
+    public function parse(StructureShape $shape, \SimpleXMLElement $value)
+    {
         return $this->dispatch($shape, $value);
     }
 
-    private function dispatch($shape, \SimpleXMLElement $value) {
+    private function dispatch($shape, \SimpleXMLElement $value)
+    {
         static $methods = [
             'structure' => 'parse_structure',
-            'list' => 'parse_list',
-            'map' => 'parse_map',
-            'blob' => 'parse_blob',
-            'boolean' => 'parse_boolean',
-            'integer' => 'parse_integer',
-            'float' => 'parse_float',
-            'double' => 'parse_float',
+            'list'      => 'parse_list',
+            'map'       => 'parse_map',
+            'blob'      => 'parse_blob',
+            'boolean'   => 'parse_boolean',
+            'integer'   => 'parse_integer',
+            'float'     => 'parse_float',
+            'double'    => 'parse_float',
             'timestamp' => 'parse_timestamp',
         ];
 
@@ -39,7 +40,8 @@ class XmlParser {
     }
 
     private function parse_structure(
-    StructureShape $shape, \SimpleXMLElement $value
+        StructureShape $shape,
+        \SimpleXMLElement $value
     ) {
         $target = [];
 
@@ -54,7 +56,8 @@ class XmlParser {
         return $target;
     }
 
-    private function memberKey(Shape $shape, $name) {
+    private function memberKey(Shape $shape, $name)
+    {
         if (null !== $shape['locationName']) {
             return $shape['locationName'];
         }
@@ -66,7 +69,8 @@ class XmlParser {
         return $name;
     }
 
-    private function parse_list(ListShape $shape, \SimpleXMLElement $value) {
+    private function parse_list(ListShape $shape, \SimpleXMLElement  $value)
+    {
         $target = [];
         $member = $shape->getMember();
 
@@ -81,7 +85,8 @@ class XmlParser {
         return $target;
     }
 
-    private function parse_map(MapShape $shape, \SimpleXMLElement $value) {
+    private function parse_map(MapShape $shape, \SimpleXMLElement $value)
+    {
         $target = [];
 
         if (!$shape['flattened']) {
@@ -102,24 +107,28 @@ class XmlParser {
         return $target;
     }
 
-    private function parse_blob(Shape $shape, $value) {
+    private function parse_blob(Shape $shape, $value)
+    {
         return base64_decode((string) $value);
     }
 
-    private function parse_float(Shape $shape, $value) {
+    private function parse_float(Shape $shape, $value)
+    {
         return (float) (string) $value;
     }
 
-    private function parse_integer(Shape $shape, $value) {
+    private function parse_integer(Shape $shape, $value)
+    {
         return (int) (string) $value;
     }
 
-    private function parse_boolean(Shape $shape, $value) {
+    private function parse_boolean(Shape $shape, $value)
+    {
         return $value == 'true' ? true : false;
     }
 
-    private function parse_timestamp(Shape $shape, $value) {
+    private function parse_timestamp(Shape $shape, $value)
+    {
         return new DateTimeResult($value);
     }
-
 }

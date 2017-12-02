@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Kms;
 
 use Aws\AwsClient;
@@ -78,6 +77,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateKeyDescription(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateKeyDescriptionAsync(array $args = [])
  */
-class KmsClient extends AwsClient {
-    
-}
+class KmsClient extends AwsClient {}

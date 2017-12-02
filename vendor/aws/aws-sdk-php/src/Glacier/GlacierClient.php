@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Glacier;
 
 use Aws\Api\ApiProvider;
@@ -83,9 +82,10 @@ use Psr\Http\Message\RequestInterface;
  * @method \Aws\Result uploadMultipartPart(array $args = [])
  * @method \GuzzleHttp\Promise\Promise uploadMultipartPartAsync(array $args = [])
  */
-class GlacierClient extends AwsClient {
-
-    public function __construct(array $args) {
+class GlacierClient extends AwsClient
+{
+    public function __construct(array $args)
+    {
         parent::__construct($args);
 
         // Setup middleware.
@@ -93,10 +93,12 @@ class GlacierClient extends AwsClient {
         $stack->appendBuild($this->getApiVersionMiddleware(), 'glacier.api_version');
         $stack->appendBuild($this->getChecksumsMiddleware(), 'glacier.checksum');
         $stack->appendBuild(
-                Middleware::contentType(['UploadArchive', 'UploadPart']), 'glacier.content_type'
+            Middleware::contentType(['UploadArchive', 'UploadPart']),
+            'glacier.content_type'
         );
         $stack->appendInit(
-                Middleware::sourceFile($this->getApi(), 'body', 'sourceFile'), 'glacier.source_file'
+            Middleware::sourceFile($this->getApi(), 'body', 'sourceFile'),
+            'glacier.source_file'
         );
     }
 
@@ -105,7 +107,8 @@ class GlacierClient extends AwsClient {
      *
      * Sets the default accountId to "-" for all operations.
      */
-    public function getCommand($name, array $args = []) {
+    public function getCommand($name, array $args = [])
+    {
         return parent::getCommand($name, $args + ['accountId' => '-']);
     }
 
@@ -116,12 +119,13 @@ class GlacierClient extends AwsClient {
      * @return callable
      * @throws CouldNotCreateChecksumException if the body is not seekable.
      */
-    private function getChecksumsMiddleware() {
+    private function getChecksumsMiddleware()
+    {
         return function (callable $handler) {
             return function (
-                    CommandInterface $command,
-                    RequestInterface $request = null
-                    ) use ($handler) {
+                CommandInterface $command,
+                RequestInterface $request = null
+            ) use ($handler) {
                 // Accept "ContentSHA256" with a lowercase "c" to match other Glacier params.
                 if (!$command['ContentSHA256'] && $command['contentSHA256']) {
                     $command['ContentSHA256'] = $command['contentSHA256'];
@@ -130,7 +134,8 @@ class GlacierClient extends AwsClient {
 
                 // If uploading, then make sure checksums are added.
                 $name = $command->getName();
-                if (($name === 'UploadArchive' || $name === 'UploadMultipartPart') && (!$command['checksum'] || !$command['ContentSHA256'])
+                if (($name === 'UploadArchive' || $name === 'UploadMultipartPart')
+                    && (!$command['checksum'] || !$command['ContentSHA256'])
                 ) {
                     $body = $request->getBody();
                     if (!$body->isSeekable()) {
@@ -140,20 +145,23 @@ class GlacierClient extends AwsClient {
                     // Add a tree hash if not provided.
                     if (!$command['checksum']) {
                         $body = new HashingStream(
-                                $body, new TreeHash(), function ($result) use ($command, &$request) {
-                            $request = $request->withHeader(
-                                    'x-amz-sha256-tree-hash', bin2hex($result)
-                            );
-                        }
+                            $body, new TreeHash(),
+                            function ($result) use ($command, &$request) {
+                                $request = $request->withHeader(
+                                    'x-amz-sha256-tree-hash',
+                                    bin2hex($result)
+                                );
+                            }
                         );
                     }
 
                     // Add a linear content hash if not provided.
                     if (!$command['ContentSHA256']) {
                         $body = new HashingStream(
-                                $body, new PhpHash('sha256'), function ($result) use ($command) {
-                            $command['ContentSHA256'] = bin2hex($result);
-                        }
+                            $body, new PhpHash('sha256'),
+                            function ($result) use ($command) {
+                                $command['ContentSHA256'] = bin2hex($result);
+                            }
                         );
                     }
 
@@ -167,7 +175,8 @@ class GlacierClient extends AwsClient {
                 // Set the content hash header if a value is in the command.
                 if ($command['ContentSHA256']) {
                     $request = $request->withHeader(
-                            'x-amz-content-sha256', $command['ContentSHA256']
+                        'x-amz-content-sha256',
+                        $command['ContentSHA256']
                     );
                 }
 
@@ -181,14 +190,16 @@ class GlacierClient extends AwsClient {
      *
      * @return callable
      */
-    private function getApiVersionMiddleware() {
+    private function getApiVersionMiddleware()
+    {
         return function (callable $handler) {
             return function (
-                    CommandInterface $command,
-                    RequestInterface $request = null
-                    ) use ($handler) {
+                CommandInterface $command,
+                RequestInterface $request = null
+            ) use ($handler) {
                 return $handler($command, $request->withHeader(
-                                'x-amz-glacier-version', $this->getApi()->getMetadata('apiVersion')
+                    'x-amz-glacier-version',
+                    $this->getApi()->getMetadata('apiVersion')
                 ));
             };
         };
@@ -198,7 +209,8 @@ class GlacierClient extends AwsClient {
      * @internal
      * @codeCoverageIgnore
      */
-    public static function applyDocFilters(array $api, array $docs) {
+    public static function applyDocFilters(array $api, array $docs)
+    {
         // Add the SourceFile parameter.
         $docs['shapes']['SourceFile']['base'] = 'The path to a file on disk to use instead of the body parameter.';
         $api['shapes']['SourceFile'] = ['type' => 'string'];
@@ -213,13 +225,13 @@ class GlacierClient extends AwsClient {
 
         // Add information about "checksum" and "ContentSHA256" being optional.
         $optional = '<div class="alert alert-info">The SDK will compute this value '
-                . 'for you on your behalf if it is not supplied.</div>';
+            . 'for you on your behalf if it is not supplied.</div>';
         $docs['shapes']['checksum']['append'] = $optional;
         $docs['shapes']['ContentSHA256']['append'] = $optional;
 
         // Make "accountId" optional for all operations.
         foreach ($api['operations'] as $operation) {
-            $inputShape = & $api['shapes'][$operation['input']['shape']];
+            $inputShape =& $api['shapes'][$operation['input']['shape']];
             $accountIdIndex = array_search('accountId', $inputShape['required']);
             unset($inputShape['required'][$accountIdIndex]);
         }
@@ -236,5 +248,4 @@ class GlacierClient extends AwsClient {
             new DocModel($docs)
         ];
     }
-
 }

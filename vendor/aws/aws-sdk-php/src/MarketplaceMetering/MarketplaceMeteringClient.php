@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\MarketplaceMetering;
 
 use Aws\AwsClient;
@@ -13,6 +12,4 @@ use Aws\AwsClient;
  * @method \Aws\Result resolveCustomer(array $args = [])
  * @method \GuzzleHttp\Promise\Promise resolveCustomerAsync(array $args = [])
  */
-class MarketplaceMeteringClient extends AwsClient {
-    
-}
+class MarketplaceMeteringClient extends AwsClient {}

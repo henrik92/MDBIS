@@ -1,7 +1,4 @@
 <?php
-
 namespace Aws\Exception;
 
-class UnresolvedApiException extends \RuntimeException {
-    
-}
+class UnresolvedApiException extends \RuntimeException {}

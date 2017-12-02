@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\ImportExport;
 
 use Aws\AwsClient;
@@ -19,6 +18,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateJob(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateJobAsync(array $args = [])
  */
-class ImportExportClient extends AwsClient {
-    
-}
+class ImportExportClient extends AwsClient {}

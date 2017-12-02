@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\LexModelBuildingService;
 
 use Aws\AwsClient;
@@ -75,6 +74,4 @@ use Aws\AwsClient;
  * @method \Aws\Result putSlotType(array $args = [])
  * @method \GuzzleHttp\Promise\Promise putSlotTypeAsync(array $args = [])
  */
-class LexModelBuildingServiceClient extends AwsClient {
-    
-}
+class LexModelBuildingServiceClient extends AwsClient {}

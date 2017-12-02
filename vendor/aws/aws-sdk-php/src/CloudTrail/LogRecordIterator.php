@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\CloudTrail;
 
 use Aws\S3\S3Client;
@@ -18,8 +17,8 @@ use Aws\S3\S3Client;
  * A log record containing data about an AWS API call is yielded for each
  * iteration on this object.
  */
-class LogRecordIterator implements \OuterIterator {
-
+class LogRecordIterator implements \OuterIterator
+{
     /** @var LogFileReader */
     private $logFileReader;
 
@@ -40,10 +39,14 @@ class LogRecordIterator implements \OuterIterator {
      * @return LogRecordIterator
      */
     public static function forTrail(
-    S3Client $s3Client, CloudTrailClient $cloudTrailClient, array $options = []
+        S3Client $s3Client,
+        CloudTrailClient $cloudTrailClient,
+        array $options = []
     ) {
         $logFileIterator = LogFileIterator::forTrail(
-                        $s3Client, $cloudTrailClient, $options
+            $s3Client,
+            $cloudTrailClient,
+            $options
         );
 
         return new self(new LogFileReader($s3Client), $logFileIterator);
@@ -57,7 +60,9 @@ class LogRecordIterator implements \OuterIterator {
      * @return LogRecordIterator
      */
     public static function forBucket(
-    S3Client $s3Client, $s3BucketName, array $options = []
+        S3Client $s3Client,
+        $s3BucketName,
+        array $options = []
     ) {
         $logFileReader = new LogFileReader($s3Client);
         $iter = new LogFileIterator($s3Client, $s3BucketName, $options);
@@ -73,12 +78,14 @@ class LogRecordIterator implements \OuterIterator {
      * @return LogRecordIterator
      */
     public static function forFile(
-    S3Client $s3Client, $s3BucketName, $s3ObjectKey
+        S3Client $s3Client,
+        $s3BucketName,
+        $s3ObjectKey
     ) {
         $logFileReader = new LogFileReader($s3Client);
         $logFileIterator = new \ArrayIterator([[
-        'Bucket' => $s3BucketName,
-        'Key' => $s3ObjectKey,
+            'Bucket' => $s3BucketName,
+            'Key'    => $s3ObjectKey,
         ]]);
 
         return new self($logFileReader, $logFileIterator);
@@ -89,7 +96,8 @@ class LogRecordIterator implements \OuterIterator {
      * @param \Iterator     $logFileIterator
      */
     public function __construct(
-    LogFileReader $logFileReader, \Iterator $logFileIterator
+        LogFileReader $logFileReader,
+        \Iterator $logFileIterator
     ) {
         $this->logFileReader = $logFileReader;
         $this->logFileIterator = $logFileIterator;
@@ -102,11 +110,13 @@ class LogRecordIterator implements \OuterIterator {
      *
      * @return array|false
      */
-    public function current() {
+    public function current()
+    {
         return $this->valid() ? $this->records[$this->recordIndex] : false;
     }
 
-    public function next() {
+    public function next()
+    {
         $this->recordIndex++;
 
         // If all the records have been exhausted, get more records from the
@@ -117,11 +127,12 @@ class LogRecordIterator implements \OuterIterator {
             if (!$success) {
                 // The objects iterator is exhausted as well, so stop trying
                 break;
-            }
+           }
         }
     }
 
-    public function key() {
+    public function key()
+    {
         if ($logFile = $this->logFileIterator->current()) {
             return $logFile['Key'] . '.' . $this->recordIndex;
         }
@@ -129,16 +140,19 @@ class LogRecordIterator implements \OuterIterator {
         return null;
     }
 
-    public function valid() {
+    public function valid()
+    {
         return isset($this->records[$this->recordIndex]);
     }
 
-    public function rewind() {
+    public function rewind()
+    {
         $this->logFileIterator->rewind();
         $this->loadRecordsFromCurrentLogFile();
     }
 
-    public function getInnerIterator() {
+    public function getInnerIterator()
+    {
         return $this->logFileIterator;
     }
 
@@ -155,18 +169,19 @@ class LogRecordIterator implements \OuterIterator {
      * @return bool Returns `true` if records were loaded and `false` if no
      *     records were found
      */
-    private function loadRecordsFromCurrentLogFile() {
+    private function loadRecordsFromCurrentLogFile()
+    {
         $this->recordIndex = 0;
         $this->records = array();
 
         $logFile = $this->logFileIterator->current();
         if ($logFile && isset($logFile['Bucket']) && isset($logFile['Key'])) {
             $this->records = $this->logFileReader->read(
-                    $logFile['Bucket'], $logFile['Key']
+                $logFile['Bucket'],
+                $logFile['Key']
             );
         }
 
         return (bool) $logFile;
     }
-
 }

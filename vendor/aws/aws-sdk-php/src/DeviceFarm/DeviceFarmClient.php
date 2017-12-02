@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\DeviceFarm;
 
 use Aws\AwsClient;
@@ -106,6 +105,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateProject(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateProjectAsync(array $args = [])
  */
-class DeviceFarmClient extends AwsClient {
-    
-}
+class DeviceFarmClient extends AwsClient {}

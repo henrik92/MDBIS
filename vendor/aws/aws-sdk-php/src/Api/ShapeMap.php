@@ -1,12 +1,11 @@
 <?php
-
 namespace Aws\Api;
 
 /**
  * Builds shape based on shape references.
  */
-class ShapeMap {
-
+class ShapeMap
+{
     /** @var array */
     private $definitions;
 
@@ -16,7 +15,8 @@ class ShapeMap {
     /**
      * @param array $shapeModels Associative array of shape definitions.
      */
-    public function __construct(array $shapeModels) {
+    public function __construct(array $shapeModels)
+    {
         $this->definitions = $shapeModels;
     }
 
@@ -25,7 +25,8 @@ class ShapeMap {
      *
      * @return array
      */
-    public function getShapeNames() {
+    public function getShapeNames()
+    {
         return array_keys($this->definitions);
     }
 
@@ -37,7 +38,8 @@ class ShapeMap {
      * @return Shape
      * @throws \InvalidArgumentException
      */
-    public function resolve(array $shapeRef) {
+    public function resolve(array $shapeRef)
+    {
         $shape = $shapeRef['shape'];
 
         if (!isset($this->definitions[$shape])) {
@@ -61,5 +63,4 @@ class ShapeMap {
 
         return $result;
     }
-
 }

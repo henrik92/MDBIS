@@ -1,7 +1,4 @@
 <?php
-
 namespace Aws\Exception;
 
-class CredentialsException extends \RuntimeException {
-    
-}
+class CredentialsException extends \RuntimeException {}

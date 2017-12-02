@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Sms;
 
 use Aws\AwsClient;
@@ -29,6 +28,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateReplicationJob(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateReplicationJobAsync(array $args = [])
  */
-class SmsClient extends AwsClient {
-    
-}
+class SmsClient extends AwsClient {}

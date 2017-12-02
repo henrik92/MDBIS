@@ -1,12 +1,11 @@
 <?php
-
 namespace Aws\Endpoint;
 
 /**
  * Represents a section of the AWS cloud.
  */
-interface PartitionInterface {
-
+interface PartitionInterface
+{
     /**
      * Returns the partition's short name, e.g., 'aws,' 'aws-cn,' or
      * 'aws-us-gov.'
@@ -41,7 +40,8 @@ interface PartitionInterface {
      * @return string[]
      */
     public function getAvailableEndpoints(
-    $service, $allowNonRegionalEndpoints = false
+        $service,
+        $allowNonRegionalEndpoints = false
     );
 
     /**

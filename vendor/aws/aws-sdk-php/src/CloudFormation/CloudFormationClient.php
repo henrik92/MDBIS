@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\CloudFormation;
 
 use Aws\AwsClient;
@@ -81,6 +80,8 @@ use Aws\AwsClient;
  * @method \GuzzleHttp\Promise\Promise stopStackSetOperationAsync(array $args = [])
  * @method \Aws\Result updateStack(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateStackAsync(array $args = [])
+ * @method \Aws\Result updateStackInstances(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise updateStackInstancesAsync(array $args = [])
  * @method \Aws\Result updateStackSet(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateStackSetAsync(array $args = [])
  * @method \Aws\Result updateTerminationProtection(array $args = [])
@@ -88,6 +89,4 @@ use Aws\AwsClient;
  * @method \Aws\Result validateTemplate(array $args = [])
  * @method \GuzzleHttp\Promise\Promise validateTemplateAsync(array $args = [])
  */
-class CloudFormationClient extends AwsClient {
-    
-}
+class CloudFormationClient extends AwsClient {}

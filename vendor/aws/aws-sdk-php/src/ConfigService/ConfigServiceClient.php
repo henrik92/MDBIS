@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\ConfigService;
 
 use Aws\AwsClient;
@@ -62,6 +61,4 @@ use Aws\AwsClient;
  * @method \Aws\Result stopConfigurationRecorder(array $args = [])
  * @method \GuzzleHttp\Promise\Promise stopConfigurationRecorderAsync(array $args = [])
  */
-class ConfigServiceClient extends AwsClient {
-    
-}
+class ConfigServiceClient extends AwsClient {}

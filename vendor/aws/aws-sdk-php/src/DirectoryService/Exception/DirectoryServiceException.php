@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\DirectoryService\Exception;
 
 use Aws\Exception\AwsException;
@@ -7,6 +6,4 @@ use Aws\Exception\AwsException;
 /**
  * AWS Directory Service Exception
  */
-class DirectoryServiceException extends AwsException {
-    
-}
+class DirectoryServiceException extends AwsException {}

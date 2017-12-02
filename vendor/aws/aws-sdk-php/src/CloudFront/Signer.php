@@ -1,12 +1,11 @@
 <?php
-
 namespace Aws\CloudFront;
 
 /**
  * @internal
  */
-class Signer {
-
+class Signer
+{
     private $keyPairId;
     private $pk;
 
@@ -20,11 +19,12 @@ class Signer {
      * @throws \RuntimeException if the openssl extension is missing
      * @throws \InvalidArgumentException if the private key cannot be found.
      */
-    public function __construct($keyPairId, $privateKey) {
+    public function __construct($keyPairId, $privateKey)
+    {
         if (!extension_loaded('openssl')) {
             //@codeCoverageIgnoreStart
             throw new \RuntimeException('The openssl extension is required to '
-            . 'sign CloudFront urls.');
+                . 'sign CloudFront urls.');
             //@codeCoverageIgnoreEnd
         }
 
@@ -36,6 +36,7 @@ class Signer {
 
         $this->pk = file_get_contents($privateKey);
     }
+
 
     /**
      * Create the values used to construct signed URLs and cookies.
@@ -58,7 +59,8 @@ class Signer {
      *
      * @link http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-signed-cookies.html
      */
-    public function getSignature($resource = null, $expires = null, $policy = null) {
+    public function getSignature($resource = null, $expires = null, $policy = null)
+    {
         $signatureHash = [];
         if ($policy) {
             $policy = preg_replace('/\s/s', '', $policy);
@@ -68,7 +70,7 @@ class Signer {
             $signatureHash['Expires'] = $expires;
         } else {
             throw new \InvalidArgumentException('Either a policy or a resource'
-            . ' and an expiration time must be provided.');
+                . ' and an expiration time must be provided.');
         }
 
         $signatureHash['Signature'] = $this->encode($this->sign($policy));
@@ -77,7 +79,8 @@ class Signer {
         return $signatureHash;
     }
 
-    private function createCannedPolicy($resource, $expiration) {
+    private function createCannedPolicy($resource, $expiration)
+    {
         return json_encode([
             'Statement' => [
                 [
@@ -87,18 +90,19 @@ class Signer {
                     ],
                 ],
             ],
-                ], JSON_UNESCAPED_SLASHES);
+        ], JSON_UNESCAPED_SLASHES);
     }
 
-    private function sign($policy) {
+    private function sign($policy)
+    {
         $signature = '';
         openssl_sign($policy, $signature, $this->pk);
 
         return $signature;
     }
 
-    private function encode($policy) {
+    private function encode($policy)
+    {
         return strtr(base64_encode($policy), '+=/', '-_~');
     }
-
 }

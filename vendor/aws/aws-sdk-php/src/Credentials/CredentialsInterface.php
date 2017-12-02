@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Credentials;
 
 /**
@@ -7,8 +6,8 @@ namespace Aws\Credentials;
  * access key ID, secret access key, and security token. These credentials are
  * used to securely sign requests to AWS services.
  */
-interface CredentialsInterface {
-
+interface CredentialsInterface
+{
     /**
      * Returns the AWS access key ID for this credentials object.
      *

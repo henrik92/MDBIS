@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\ResourceGroupsTaggingAPI;
 
 use Aws\AwsClient;
@@ -17,6 +16,4 @@ use Aws\AwsClient;
  * @method \Aws\Result untagResources(array $args = [])
  * @method \GuzzleHttp\Promise\Promise untagResourcesAsync(array $args = [])
  */
-class ResourceGroupsTaggingAPIClient extends AwsClient {
-    
-}
+class ResourceGroupsTaggingAPIClient extends AwsClient {}

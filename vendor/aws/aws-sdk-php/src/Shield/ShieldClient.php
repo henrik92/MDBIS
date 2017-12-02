@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Shield;
 
 use Aws\AwsClient;
@@ -20,11 +19,11 @@ use Aws\AwsClient;
  * @method \GuzzleHttp\Promise\Promise describeProtectionAsync(array $args = [])
  * @method \Aws\Result describeSubscription(array $args = [])
  * @method \GuzzleHttp\Promise\Promise describeSubscriptionAsync(array $args = [])
+ * @method \Aws\Result getSubscriptionState(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getSubscriptionStateAsync(array $args = [])
  * @method \Aws\Result listAttacks(array $args = [])
  * @method \GuzzleHttp\Promise\Promise listAttacksAsync(array $args = [])
  * @method \Aws\Result listProtections(array $args = [])
  * @method \GuzzleHttp\Promise\Promise listProtectionsAsync(array $args = [])
  */
-class ShieldClient extends AwsClient {
-    
-}
+class ShieldClient extends AwsClient {}

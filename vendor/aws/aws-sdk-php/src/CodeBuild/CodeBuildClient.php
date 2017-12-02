@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\CodeBuild;
 
 use Aws\AwsClient;
@@ -20,6 +19,8 @@ use Aws\AwsClient;
  * @method \GuzzleHttp\Promise\Promise deleteProjectAsync(array $args = [])
  * @method \Aws\Result deleteWebhook(array $args = [])
  * @method \GuzzleHttp\Promise\Promise deleteWebhookAsync(array $args = [])
+ * @method \Aws\Result invalidateProjectCache(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise invalidateProjectCacheAsync(array $args = [])
  * @method \Aws\Result listBuilds(array $args = [])
  * @method \GuzzleHttp\Promise\Promise listBuildsAsync(array $args = [])
  * @method \Aws\Result listBuildsForProject(array $args = [])
@@ -35,6 +36,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateProject(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateProjectAsync(array $args = [])
  */
-class CodeBuildClient extends AwsClient {
-    
-}
+class CodeBuildClient extends AwsClient {}

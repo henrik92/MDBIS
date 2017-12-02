@@ -1,18 +1,16 @@
 <?php
-
 namespace Aws\S3;
 
 use Aws\Multipart\AbstractUploadManager;
 use Aws\ResultInterface;
 use GuzzleHttp\Psr7;
 
-class MultipartCopy extends AbstractUploadManager {
-
+class MultipartCopy extends AbstractUploadManager
+{
     use MultipartUploadingTrait;
 
     /** @var string */
     private $source;
-
     /** @var ResultInterface */
     private $sourceMetadata;
 
@@ -57,7 +55,9 @@ class MultipartCopy extends AbstractUploadManager {
      * @param array             $config Configuration used to perform the upload.
      */
     public function __construct(
-    S3ClientInterface $client, $source, array $config = []
+        S3ClientInterface $client,
+        $source,
+        array $config = []
     ) {
         $this->source = '/' . ltrim($source, '/');
         parent::__construct($client, array_change_key_case($config) + [
@@ -70,34 +70,39 @@ class MultipartCopy extends AbstractUploadManager {
      *
      * @see self::upload
      */
-    public function copy() {
+    public function copy()
+    {
         return $this->upload();
     }
 
-    protected function loadUploadWorkflowInfo() {
+    protected function loadUploadWorkflowInfo()
+    {
         return [
             'command' => [
                 'initiate' => 'CreateMultipartUpload',
-                'upload' => 'UploadPartCopy',
+                'upload'   => 'UploadPartCopy',
                 'complete' => 'CompleteMultipartUpload',
             ],
             'id' => [
-                'bucket' => 'Bucket',
-                'key' => 'Key',
+                'bucket'    => 'Bucket',
+                'key'       => 'Key',
                 'upload_id' => 'UploadId',
             ],
             'part_num' => 'PartNumber',
         ];
     }
 
-    protected function getUploadCommands(callable $resultHandler) {
+    protected function getUploadCommands(callable $resultHandler)
+    {
         $parts = ceil($this->getSourceSize() / $this->determinePartSize());
 
         for ($partNumber = 1; $partNumber <= $parts; $partNumber++) {
             // If we haven't already uploaded this part, yield a new part.
             if (!$this->state->hasPartBeenUploaded($partNumber)) {
                 $command = $this->client->getCommand(
-                        $this->info['command']['upload'], $this->createPart($partNumber, $parts) + $this->getState()->getId()
+                    $this->info['command']['upload'],
+                    $this->createPart($partNumber, $parts)
+                        + $this->getState()->getId()
                 );
                 $command->getHandlerList()->appendSign($resultHandler, 'mup');
                 yield $command;
@@ -105,7 +110,8 @@ class MultipartCopy extends AbstractUploadManager {
         }
     }
 
-    private function createPart($partNumber, $partsCount) {
+    private function createPart($partNumber, $partsCount)
+    {
         $data = [];
 
         // Apply custom params to UploadPartCopy data
@@ -120,26 +126,32 @@ class MultipartCopy extends AbstractUploadManager {
 
         $defaultPartSize = $this->determinePartSize();
         $startByte = $defaultPartSize * ($partNumber - 1);
-        $data['ContentLength'] = $partNumber < $partsCount ? $defaultPartSize : $this->getSourceSize() - ($defaultPartSize * ($partsCount - 1));
+        $data['ContentLength'] = $partNumber < $partsCount
+            ? $defaultPartSize
+            : $this->getSourceSize() - ($defaultPartSize * ($partsCount - 1));
         $endByte = $startByte + $data['ContentLength'] - 1;
         $data['CopySourceRange'] = "bytes=$startByte-$endByte";
 
         return $data;
     }
 
-    protected function extractETag(ResultInterface $result) {
+    protected function extractETag(ResultInterface $result)
+    {
         return $result->search('CopyPartResult.ETag');
     }
 
-    protected function getSourceMimeType() {
+    protected function getSourceMimeType()
+    {
         return $this->getSourceMetadata()['ContentType'];
     }
 
-    protected function getSourceSize() {
+    protected function getSourceSize()
+    {
         return $this->getSourceMetadata()['ContentLength'];
     }
 
-    private function getSourceMetadata() {
+    private function getSourceMetadata()
+    {
         if (empty($this->sourceMetadata)) {
             $this->sourceMetadata = $this->fetchSourceMetadata();
         }
@@ -147,7 +159,8 @@ class MultipartCopy extends AbstractUploadManager {
         return $this->sourceMetadata;
     }
 
-    private function fetchSourceMetadata() {
+    private function fetchSourceMetadata()
+    {
         if ($this->config['source_metadata'] instanceof ResultInterface) {
             return $this->config['source_metadata'];
         }
@@ -167,5 +180,4 @@ class MultipartCopy extends AbstractUploadManager {
         }
         return $this->client->headObject($headParams);
     }
-
 }

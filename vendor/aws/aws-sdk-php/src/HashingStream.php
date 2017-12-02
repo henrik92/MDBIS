@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws;
 
 use GuzzleHttp\Psr7\StreamDecoratorTrait;
@@ -8,8 +7,8 @@ use Psr\Http\Message\StreamInterface;
 /**
  * Stream decorator that calculates a rolling hash of the stream as it is read.
  */
-class HashingStream implements StreamInterface {
-
+class HashingStream implements StreamInterface
+{
     use StreamDecoratorTrait;
 
     /** @var HashInterface */
@@ -25,14 +24,17 @@ class HashingStream implements StreamInterface {
      *                                    hash calculation is completed.
      */
     public function __construct(
-    StreamInterface $stream, HashInterface $hash, callable $onComplete = null
+        StreamInterface $stream,
+        HashInterface $hash,
+        callable $onComplete = null
     ) {
         $this->stream = $stream;
         $this->hash = $hash;
         $this->callback = $onComplete;
     }
 
-    public function read($length) {
+    public function read($length)
+    {
         $data = $this->stream->read($length);
         $this->hash->update($data);
         if ($this->eof()) {
@@ -45,7 +47,8 @@ class HashingStream implements StreamInterface {
         return $data;
     }
 
-    public function seek($offset, $whence = SEEK_SET) {
+    public function seek($offset, $whence = SEEK_SET)
+    {
         if ($offset === 0) {
             $this->hash->reset();
             return $this->stream->seek($offset);
@@ -54,5 +57,4 @@ class HashingStream implements StreamInterface {
             return false;
         }
     }
-
 }

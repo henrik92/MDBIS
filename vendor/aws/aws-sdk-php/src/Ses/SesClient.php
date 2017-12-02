@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Ses;
 
 use Aws\Api\ApiProvider;
@@ -54,6 +53,8 @@ use Aws\Credentials\CredentialsInterface;
  * @method \GuzzleHttp\Promise\Promise describeReceiptRuleAsync(array $args = [])
  * @method \Aws\Result describeReceiptRuleSet(array $args = [])
  * @method \GuzzleHttp\Promise\Promise describeReceiptRuleSetAsync(array $args = [])
+ * @method \Aws\Result getAccountSendingEnabled(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getAccountSendingEnabledAsync(array $args = [])
  * @method \Aws\Result getIdentityDkimAttributes(array $args = [])
  * @method \GuzzleHttp\Promise\Promise getIdentityDkimAttributesAsync(array $args = [])
  * @method \Aws\Result getIdentityMailFromDomainAttributes(array $args = [])
@@ -114,8 +115,14 @@ use Aws\Credentials\CredentialsInterface;
  * @method \GuzzleHttp\Promise\Promise setReceiptRulePositionAsync(array $args = [])
  * @method \Aws\Result testRenderTemplate(array $args = [])
  * @method \GuzzleHttp\Promise\Promise testRenderTemplateAsync(array $args = [])
+ * @method \Aws\Result updateAccountSendingEnabled(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise updateAccountSendingEnabledAsync(array $args = [])
  * @method \Aws\Result updateConfigurationSetEventDestination(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateConfigurationSetEventDestinationAsync(array $args = [])
+ * @method \Aws\Result updateConfigurationSetReputationMetricsEnabled(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise updateConfigurationSetReputationMetricsEnabledAsync(array $args = [])
+ * @method \Aws\Result updateConfigurationSetSendingEnabled(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise updateConfigurationSetSendingEnabledAsync(array $args = [])
  * @method \Aws\Result updateConfigurationSetTrackingOptions(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateConfigurationSetTrackingOptionsAsync(array $args = [])
  * @method \Aws\Result updateReceiptRule(array $args = [])
@@ -131,8 +138,8 @@ use Aws\Credentials\CredentialsInterface;
  * @method \Aws\Result verifyEmailIdentity(array $args = [])
  * @method \GuzzleHttp\Promise\Promise verifyEmailIdentityAsync(array $args = [])
  */
-class SesClient extends \Aws\AwsClient {
-
+class SesClient extends \Aws\AwsClient
+{
     /**
      * Create an SMTP password for a given IAM user's credentials.
      *
@@ -144,7 +151,8 @@ class SesClient extends \Aws\AwsClient {
      *
      * @return string
      */
-    public static function generateSmtpPassword(CredentialsInterface $creds) {
+    public static function generateSmtpPassword(CredentialsInterface $creds)
+    {
         static $version = "\x02";
         static $algo = 'sha256';
         static $message = 'SendRawEmail';
@@ -157,7 +165,8 @@ class SesClient extends \Aws\AwsClient {
      * @internal
      * @codeCoverageIgnore
      */
-    public static function applyDocFilters(array $api, array $docs) {
+    public static function applyDocFilters(array $api, array $docs)
+    {
         $b64 = '<div class="alert alert-info">This value will be base64 encoded on your behalf.</div>';
 
         $docs['shapes']['RawMessage']['append'] = $b64;
@@ -167,5 +176,4 @@ class SesClient extends \Aws\AwsClient {
             new DocModel($docs)
         ];
     }
-
 }

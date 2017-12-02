@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\CloudWatchLogs;
 
 use Aws\AwsClient;
@@ -74,6 +73,4 @@ use Aws\AwsClient;
  * @method \Aws\Result untagLogGroup(array $args = [])
  * @method \GuzzleHttp\Promise\Promise untagLogGroupAsync(array $args = [])
  */
-class CloudWatchLogsClient extends AwsClient {
-    
-}
+class CloudWatchLogsClient extends AwsClient {}

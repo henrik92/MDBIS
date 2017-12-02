@@ -1,12 +1,11 @@
 <?php
-
 namespace Aws;
 
 /**
  * Represents a simple cache interface.
  */
-interface CacheInterface {
-
+interface CacheInterface
+{
     /**
      * Get a cache item by key.
      *

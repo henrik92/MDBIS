@@ -1,18 +1,18 @@
 <?php
-
 namespace Aws\Api;
 
 /**
  * Represents a structure shape and resolve member shape references.
  */
-class StructureShape extends Shape {
-
+class StructureShape extends Shape
+{
     /**
      * @var Shape[]
      */
     private $members;
 
-    public function __construct(array $definition, ShapeMap $shapeMap) {
+    public function __construct(array $definition, ShapeMap $shapeMap)
+    {
         $definition['type'] = 'structure';
 
         if (!isset($definition['members'])) {
@@ -27,7 +27,8 @@ class StructureShape extends Shape {
      *
      * @return Shape[]
      */
-    public function getMembers() {
+    public function getMembers()
+    {
         if (empty($this->members)) {
             $this->generateMembersHash();
         }
@@ -42,7 +43,8 @@ class StructureShape extends Shape {
      *
      * @return bool
      */
-    public function hasMember($name) {
+    public function hasMember($name)
+    {
         return isset($this->definition['members'][$name]);
     }
 
@@ -54,7 +56,8 @@ class StructureShape extends Shape {
      * @return Shape
      * @throws \InvalidArgumentException if the member is not found.
      */
-    public function getMember($name) {
+    public function getMember($name)
+    {
         $members = $this->getMembers();
 
         if (!isset($members[$name])) {
@@ -64,12 +67,13 @@ class StructureShape extends Shape {
         return $members[$name];
     }
 
-    private function generateMembersHash() {
+
+    private function generateMembersHash()
+    {
         $this->members = [];
 
         foreach ($this->definition['members'] as $name => $definition) {
             $this->members[$name] = $this->shapeFor($definition);
         }
     }
-
 }

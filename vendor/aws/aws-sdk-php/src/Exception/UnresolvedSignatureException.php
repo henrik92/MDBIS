@@ -1,7 +1,4 @@
 <?php
-
 namespace Aws\Exception;
 
-class UnresolvedSignatureException extends \RuntimeException {
-    
-}
+class UnresolvedSignatureException extends \RuntimeException {}

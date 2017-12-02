@@ -14,7 +14,27 @@
 if (!empty($_POST['title']) and isset($_POST["submit_search"])) {
 
     $title = ucwords(strtolower($_POST['title']));
+    
+    /*ELASTICSEARCH*/
+    require 'lib/es_config.php';
 
+if(isset($title)){
+$params = [
+    'index' => 'movies',
+    'type' => 'movie',
+    'body' => [
+        'query' => [
+            'match' => [
+                'title' => $title
+            ]
+        ]
+    ]
+];
+
+$results = $es_client->search($params);
+}
+    
+    /*GET ITEMS FROM DYNAMODB*/
     require 'lib/aws_config.php';
 
     /* Get Parameters for Item */
@@ -40,6 +60,17 @@ if (!empty($_POST['title']) and isset($_POST["submit_search"])) {
             ?>
             <div class="container text-center">
                 <h4>Movie: <b>"<?php echo $title; ?>"</b> not found in our Collection. We are sorry :(</h4>
+                <?php 
+                $i = 0;
+                if(isset($result)){
+                while ($i < $results['hits']['total']) {
+                echo $results['hits']['hits'][$i]['_source']['title'];
+                echo '<br>';
+                $i++;
+            }
+        }
+                
+                ?>
             </div>
             <?php
             $error = "Movie not found. Try again.";
@@ -52,6 +83,17 @@ if (!empty($_POST['title']) and isset($_POST["submit_search"])) {
             ?>
             <div class="container text-center">
                 <h4><u>Search result for "<b><?php echo $title ?>" : </b></u></h4>
+                <?php 
+                $i = 0;
+                if(isset($result)){
+                while ($i < $results['hits']['total']) {
+                echo $results['hits']['hits'][$i]['_source']['title'];
+                echo '<br>';
+                $i++;
+            }
+        }
+                
+                ?>
             </div>
             <?php
         }

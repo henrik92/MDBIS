@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Batch;
 
 use Aws\AwsClient;
@@ -39,6 +38,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateJobQueue(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateJobQueueAsync(array $args = [])
  */
-class BatchClient extends AwsClient {
-    
-}
+class BatchClient extends AwsClient {}

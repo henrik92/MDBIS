@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\SnowBall;
 
 use Aws\AwsClient;
@@ -41,6 +40,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateJob(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateJobAsync(array $args = [])
  */
-class SnowBallClient extends AwsClient {
-    
-}
+class SnowBallClient extends AwsClient {}

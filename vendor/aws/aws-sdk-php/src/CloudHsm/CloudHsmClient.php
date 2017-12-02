@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\CloudHsm;
 
 use Aws\Api\ApiProvider;
@@ -51,9 +50,10 @@ use Aws\AwsClient;
  * @method \Aws\Result removeTagsFromResource(array $args = [])
  * @method \GuzzleHttp\Promise\Promise removeTagsFromResourceAsync(array $args = [])
  */
-class CloudHsmClient extends AwsClient {
-
-    public function __call($name, array $args) {
+class CloudHsmClient extends AwsClient
+{
+    public function __call($name, array $args)
+    {
         // Overcomes a naming collision with `AwsClient::getConfig`.
         if (lcfirst($name) === 'getConfigFiles') {
             $name = 'GetConfig';
@@ -68,7 +68,8 @@ class CloudHsmClient extends AwsClient {
      * @internal
      * @codeCoverageIgnore
      */
-    public static function applyDocFilters(array $api, array $docs) {
+    public static function applyDocFilters(array $api, array $docs)
+    {
         // Overcomes a naming collision with `AwsClient::getConfig`.
         $api['operations']['GetConfigFiles'] = $api['operations']['GetConfig'];
         $docs['operations']['GetConfigFiles'] = $docs['operations']['GetConfig'];
@@ -80,5 +81,4 @@ class CloudHsmClient extends AwsClient {
             new DocModel($docs)
         ];
     }
-
 }

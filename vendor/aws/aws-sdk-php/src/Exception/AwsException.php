@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Exception;
 
 use Psr\Http\Message\ResponseInterface;
@@ -10,8 +9,8 @@ use Aws\ResultInterface;
 /**
  * Represents an AWS exception that is thrown when a command fails.
  */
-class AwsException extends \RuntimeException {
-
+class AwsException extends \RuntimeException
+{
     /** @var ResponseInterface */
     private $response;
     private $request;
@@ -31,22 +30,32 @@ class AwsException extends \RuntimeException {
      * @param \Exception       $previous  Previous exception (if any)
      */
     public function __construct(
-    $message, CommandInterface $command, array $context = [], \Exception $previous = null
+        $message,
+        CommandInterface $command,
+        array $context = [],
+        \Exception $previous = null
     ) {
         $this->command = $command;
         $this->response = isset($context['response']) ? $context['response'] : null;
         $this->request = isset($context['request']) ? $context['request'] : null;
-        $this->requestId = isset($context['request_id']) ? $context['request_id'] : null;
+        $this->requestId = isset($context['request_id'])
+            ? $context['request_id']
+            : null;
         $this->errorType = isset($context['type']) ? $context['type'] : null;
         $this->errorCode = isset($context['code']) ? $context['code'] : null;
         $this->connectionError = !empty($context['connection_error']);
         $this->result = isset($context['result']) ? $context['result'] : null;
-        $this->transferInfo = isset($context['transfer_stats']) ? $context['transfer_stats'] : [];
-        $this->errorMessage = isset($context['message']) ? $context['message'] : null;
+        $this->transferInfo = isset($context['transfer_stats'])
+            ? $context['transfer_stats']
+            : [];
+        $this->errorMessage = isset($context['message'])
+            ? $context['message']
+            : null;
         parent::__construct($message, 0, $previous);
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         if (!$this->getPrevious()) {
             return parent::__toString();
         }
@@ -58,7 +67,10 @@ class AwsException extends \RuntimeException {
         // the inner exception instead of the actual exception because they
         // can't see the outer exception's __toString output.
         return sprintf(
-                "exception '%s' with message '%s'\n\n%s", get_class($this), $this->getMessage(), parent::__toString()
+            "exception '%s' with message '%s'\n\n%s",
+            get_class($this),
+            $this->getMessage(),
+            parent::__toString()
         );
     }
 
@@ -67,7 +79,8 @@ class AwsException extends \RuntimeException {
      *
      * @return CommandInterface
      */
-    public function getCommand() {
+    public function getCommand()
+    {
         return $this->command;
     }
 
@@ -76,7 +89,8 @@ class AwsException extends \RuntimeException {
      *
      * @return string|null
      */
-    public function getAwsErrorMessage() {
+    public function getAwsErrorMessage()
+    {
         return $this->errorMessage;
     }
 
@@ -85,7 +99,8 @@ class AwsException extends \RuntimeException {
      *
      * @return RequestInterface|null
      */
-    public function getRequest() {
+    public function getRequest()
+    {
         return $this->request;
     }
 
@@ -94,7 +109,8 @@ class AwsException extends \RuntimeException {
      *
      * @return ResponseInterface|null
      */
-    public function getResponse() {
+    public function getResponse()
+    {
         return $this->response;
     }
 
@@ -103,7 +119,8 @@ class AwsException extends \RuntimeException {
      *
      * @return ResultInterface|null
      */
-    public function getResult() {
+    public function getResult()
+    {
         return $this->result;
     }
 
@@ -112,7 +129,8 @@ class AwsException extends \RuntimeException {
      *
      * @return bool
      */
-    public function isConnectionError() {
+    public function isConnectionError()
+    {
         return $this->connectionError;
     }
 
@@ -121,7 +139,8 @@ class AwsException extends \RuntimeException {
      *
      * @return int|null
      */
-    public function getStatusCode() {
+    public function getStatusCode()
+    {
         return $this->response ? $this->response->getStatusCode() : null;
     }
 
@@ -132,7 +151,8 @@ class AwsException extends \RuntimeException {
      *
      * @return string|null Returns null if no response was received
      */
-    public function getAwsRequestId() {
+    public function getAwsRequestId()
+    {
         return $this->requestId;
     }
 
@@ -141,7 +161,8 @@ class AwsException extends \RuntimeException {
      *
      * @return string|null Returns null if no response was received
      */
-    public function getAwsErrorType() {
+    public function getAwsErrorType()
+    {
         return $this->errorType;
     }
 
@@ -150,7 +171,8 @@ class AwsException extends \RuntimeException {
      *
      * @return string|null Returns null if no response was received
      */
-    public function getAwsErrorCode() {
+    public function getAwsErrorCode()
+    {
         return $this->errorCode;
     }
 
@@ -163,12 +185,15 @@ class AwsException extends \RuntimeException {
      *
      * @return mixed|null|array
      */
-    public function getTransferInfo($name = null) {
+    public function getTransferInfo($name = null)
+    {
         if (!$name) {
             return $this->transferInfo;
         }
 
-        return isset($this->transferInfo[$name]) ? $this->transferInfo[$name] : null;
+        return isset($this->transferInfo[$name])
+            ? $this->transferInfo[$name]
+            : null;
     }
 
     /**
@@ -176,8 +201,8 @@ class AwsException extends \RuntimeException {
      *
      * @param array $info
      */
-    public function setTransferInfo(array $info) {
+    public function setTransferInfo(array $info)
+    {
         $this->transferInfo = $info;
     }
-
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\CloudFront;
 
 use Aws\AwsClient;
@@ -61,9 +60,11 @@ use Aws\AwsClient;
  * @method \GuzzleHttp\Promise\Promise tagResourceAsync(array $args = []) (supported in versions 2016-08-01, 2016-08-20, 2016-09-07, 2016-09-29, 2016-11-25, 2017-03-25)
  * @method \Aws\Result untagResource(array $args = []) (supported in versions 2016-08-01, 2016-08-20, 2016-09-07, 2016-09-29, 2016-11-25, 2017-03-25)
  * @method \GuzzleHttp\Promise\Promise untagResourceAsync(array $args = []) (supported in versions 2016-08-01, 2016-08-20, 2016-09-07, 2016-09-29, 2016-11-25, 2017-03-25)
+ * @method \Aws\Result deleteServiceLinkedRole(array $args = []) (supported in versions 2017-03-25)
+ * @method \GuzzleHttp\Promise\Promise deleteServiceLinkedRoleAsync(array $args = []) (supported in versions 2017-03-25)
  */
-class CloudFrontClient extends AwsClient {
-
+class CloudFrontClient extends AwsClient
+{
     /**
      * Create a signed Amazon CloudFront URL.
      *
@@ -88,7 +89,8 @@ class CloudFrontClient extends AwsClient {
      *     were not specified.
      * @link http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/WorkingWithStreamingDistributions.html
      */
-    public function getSignedUrl(array $options) {
+    public function getSignedUrl(array $options)
+    {
         foreach (['url', 'key_pair_id', 'private_key'] as $required) {
             if (!isset($options[$required])) {
                 throw new \InvalidArgumentException("$required is required");
@@ -96,11 +98,14 @@ class CloudFrontClient extends AwsClient {
         }
 
         $urlSigner = new UrlSigner(
-                $options['key_pair_id'], $options['private_key']
+            $options['key_pair_id'],
+            $options['private_key']
         );
 
         return $urlSigner->getSignedUrl(
-                        $options['url'], isset($options['expires']) ? $options['expires'] : null, isset($options['policy']) ? $options['policy'] : null
+            $options['url'],
+            isset($options['expires']) ? $options['expires'] : null,
+            isset($options['policy']) ? $options['policy'] : null
         );
     }
 
@@ -127,7 +132,8 @@ class CloudFrontClient extends AwsClient {
      *     were not specified.
      * @link http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/WorkingWithStreamingDistributions.html
      */
-    public function getSignedCookie(array $options) {
+    public function getSignedCookie(array $options)
+    {
         foreach (['key_pair_id', 'private_key'] as $required) {
             if (!isset($options[$required])) {
                 throw new \InvalidArgumentException("$required is required");
@@ -135,12 +141,14 @@ class CloudFrontClient extends AwsClient {
         }
 
         $cookieSigner = new CookieSigner(
-                $options['key_pair_id'], $options['private_key']
+            $options['key_pair_id'],
+            $options['private_key']
         );
 
         return $cookieSigner->getSignedCookie(
-                        isset($options['url']) ? $options['url'] : null, isset($options['expires']) ? $options['expires'] : null, isset($options['policy']) ? $options['policy'] : null
+            isset($options['url']) ? $options['url'] : null,
+            isset($options['expires']) ? $options['expires'] : null,
+            isset($options['policy']) ? $options['policy'] : null
         );
     }
-
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws;
 
 use Aws\AwsClientInterface;
@@ -12,23 +11,25 @@ use Psr\Http\Message\RequestInterface;
 /**
  * @internal Adds computed values to service operations that need presigned url.
  */
-class PresignUrlMiddleware {
-
+class PresignUrlMiddleware
+{
     private $client;
     private $endpointProvider;
     private $nextHandler;
-
     /** @var array names of operations that require presign url */
     private $commandPool;
-
     /** @var string */
     private $serviceName;
-
     /** @var string */
     private $presignParam;
+    /** @var bool */
+    private $requireDifferentRegion;
 
     public function __construct(
-    array $options, callable $endpointProvider, AwsClientInterface $client, callable $nextHandler
+        array $options,
+        callable $endpointProvider,
+        AwsClientInterface $client,
+        callable $nextHandler
     ) {
         $this->endpointProvider = $endpointProvider;
         $this->client = $client;
@@ -36,10 +37,13 @@ class PresignUrlMiddleware {
         $this->commandPool = $options['operations'];
         $this->serviceName = $options['service'];
         $this->presignParam = $options['presign_param'];
+        $this->requireDifferentRegion = !empty($options['require_different_region']);
     }
 
     public static function wrap(
-    AwsClientInterface $client, callable $endpointProvider, array $options = []
+        AwsClientInterface $client,
+        callable $endpointProvider,
+        array $options = []
     ) {
         return function (callable $handler) use ($endpointProvider, $client, $options) {
             $f = new PreSignUrlMiddleware($options, $endpointProvider, $client, $handler);
@@ -47,11 +51,18 @@ class PresignUrlMiddleware {
         };
     }
 
-    public function __invoke(CommandInterface $cmd, RequestInterface $request = null) {
-        if (in_array($cmd->getName(), $this->commandPool) && (!isset($cmd->{'__skip' . $cmd->getName()}))
+    public function __invoke(CommandInterface $cmd, RequestInterface $request = null)
+    {
+        if (in_array($cmd->getName(), $this->commandPool)
+            && (!isset($cmd->{'__skip' . $cmd->getName()}))
         ) {
-            $cmd[$this->presignParam] = $this->createPresignedUrl($this->client, $cmd);
             $cmd['DestinationRegion'] = $this->client->getRegion();
+            if (!$this->requireDifferentRegion
+                || (!empty($cmd['SourceRegion'])
+                    && $cmd['SourceRegion'] !== $cmd['DestinationRegion'])
+            ) {
+                $cmd[$this->presignParam] = $this->createPresignedUrl($this->client, $cmd);
+            }
         }
 
         $f = $this->nextHandler;
@@ -59,7 +70,8 @@ class PresignUrlMiddleware {
     }
 
     private function createPresignedUrl(
-    AwsClientInterface $client, CommandInterface $cmd
+        AwsClientInterface $client,
+        CommandInterface $cmd
     ) {
         $cmdName = $cmd->getName();
         $newCmd = $client->getCommand($cmdName, $cmd->toArray());
@@ -70,9 +82,9 @@ class PresignUrlMiddleware {
         $request = \Aws\serialize($newCmd);
         // Create the new endpoint for the target endpoint.
         $endpoint = EndpointProvider::resolve($this->endpointProvider, [
-                    'region' => $cmd['SourceRegion'],
-                    'service' => $this->serviceName,
-                ])['endpoint'];
+            'region'  => $cmd['SourceRegion'],
+            'service' => $this->serviceName,
+        ])['endpoint'];
 
         // Set the request to hit the target endpoint.
         $uri = $request->getUri()->withHost((new Uri($endpoint))->getHost());
@@ -81,8 +93,9 @@ class PresignUrlMiddleware {
         $signer = new SignatureV4($this->serviceName, $cmd['SourceRegion']);
 
         return (string) $signer->presign(
-                        SignatureV4::convertPostToGet($request), $client->getCredentials()->wait(), '+1 hour'
-                )->getUri();
+            SignatureV4::convertPostToGet($request),
+            $client->getCredentials()->wait(),
+            '+1 hour'
+        )->getUri();
     }
-
 }

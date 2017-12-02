@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\S3;
 
 use Aws\Exception\MultipartUploadException;
@@ -12,8 +11,8 @@ use InvalidArgumentException;
  * Copies objects from one S3 location to another, utilizing a multipart copy
  * when appropriate.
  */
-class ObjectCopier implements PromisorInterface {
-
+class ObjectCopier implements PromisorInterface
+{
     const DEFAULT_MULTIPART_THRESHOLD = MultipartUploader::PART_MAX_SIZE;
 
     private $client;
@@ -21,14 +20,15 @@ class ObjectCopier implements PromisorInterface {
     private $destination;
     private $acl;
     private $options;
+
     private static $defaults = [
         'before_lookup' => null,
         'before_upload' => null,
-        'concurrency' => 5,
+        'concurrency'   => 5,
         'mup_threshold' => self::DEFAULT_MULTIPART_THRESHOLD,
-        'params' => [],
-        'part_size' => null,
-        'version_id' => null,
+        'params'        => [],
+        'part_size'     => null,
+        'version_id'    => null,
     ];
 
     /**
@@ -53,7 +53,11 @@ class ObjectCopier implements PromisorInterface {
      * @throws InvalidArgumentException
      */
     public function __construct(
-    S3ClientInterface $client, array $source, array $destination, $acl = 'private', array $options = []
+        S3ClientInterface $client,
+        array $source,
+        array $destination,
+        $acl = 'private',
+        array $options = []
     ) {
         $this->validateLocation($source);
         $this->validateLocation($destination);
@@ -70,21 +74,27 @@ class ObjectCopier implements PromisorInterface {
      * fulfilled with the result of the CompleteMultipartUpload or CopyObject
      * operation or rejected with an exception.
      */
-    public function promise() {
+    public function promise()
+    {
         return \GuzzleHttp\Promise\coroutine(function () {
             $headObjectCommand = $this->client->getCommand(
-                    'HeadObject', $this->options['params'] + $this->source
+                'HeadObject',
+                $this->options['params'] + $this->source
             );
             if (is_callable($this->options['before_lookup'])) {
                 $this->options['before_lookup']($headObjectCommand);
             }
             $objectStats = (yield $this->client->executeAsync(
-                            $headObjectCommand
+                $headObjectCommand
             ));
 
             if ($objectStats['ContentLength'] > $this->options['mup_threshold']) {
                 $mup = new MultipartCopy(
-                        $this->client, $this->getSourcePath(), ['source_metadata' => $objectStats, 'acl' => $this->acl] + $this->destination + $this->options
+                    $this->client,
+                    $this->getSourcePath(),
+                    ['source_metadata' => $objectStats, 'acl' => $this->acl]
+                        + $this->destination
+                        + $this->options
                 );
 
                 yield $mup->promise();
@@ -95,10 +105,11 @@ class ObjectCopier implements PromisorInterface {
                     'CopySource' => $this->getSourcePath(),
                 ];
 
-                $params = array_diff_key($this->options, self::$defaults) + $this->destination + $defaults + $this->options['params'];
+                $params = array_diff_key($this->options, self::$defaults)
+                    + $this->destination + $defaults + $this->options['params'];
 
                 yield $this->client->executeAsync(
-                                $this->client->getCommand('CopyObject', $params)
+                    $this->client->getCommand('CopyObject', $params)
                 );
             }
         });
@@ -113,25 +124,27 @@ class ObjectCopier implements PromisorInterface {
      * @throws S3Exception
      * @throws MultipartUploadException
      */
-    public function copy() {
+    public function copy()
+    {
         return $this->promise()->wait();
     }
 
-    private function validateLocation(array $location) {
+    private function validateLocation(array $location)
+    {
         if (empty($location['Bucket']) || empty($location['Key'])) {
             throw new \InvalidArgumentException('Locations provided to an'
-            . ' Aws\S3\ObjectCopier must have a non-empty Bucket and Key');
+                . ' Aws\S3\ObjectCopier must have a non-empty Bucket and Key');
         }
     }
 
-    private function getSourcePath() {
+    private function getSourcePath()
+    {
         $sourcePath = "/{$this->source['Bucket']}/"
-                . rawurlencode($this->source['Key']);
+            . rawurlencode($this->source['Key']);
         if (isset($this->source['VersionId'])) {
             $sourcePath .= "?versionId={$this->source['VersionId']}";
         }
 
         return $sourcePath;
     }
-
 }

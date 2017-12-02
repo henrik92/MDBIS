@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\CostandUsageReportService;
 
 use Aws\AwsClient;
@@ -13,6 +12,4 @@ use Aws\AwsClient;
  * @method \Aws\Result putReportDefinition(array $args = [])
  * @method \GuzzleHttp\Promise\Promise putReportDefinitionAsync(array $args = [])
  */
-class CostandUsageReportServiceClient extends AwsClient {
-    
-}
+class CostandUsageReportServiceClient extends AwsClient {}

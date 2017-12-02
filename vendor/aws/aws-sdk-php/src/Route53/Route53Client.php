@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Route53;
 
 use Aws\AwsClient;
@@ -47,6 +46,8 @@ use Psr\Http\Message\RequestInterface;
  * @method \GuzzleHttp\Promise\Promise deleteVPCAssociationAuthorizationAsync(array $args = [])
  * @method \Aws\Result disassociateVPCFromHostedZone(array $args = [])
  * @method \GuzzleHttp\Promise\Promise disassociateVPCFromHostedZoneAsync(array $args = [])
+ * @method \Aws\Result getAccountLimit(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getAccountLimitAsync(array $args = [])
  * @method \Aws\Result getChange(array $args = [])
  * @method \GuzzleHttp\Promise\Promise getChangeAsync(array $args = [])
  * @method \Aws\Result getCheckerIpRanges(array $args = [])
@@ -65,10 +66,14 @@ use Psr\Http\Message\RequestInterface;
  * @method \GuzzleHttp\Promise\Promise getHostedZoneAsync(array $args = [])
  * @method \Aws\Result getHostedZoneCount(array $args = [])
  * @method \GuzzleHttp\Promise\Promise getHostedZoneCountAsync(array $args = [])
+ * @method \Aws\Result getHostedZoneLimit(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getHostedZoneLimitAsync(array $args = [])
  * @method \Aws\Result getQueryLoggingConfig(array $args = [])
  * @method \GuzzleHttp\Promise\Promise getQueryLoggingConfigAsync(array $args = [])
  * @method \Aws\Result getReusableDelegationSet(array $args = [])
  * @method \GuzzleHttp\Promise\Promise getReusableDelegationSetAsync(array $args = [])
+ * @method \Aws\Result getReusableDelegationSetLimit(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getReusableDelegationSetLimitAsync(array $args = [])
  * @method \Aws\Result getTrafficPolicy(array $args = [])
  * @method \GuzzleHttp\Promise\Promise getTrafficPolicyAsync(array $args = [])
  * @method \Aws\Result getTrafficPolicyInstance(array $args = [])
@@ -116,14 +121,16 @@ use Psr\Http\Message\RequestInterface;
  * @method \Aws\Result updateTrafficPolicyInstance(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateTrafficPolicyInstanceAsync(array $args = [])
  */
-class Route53Client extends AwsClient {
-
-    public function __construct(array $args) {
+class Route53Client extends AwsClient
+{
+    public function __construct(array $args)
+    {
         parent::__construct($args);
         $this->getHandlerList()->appendInit($this->cleanIdFn(), 'route53.clean_id');
     }
 
-    private function cleanIdFn() {
+    private function cleanIdFn()
+    {
         return function (callable $handler) {
             return function (CommandInterface $c, RequestInterface $r = null) use ($handler) {
                 foreach (['Id', 'HostedZoneId', 'DelegationSetId'] as $clean) {
@@ -136,10 +143,10 @@ class Route53Client extends AwsClient {
         };
     }
 
-    private function cleanId($id) {
+    private function cleanId($id)
+    {
         static $toClean = ['/hostedzone/', '/change/', '/delegationset/'];
 
         return str_replace($toClean, '', $id);
     }
-
 }

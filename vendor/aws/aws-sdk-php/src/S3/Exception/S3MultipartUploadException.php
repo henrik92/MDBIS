@@ -1,19 +1,16 @@
 <?php
-
 namespace Aws\S3\Exception;
 
 use Aws\CommandInterface;
 use Aws\Exception\AwsException;
 use Aws\Multipart\UploadState;
 
-class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException {
-
+class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException
+{
     /** @var string Bucket of the transfer object */
     private $bucket;
-
     /** @var string Key of the transfer object */
     private $key;
-
     /** @var string Source file name of the transfer object */
     private $filename;
 
@@ -26,7 +23,7 @@ class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException
      *                                the MultipartUpload process.
      */
     public function __construct(UploadState $state, $prev = null) {
-        if (is_array($prev) && $error = each($prev)[1]) {
+        if (is_array($prev) && $error = $prev[key($prev)]) {
             $this->collectPathInfo($error->getCommand());
         } elseif ($prev instanceof AwsException) {
             $this->collectPathInfo($prev->getCommand());
@@ -40,7 +37,8 @@ class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException
      * @return string|null Returns null when 'Bucket' information
      *                     is unavailable.
      */
-    public function getBucket() {
+    public function getBucket()
+    {
         return $this->bucket;
     }
 
@@ -50,7 +48,8 @@ class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException
      * @return string|null Returns null when 'Key' information
      *                     is unavailable.
      */
-    public function getKey() {
+    public function getKey()
+    {
         return $this->key;
     }
 
@@ -60,7 +59,8 @@ class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException
      * @return string|null Returns null when metadata of the stream
      *                     wrapped in 'Body' parameter is unavailable.
      */
-    public function getSourceFileName() {
+    public function getSourceFileName()
+    {
         return $this->filename;
     }
 
@@ -69,7 +69,8 @@ class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException
      *
      * @param CommandInterface $cmd
      */
-    private function collectPathInfo(CommandInterface $cmd) {
+    private function collectPathInfo(CommandInterface $cmd)
+    {
         if (empty($this->bucket) && isset($cmd['Bucket'])) {
             $this->bucket = $cmd['Bucket'];
         }
@@ -80,5 +81,4 @@ class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException
             $this->filename = $cmd['Body']->getMetadata('uri');
         }
     }
-
 }

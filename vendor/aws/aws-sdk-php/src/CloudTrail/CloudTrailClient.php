@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\CloudTrail;
 
 use Aws\AwsClient;
@@ -36,6 +35,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateTrail(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateTrailAsync(array $args = [])
  */
-class CloudTrailClient extends AwsClient {
-    
-}
+class CloudTrailClient extends AwsClient {}

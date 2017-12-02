@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Organizations;
 
 use Aws\AwsClient;
@@ -42,8 +41,12 @@ use Aws\AwsClient;
  * @method \GuzzleHttp\Promise\Promise describePolicyAsync(array $args = [])
  * @method \Aws\Result detachPolicy(array $args = [])
  * @method \GuzzleHttp\Promise\Promise detachPolicyAsync(array $args = [])
+ * @method \Aws\Result disableAWSServiceAccess(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise disableAWSServiceAccessAsync(array $args = [])
  * @method \Aws\Result disablePolicyType(array $args = [])
  * @method \GuzzleHttp\Promise\Promise disablePolicyTypeAsync(array $args = [])
+ * @method \Aws\Result enableAWSServiceAccess(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise enableAWSServiceAccessAsync(array $args = [])
  * @method \Aws\Result enableAllFeatures(array $args = [])
  * @method \GuzzleHttp\Promise\Promise enableAllFeaturesAsync(array $args = [])
  * @method \Aws\Result enablePolicyType(array $args = [])
@@ -52,6 +55,8 @@ use Aws\AwsClient;
  * @method \GuzzleHttp\Promise\Promise inviteAccountToOrganizationAsync(array $args = [])
  * @method \Aws\Result leaveOrganization(array $args = [])
  * @method \GuzzleHttp\Promise\Promise leaveOrganizationAsync(array $args = [])
+ * @method \Aws\Result listAWSServiceAccessForOrganization(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listAWSServiceAccessForOrganizationAsync(array $args = [])
  * @method \Aws\Result listAccounts(array $args = [])
  * @method \GuzzleHttp\Promise\Promise listAccountsAsync(array $args = [])
  * @method \Aws\Result listAccountsForParent(array $args = [])
@@ -85,6 +90,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updatePolicy(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updatePolicyAsync(array $args = [])
  */
-class OrganizationsClient extends AwsClient {
-    
-}
+class OrganizationsClient extends AwsClient {}

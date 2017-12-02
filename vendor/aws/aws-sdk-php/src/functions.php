@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws;
 
 use Psr\Http\Message\RequestInterface;
@@ -17,10 +16,9 @@ use GuzzleHttp\Promise\FulfilledPromise;
  *
  * @return callable
  */
-function constantly($value) {
-    return function () use ($value) {
-        return $value;
-    };
+function constantly($value)
+{
+    return function () use ($value) { return $value; };
 }
 
 /**
@@ -31,7 +29,8 @@ function constantly($value) {
  *
  * @return \Generator
  */
-function filter($iterable, callable $pred) {
+function filter($iterable, callable $pred)
+{
     foreach ($iterable as $value) {
         if ($pred($value)) {
             yield $value;
@@ -47,7 +46,8 @@ function filter($iterable, callable $pred) {
  *
  * @return \Generator
  */
-function map($iterable, callable $f) {
+function map($iterable, callable $f)
+{
     foreach ($iterable as $value) {
         yield $f($value);
     }
@@ -63,7 +63,8 @@ function map($iterable, callable $f) {
  *
  * @return \Generator
  */
-function flatmap($iterable, callable $f) {
+function flatmap($iterable, callable $f)
+{
     foreach (map($iterable, $f) as $outer) {
         foreach ($outer as $inner) {
             yield $inner;
@@ -79,7 +80,8 @@ function flatmap($iterable, callable $f) {
  *
  * @return \Generator
  */
-function partition($iterable, $size) {
+function partition($iterable, $size)
+{
     $buffer = [];
     foreach ($iterable as $value) {
         $buffer[] = $value;
@@ -107,7 +109,8 @@ function partition($iterable, $size) {
  *
  * @return callable
  */
-function or_chain() {
+function or_chain()
+{
     $fns = func_get_args();
     return function () use ($fns) {
         $args = func_get_args();
@@ -136,14 +139,15 @@ function or_chain() {
  * @return mixed Returns the JSON decoded data. Note that JSON objects are
  *     decoded as associative arrays.
  */
-function load_compiled_json($path) {
+function load_compiled_json($path)
+{
     if ($compiled = @include("$path.php")) {
         return $compiled;
     }
 
     if (!file_exists($path)) {
         throw new \InvalidArgumentException(
-        sprintf("File not found: %s", $path)
+            sprintf("File not found: %s", $path)
         );
     }
 
@@ -153,7 +157,8 @@ function load_compiled_json($path) {
 /**
  * No-op
  */
-function clear_compiled_json() {
+function clear_compiled_json()
+{
     // pass
 }
 
@@ -169,7 +174,8 @@ function clear_compiled_json() {
  *
  * @return \Generator Yields relative filename strings.
  */
-function dir_iterator($path, $context = null) {
+function dir_iterator($path, $context = null)
+{
     $dh = $context ? opendir($path, $context) : opendir($path);
     if (!$dh) {
         throw new \InvalidArgumentException('File not found: ' . $path);
@@ -192,7 +198,8 @@ function dir_iterator($path, $context = null) {
  *
  * @return \Generator Yields absolute filenames.
  */
-function recursive_dir_iterator($path, $context = null) {
+function recursive_dir_iterator($path, $context = null)
+{
     $invalid = ['.' => true, '..' => true];
     $pathLen = strlen($path) + 1;
     $iterator = dir_iterator($path, $context);
@@ -209,9 +216,10 @@ function recursive_dir_iterator($path, $context = null) {
             if (is_dir($fullPath)) {
                 $queue[] = $iterator;
                 $iterator = map(
-                        dir_iterator($fullPath, $context), function ($file) use ($fullPath, $pathLen) {
-                    return substr("{$fullPath}/{$file}", $pathLen);
-                }
+                    dir_iterator($fullPath, $context),
+                    function ($file) use ($fullPath, $pathLen) {
+                        return substr("{$fullPath}/{$file}", $pathLen);
+                    }
                 );
                 continue;
             }
@@ -232,7 +240,8 @@ function recursive_dir_iterator($path, $context = null) {
  * @return string Returns a string containing the type of the variable and
  *                if a class is provided, the class name.
  */
-function describe_type($input) {
+function describe_type($input)
+{
     switch (gettype($input)) {
         case 'object':
             return 'object(' . get_class($input) . ')';
@@ -251,7 +260,8 @@ function describe_type($input) {
  *
  * @return callable
  */
-function default_http_handler() {
+function default_http_handler()
+{
     $version = (string) ClientInterface::VERSION;
     if ($version[0] === '5') {
         return new \Aws\Handler\GuzzleV5\GuzzleHandler();
@@ -272,22 +282,23 @@ function default_http_handler() {
  * @return RequestInterface
  * @throws \RuntimeException
  */
-function serialize(CommandInterface $command) {
+function serialize(CommandInterface $command)
+{
     $request = null;
     $handlerList = $command->getHandlerList();
 
     // Return a mock result.
     $handlerList->setHandler(
-            function (CommandInterface $_, RequestInterface $r) use (&$request) {
-        $request = $r;
-        return new FulfilledPromise(new Result([]));
-    }
+        function (CommandInterface $_, RequestInterface $r) use (&$request) {
+            $request = $r;
+            return new FulfilledPromise(new Result([]));
+        }
     );
 
     call_user_func($handlerList->resolve(), $command)->wait();
     if (!$request instanceof RequestInterface) {
         throw new \RuntimeException(
-        'Calling handler did not serialize request'
+            'Calling handler did not serialize request'
         );
     }
 
@@ -306,7 +317,8 @@ function serialize(CommandInterface $command) {
  * @return array
  * @throws \InvalidArgumentException if the service is not supported.
  */
-function manifest($service = null) {
+function manifest($service = null)
+{
     // Load the manifest and create aliases for lowercased namespaces
     static $manifest = [];
     static $aliases = [];
@@ -333,7 +345,7 @@ function manifest($service = null) {
         return manifest($aliases[$service]);
     } else {
         throw new \InvalidArgumentException(
-        "The service \"{$service}\" is not provided by the AWS SDK for PHP."
+            "The service \"{$service}\" is not provided by the AWS SDK for PHP."
         );
     }
 }

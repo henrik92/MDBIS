@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Glue;
 
 use Aws\AwsClient;
@@ -16,6 +15,8 @@ use Aws\AwsClient;
  * @method \GuzzleHttp\Promise\Promise batchDeleteTableAsync(array $args = [])
  * @method \Aws\Result batchGetPartition(array $args = [])
  * @method \GuzzleHttp\Promise\Promise batchGetPartitionAsync(array $args = [])
+ * @method \Aws\Result batchStopJobRun(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise batchStopJobRunAsync(array $args = [])
  * @method \Aws\Result createClassifier(array $args = [])
  * @method \GuzzleHttp\Promise\Promise createClassifierAsync(array $args = [])
  * @method \Aws\Result createConnection(array $args = [])
@@ -155,6 +156,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateUserDefinedFunction(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateUserDefinedFunctionAsync(array $args = [])
  */
-class GlueClient extends AwsClient {
-    
-}
+class GlueClient extends AwsClient {}

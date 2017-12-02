@@ -1,11 +1,11 @@
 <?php
-
 namespace Aws\CloudFront;
 
-class CookieSigner {
-
+class CookieSigner
+{
     /** @var Signer */
     private $signer;
+
     private static $schemes = [
         'http' => true,
         'https' => true,
@@ -18,7 +18,8 @@ class CookieSigner {
      * @throws \RuntimeException if the openssl extension is missing
      * @throws \InvalidArgumentException if the private key cannot be found.
      */
-    public function __construct($keyPairId, $privateKey) {
+    public function __construct($keyPairId, $privateKey)
+    {
         $this->signer = new Signer($keyPairId, $privateKey);
     }
 
@@ -39,7 +40,8 @@ class CookieSigner {
      * @throws \InvalidArgumentException if the URL provided is invalid
      * @link http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-signed-cookies.html
      */
-    public function getSignedCookie($url = null, $expires = null, $policy = null) {
+    public function getSignedCookie($url = null, $expires = null, $policy = null)
+    {
         if ($url) {
             $this->validateUrl($url);
         }
@@ -53,11 +55,11 @@ class CookieSigner {
         return $cookieParameters;
     }
 
-    private function validateUrl($url) {
+    private function validateUrl($url)
+    {
         $scheme = str_replace('*', '', explode('://', $url)[0]);
         if (empty(self::$schemes[strtolower($scheme)])) {
             throw new \InvalidArgumentException('Invalid or missing URI scheme');
         }
     }
-
 }

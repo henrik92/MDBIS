@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Route53Domains;
 
 use Aws\AwsClient;
@@ -56,6 +55,4 @@ use Aws\AwsClient;
  * @method \Aws\Result viewBilling(array $args = [])
  * @method \GuzzleHttp\Promise\Promise viewBillingAsync(array $args = [])
  */
-class Route53DomainsClient extends AwsClient {
-    
-}
+class Route53DomainsClient extends AwsClient {}

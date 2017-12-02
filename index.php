@@ -36,8 +36,8 @@ and open the template in the editor.
         if (isset($_GET["site"])) {
             $site = $_GET["site"];
             if (strlen($site) != 0) {
-                if ($site == "top10")
-                    $incFile = "src/view/top10.php";
+                if ($site == "top_movies")
+                    $incFile = "src/view/top_movies.php";
                 
                 if ($site == "all")
                     $incFile = "src/view/all.php";

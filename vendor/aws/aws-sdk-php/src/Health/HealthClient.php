@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Health;
 
 use Aws\AwsClient;
@@ -19,6 +18,4 @@ use Aws\AwsClient;
  * @method \Aws\Result describeEvents(array $args = [])
  * @method \GuzzleHttp\Promise\Promise describeEventsAsync(array $args = [])
  */
-class HealthClient extends AwsClient {
-    
-}
+class HealthClient extends AwsClient {}

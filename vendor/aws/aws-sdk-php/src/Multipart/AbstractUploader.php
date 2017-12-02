@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Multipart;
 
 use Aws\AwsClientInterface as Client;
@@ -7,8 +6,8 @@ use GuzzleHttp\Psr7;
 use InvalidArgumentException as IAE;
 use Psr\Http\Message\StreamInterface as Stream;
 
-abstract class AbstractUploader extends AbstractUploadManager {
-
+abstract class AbstractUploader extends AbstractUploadManager
+{
     /** @var Stream Source of the data to be uploaded. */
     protected $source;
 
@@ -17,7 +16,8 @@ abstract class AbstractUploader extends AbstractUploadManager {
      * @param mixed  $source
      * @param array  $config
      */
-    public function __construct(Client $client, $source, array $config = []) {
+    public function __construct(Client $client, $source, array $config = [])
+    {
         $this->source = $this->determineSource($source);
         parent::__construct($client, $config);
     }
@@ -30,16 +30,21 @@ abstract class AbstractUploader extends AbstractUploadManager {
      *
      * @return Psr7\LimitStream
      */
-    protected function limitPartStream(Stream $stream) {
+    protected function limitPartStream(Stream $stream)
+    {
         // Limit what is read from the stream to the part size.
         return new Psr7\LimitStream(
-                $stream, $this->state->getPartSize(), $this->source->tell()
+            $stream,
+            $this->state->getPartSize(),
+            $this->source->tell()
         );
     }
 
-    protected function getUploadCommands(callable $resultHandler) {
+    protected function getUploadCommands(callable $resultHandler)
+    {
         // Determine if the source can be seeked.
-        $seekable = $this->source->isSeekable() && $this->source->getMetadata('wrapper_type') === 'plainfile';
+        $seekable = $this->source->isSeekable()
+            && $this->source->getMetadata('wrapper_type') === 'plainfile';
 
         for ($partNumber = 1; $this->isEof($seekable); $partNumber++) {
             // If we haven't already uploaded this part, yield a new part.
@@ -49,7 +54,8 @@ abstract class AbstractUploader extends AbstractUploadManager {
                     break;
                 }
                 $command = $this->client->getCommand(
-                        $this->info['command']['upload'], $data + $this->state->getId()
+                    $this->info['command']['upload'],
+                    $data + $this->state->getId()
                 );
                 $command->getHandlerList()->appendSign($resultHandler, 'mup');
                 yield $command;
@@ -61,7 +67,8 @@ abstract class AbstractUploader extends AbstractUploadManager {
             // Advance the source's offset if not already advanced.
             if ($seekable) {
                 $this->source->seek(min(
-                                $this->source->tell() + $this->state->getPartSize(), $this->source->getSize()
+                    $this->source->tell() + $this->state->getPartSize(),
+                    $this->source->getSize()
                 ));
             } else {
                 $this->source->read($this->state->getPartSize());
@@ -87,8 +94,11 @@ abstract class AbstractUploader extends AbstractUploadManager {
      *
      * @return bool
      */
-    private function isEof($seekable) {
-        return $seekable ? $this->source->tell() < $this->source->getSize() : !$this->source->eof();
+    private function isEof($seekable)
+    {
+        return $seekable
+            ? $this->source->tell() < $this->source->getSize()
+            : !$this->source->eof();
     }
 
     /**
@@ -101,7 +111,8 @@ abstract class AbstractUploader extends AbstractUploadManager {
      *
      * @return Stream
      */
-    private function determineSource($source) {
+    private function determineSource($source)
+    {
         // Use the contents of a file as the data source.
         if (is_string($source)) {
             $source = Psr7\try_fopen($source, 'r');
@@ -115,5 +126,4 @@ abstract class AbstractUploader extends AbstractUploadManager {
 
         return $stream;
     }
-
 }

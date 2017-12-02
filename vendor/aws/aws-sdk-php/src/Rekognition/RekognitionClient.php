@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Rekognition;
 
 use Aws\AwsClient;
@@ -20,6 +19,8 @@ use Aws\AwsClient;
  * @method \GuzzleHttp\Promise\Promise detectLabelsAsync(array $args = [])
  * @method \Aws\Result detectModerationLabels(array $args = [])
  * @method \GuzzleHttp\Promise\Promise detectModerationLabelsAsync(array $args = [])
+ * @method \Aws\Result detectText(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise detectTextAsync(array $args = [])
  * @method \Aws\Result getCelebrityInfo(array $args = [])
  * @method \GuzzleHttp\Promise\Promise getCelebrityInfoAsync(array $args = [])
  * @method \Aws\Result indexFaces(array $args = [])
@@ -35,6 +36,4 @@ use Aws\AwsClient;
  * @method \Aws\Result searchFacesByImage(array $args = [])
  * @method \GuzzleHttp\Promise\Promise searchFacesByImageAsync(array $args = [])
  */
-class RekognitionClient extends AwsClient {
-    
-}
+class RekognitionClient extends AwsClient {}

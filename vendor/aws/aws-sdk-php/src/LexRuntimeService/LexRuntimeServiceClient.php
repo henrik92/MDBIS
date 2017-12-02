@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\LexRuntimeService;
 
 use Aws\AwsClient;
@@ -11,6 +10,4 @@ use Aws\AwsClient;
  * @method \Aws\Result postText(array $args = [])
  * @method \GuzzleHttp\Promise\Promise postTextAsync(array $args = [])
  */
-class LexRuntimeServiceClient extends AwsClient {
-    
-}
+class LexRuntimeServiceClient extends AwsClient {}

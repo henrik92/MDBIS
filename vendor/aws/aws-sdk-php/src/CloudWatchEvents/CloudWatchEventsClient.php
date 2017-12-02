@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\CloudWatchEvents;
 
 use Aws\AwsClient;
@@ -38,6 +37,4 @@ use Aws\AwsClient;
  * @method \Aws\Result testEventPattern(array $args = [])
  * @method \GuzzleHttp\Promise\Promise testEventPatternAsync(array $args = [])
  */
-class CloudWatchEventsClient extends AwsClient {
-    
-}
+class CloudWatchEventsClient extends AwsClient {}

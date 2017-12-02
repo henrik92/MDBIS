@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Rds;
 
 use Aws\Credentials\CredentialsInterface;
@@ -13,7 +12,8 @@ use Aws;
 /**
  * Generates RDS auth tokens for use with IAM authentication.
  */
-class AuthTokenGenerator {
+class AuthTokenGenerator
+{
 
     private $credentialProvider;
 
@@ -22,7 +22,8 @@ class AuthTokenGenerator {
      *
      * @param callable|Credentials $creds
      */
-    public function __construct($creds) {
+    public function __construct($creds)
+    {
         if ($creds instanceof CredentialsInterface) {
             $promise = new Promise\FulfilledPromise($creds);
             $this->credentialProvider = Aws\constantly($promise);
@@ -41,7 +42,8 @@ class AuthTokenGenerator {
      *
      * @return string Token generated
      */
-    public function createToken($endpoint, $region, $username) {
+    public function createToken($endpoint, $region, $username)
+    {
         $uri = new Uri($endpoint);
         $uri = $uri->withPath('/');
         $uri = $uri->withQuery('Action=connect&DBUser=' . $username);
@@ -51,11 +53,12 @@ class AuthTokenGenerator {
         $provider = $this->credentialProvider;
 
         $url = (string) $signer->presign(
-                        $request, $provider()->wait(), '+15 minutes'
-                )->getUri();
+            $request,
+            $provider()->wait(),
+            '+15 minutes'
+        )->getUri();
 
         // Remove 2 extra slash from the presigned url result
         return substr($url, 2);
     }
-
 }

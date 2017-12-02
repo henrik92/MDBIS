@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Endpoint;
 
 use Aws\Exception\UnresolvedEndpointException;
@@ -45,8 +44,8 @@ use Aws\Exception\UnresolvedEndpointException;
  *     $config['region'] = 'us-west-2';
  *     $res = $c($config); // $b handles this.
  */
-class EndpointProvider {
-
+class EndpointProvider
+{
     /**
      * Resolves and endpoint provider and ensures a non-null return value.
      *
@@ -56,17 +55,18 @@ class EndpointProvider {
      * @return array
      * @throws UnresolvedEndpointException
      */
-    public static function resolve(callable $provider, array $args = []) {
+    public static function resolve(callable $provider, array $args = [])
+    {
         $result = $provider($args);
         if (is_array($result)) {
             return $result;
         }
 
         throw new UnresolvedEndpointException(
-        'Unable to resolve an endpoint using the provider arguments: '
-        . json_encode($args) . '. Note: you can provide an "endpoint" '
-        . 'option to a client constructor to bypass invoking an endpoint '
-        . 'provider.');
+            'Unable to resolve an endpoint using the provider arguments: '
+            . json_encode($args) . '. Note: you can provide an "endpoint" '
+            . 'option to a client constructor to bypass invoking an endpoint '
+            . 'provider.');
     }
 
     /**
@@ -76,7 +76,8 @@ class EndpointProvider {
      *
      * @return callable
      */
-    public static function defaultProvider() {
+    public static function defaultProvider()
+    {
         return PartitionEndpointProvider::defaultProvider();
     }
 
@@ -88,8 +89,8 @@ class EndpointProvider {
      *
      * @return callable
      */
-    public static function patterns(array $patterns) {
+    public static function patterns(array $patterns)
+    {
         return new PatternEndpointProvider($patterns);
     }
-
 }

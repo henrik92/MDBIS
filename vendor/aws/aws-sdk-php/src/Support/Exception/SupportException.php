@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Support\Exception;
 
 use Aws\Exception\AwsException;
@@ -7,6 +6,4 @@ use Aws\Exception\AwsException;
 /**
  * AWS Support service exception.
  */
-class SupportException extends AwsException {
-    
-}
+class SupportException extends AwsException {}

@@ -1,17 +1,17 @@
 <?php
-
 namespace Aws\Api;
 
 /**
  * Represents an API operation.
  */
-class Operation extends AbstractModel {
-
+class Operation extends AbstractModel
+{
     private $input;
     private $output;
     private $errors;
 
-    public function __construct(array $definition, ShapeMap $shapeMap) {
+    public function __construct(array $definition, ShapeMap $shapeMap)
+    {
         $definition['type'] = 'structure';
 
         if (!isset($definition['http']['method'])) {
@@ -33,7 +33,8 @@ class Operation extends AbstractModel {
      *
      * @return array
      */
-    public function getHttp() {
+    public function getHttp()
+    {
         return $this->definition['http'];
     }
 
@@ -42,7 +43,8 @@ class Operation extends AbstractModel {
      *
      * @return StructureShape
      */
-    public function getInput() {
+    public function getInput()
+    {
         if (!$this->input) {
             if ($input = $this['input']) {
                 $this->input = $this->shapeFor($input);
@@ -59,7 +61,8 @@ class Operation extends AbstractModel {
      *
      * @return StructureShape
      */
-    public function getOutput() {
+    public function getOutput()
+    {
         if (!$this->output) {
             if ($output = $this['output']) {
                 $this->output = $this->shapeFor($output);
@@ -76,7 +79,8 @@ class Operation extends AbstractModel {
      *
      * @return Shape[]
      */
-    public function getErrors() {
+    public function getErrors()
+    {
         if ($this->errors === null) {
             if ($errors = $this['errors']) {
                 foreach ($errors as $key => $error) {
@@ -90,5 +94,4 @@ class Operation extends AbstractModel {
 
         return $this->errors;
     }
-
 }

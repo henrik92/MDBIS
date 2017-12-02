@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\S3;
 
 use Aws\Api\Parser\AbstractParser;
@@ -12,8 +11,8 @@ use Psr\Http\Message\ResponseInterface;
  *
  * @internal
  */
-class AmbiguousSuccessParser extends AbstractParser {
-
+class AmbiguousSuccessParser extends AbstractParser
+{
     private static $ambiguousSuccesses = [
         'UploadPartCopy' => true,
         'CopyObject' => true,
@@ -22,15 +21,15 @@ class AmbiguousSuccessParser extends AbstractParser {
 
     /** @var callable */
     private $parser;
-
     /** @var callable */
     private $errorParser;
-
     /** @var string */
     private $exceptionClass;
 
     public function __construct(
-    callable $parser, callable $errorParser, $exceptionClass = AwsException::class
+        callable $parser,
+        callable $errorParser,
+        $exceptionClass = AwsException::class
     ) {
         $this->parser = $parser;
         $this->errorParser = $errorParser;
@@ -38,15 +37,19 @@ class AmbiguousSuccessParser extends AbstractParser {
     }
 
     public function __invoke(
-    CommandInterface $command, ResponseInterface $response
+        CommandInterface $command,
+        ResponseInterface $response
     ) {
-        if (200 === $response->getStatusCode() && isset(self::$ambiguousSuccesses[$command->getName()])
+        if (200 === $response->getStatusCode()
+            && isset(self::$ambiguousSuccesses[$command->getName()])
         ) {
             $errorParser = $this->errorParser;
             $parsed = $errorParser($response);
             if (isset($parsed['code']) && isset($parsed['message'])) {
                 throw new $this->exceptionClass(
-                $parsed['message'], $command, ['connection_error' => true]
+                    $parsed['message'],
+                    $command,
+                    ['connection_error' => true]
                 );
             }
         }
@@ -54,5 +57,4 @@ class AmbiguousSuccessParser extends AbstractParser {
         $fn = $this->parser;
         return $fn($command, $response);
     }
-
 }

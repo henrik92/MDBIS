@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\Greengrass;
 
 use Aws\AwsClient;
@@ -137,6 +136,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateSubscriptionDefinition(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateSubscriptionDefinitionAsync(array $args = [])
  */
-class GreengrassClient extends AwsClient {
-    
-}
+class GreengrassClient extends AwsClient {}

@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\StorageGateway;
 
 use Aws\AwsClient;
@@ -99,6 +98,8 @@ use Aws\AwsClient;
  * @method \GuzzleHttp\Promise\Promise listVolumeRecoveryPointsAsync(array $args = [])
  * @method \Aws\Result listVolumes(array $args = [])
  * @method \GuzzleHttp\Promise\Promise listVolumesAsync(array $args = [])
+ * @method \Aws\Result notifyWhenUploaded(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise notifyWhenUploadedAsync(array $args = [])
  * @method \Aws\Result refreshCache(array $args = [])
  * @method \GuzzleHttp\Promise\Promise refreshCacheAsync(array $args = [])
  * @method \Aws\Result removeTagsFromResource(array $args = [])
@@ -132,6 +133,4 @@ use Aws\AwsClient;
  * @method \Aws\Result updateVTLDeviceType(array $args = [])
  * @method \GuzzleHttp\Promise\Promise updateVTLDeviceTypeAsync(array $args = [])
  */
-class StorageGatewayClient extends AwsClient {
-    
-}
+class StorageGatewayClient extends AwsClient {}

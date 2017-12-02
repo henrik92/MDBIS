@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\CognitoIdentityProvider;
 
 use Aws\AwsClient;
@@ -174,6 +173,4 @@ use Aws\AwsClient;
  * @method \Aws\Result verifyUserAttribute(array $args = [])
  * @method \GuzzleHttp\Promise\Promise verifyUserAttributeAsync(array $args = [])
  */
-class CognitoIdentityProviderClient extends AwsClient {
-    
-}
+class CognitoIdentityProviderClient extends AwsClient {}

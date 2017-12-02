@@ -1,5 +1,4 @@
 <?php
-
 namespace Aws\ElastiCache;
 
 use Aws\AwsClient;
@@ -73,6 +72,8 @@ use Aws\AwsClient;
  * @method \GuzzleHttp\Promise\Promise modifyCacheSubnetGroupAsync(array $args = [])
  * @method \Aws\Result modifyReplicationGroup(array $args = [])
  * @method \GuzzleHttp\Promise\Promise modifyReplicationGroupAsync(array $args = [])
+ * @method \Aws\Result modifyReplicationGroupShardConfiguration(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise modifyReplicationGroupShardConfigurationAsync(array $args = [])
  * @method \Aws\Result purchaseReservedCacheNodesOffering(array $args = [])
  * @method \GuzzleHttp\Promise\Promise purchaseReservedCacheNodesOfferingAsync(array $args = [])
  * @method \Aws\Result rebootCacheCluster(array $args = [])
@@ -86,6 +87,4 @@ use Aws\AwsClient;
  * @method \Aws\Result testFailover(array $args = [])
  * @method \GuzzleHttp\Promise\Promise testFailoverAsync(array $args = [])
  */
-class ElastiCacheClient extends AwsClient {
-    
-}
+class ElastiCacheClient extends AwsClient {}
