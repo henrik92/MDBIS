@@ -1,15 +1,19 @@
-<?php
-    require $_SERVER["DOCUMENT_ROOT"] . '/vendor/autoload.php';
-    use Elasticsearch\ClientBuilder;
-    
+<?php 
+require $_SERVER["DOCUMENT_ROOT"] . '/vendor/autoload.php';
+require $_SERVER["DOCUMENT_ROOT"] . '/cfg/es_config.php';
+use Elasticsearch\ClientBuilder;
+
 class elastic {
-        
-    public function __construct($hosts) {
+    
+        function __construct($hosts) {
         $clientBuilder = ClientBuilder::create();   // Instantiate a new ClientBuilder
         $clientBuilder->setHosts($hosts);           // Set the hosts
-        $client = $clientBuilder->build(); 
+        $es_client = $clientBuilder->build(); 
     }
     
-    
+function getSuggestions ($params){
+    $result = $es_client->search($params);
+    return $result; 
+}
     
 }

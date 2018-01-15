@@ -1,4 +1,4 @@
-<!--SEARCH-->
+<!--SEARCHFIELD-->
 <div class="container text-center top-distance">
     <h2>Rate your favourite movie</h2><br>
     <form id="search" action="" method="post">
@@ -9,41 +9,65 @@
     <hr>
 </div>
 
-<!--VALIDATE INPUT-->
+<!--SEARCH-SUGGESTIONS-->
 <?php
 if (!empty($_POST['title']) and isset($_POST["submit_search"])) {
 
-    $title = ucwords(strtolower($_POST['title']));
-    
-    /*ELASTICSEARCH*/
+    $es_title = ucwords(strtolower($_POST['title']));
+
+    /* ELASTICSEARCH */
     require 'lib/es_config.php';
 
-if(isset($title)){
-$params = [
-    'index' => 'movies',
-    'type' => 'movie',
-    'body' => [
-        'query' => [
-            'match' => [
-                'title' => $title
+
+    if (isset($es_title)) {
+        $params = [
+            'index' => 'movies',
+            'type' => 'movie',
+            'body' => [
+                'query' => [
+                    'match' => [
+                        'title' => $es_title
+                    ]
+                ]
             ]
-        ]
-    ]
-];
+        ];
+        $results = $elastic_client->search($params);
+    }
 
-$results = $es_client->search($params);
+    if (!empty($results)) {
+        ?>
+        <div class="container text-center" id="suggestion">
+            <h4>After hard searching we found a total of <?php echo $results['hits']['total'] ?> hits for your search request: <b>"<?php echo $es_title; ?>"</b>:</h4><br>
+            <ul>
+                <?php
+                for ($i = 0; $i < $results['hits']['total']; $i++) {
+                    $elastic_title = $results['hits']['hits'][$i]['_source']['title'];
+                    echo '<li><a href="index.php?site=rating&movie=' . $elastic_title . '">' . $elastic_title . '</a></li>';
+                }
+                ?> 
+            </ul>
+        </div>
+    <?php
+    }
+} else if ($_SERVER['REQUEST_METHOD'] == "POST" and empty($_POST['title']) and isset($_POST["submit_search"])) {
+    ?>
+    <div class="container text-center">
+        <h4>Enter some title please.</h4>
+    </div>
+<?php
 }
-    
-    /*GET ITEMS FROM DYNAMODB*/
-    require 'lib/aws_config.php';
 
-    /* Get Parameters for Item */
+/* SHOW MOVIE INFORMATION */
+    // GET MOVIE INFORMATIONS FROM DATABASE
+if (isset($_GET['movie'])) {
+   require 'lib/aws_config.php';
+   
+    $db_title = $_GET['movie'];
     $tableName = 'Movies';
-    $error = "";
-
+    
     $key = $marshaler->marshalJson('
     {
-       "title": "' . $title . '"
+       "title": "' . $db_title . '"
     }
 ');
 
@@ -54,57 +78,19 @@ $results = $es_client->search($params);
 
     try {
         /* Get DynamoDB Item */
-        $result = $dynamodb->getItem($params);
-
-        if (empty($result['Item'])) {
-            ?>
-            <div class="container text-center">
-                <h4>Movie: <b>"<?php echo $title; ?>"</b> not found in our Collection. We are sorry :(</h4>
-                <?php 
-                $i = 0;
-                if(isset($result)){
-                while ($i < $results['hits']['total']) {
-                echo $results['hits']['hits'][$i]['_source']['title'];
-                echo '<br>';
-                $i++;
-            }
-        }
-                
-                ?>
-            </div>
-            <?php
-            $error = "Movie not found. Try again.";
-        } else {
-
+        $db_result = $dynamodb->getItem($params);
+    } catch(DynamoDbException $e) {
+     echo 'Cant pull Movie Informations out of Database . $e .';   
+    }
+        if (!empty($db_result['Item'])) {
             /* Unmarshal DynamoDB Item to JSON File */
-            $item = $marshaler->unmarshalJson($result['Item']);
+            $item = $marshaler->unmarshalJson($db_result['Item']);
             /* Convert JSON File to Array */
             $data = json_decode($item, true);
             ?>
-            <div class="container text-center">
-                <h4><u>Search result for "<b><?php echo $title ?>" : </b></u></h4>
-                <?php 
-                $i = 0;
-                if(isset($result)){
-                while ($i < $results['hits']['total']) {
-                echo $results['hits']['hits'][$i]['_source']['title'];
-                echo '<br>';
-                $i++;
-            }
-        }
-                
-                ?>
-            </div>
-            <?php
-        }
-    } catch (DynamoDbException $e) {
-        $error = "Unable to connect to Database. Ask the Admin for help.";
-    }
 
-    if ($error == "") {
-        ?>
 
-        <div class="container" style="background-color: lightgrey; border: 1px solid black; border-radius: 5px;">  
+<div class="container" id="<?php echo $_GET['movie'] ?>" style="background-color: lightgrey; border: 1px solid black; border-radius: 5px;">  
             <div class=" movie-view-image"> 
                 <img src="<?php echo $data['info']['image_url'] ?>" width="800" height="600"/>
             </div>
@@ -112,7 +98,7 @@ $results = $es_client->search($params);
                 <br>
                 <ul>
                     <li><h1><u><?php echo $data['title']; ?></u></h1></li>
-                    <li><p><b>Year:</b> <?php echo $data['year']; ?></p></li>
+                    <li><p><b>Year:</b> <?php echo $data['info']['year']; ?></p></li>
                     <li><p><b>Genre:</b> <?php echo implode(" , ", $data['info']['genres']); ?></p></li> 
                     <li><p><b>Actors:</b> <?php echo implode(" , ", $data['info']['actors']); ?></p></li> 
                     <li><p><b>Director:</b> <?php echo implode(" , ", $data['info']['directors']); ?></p></li> 
@@ -122,7 +108,12 @@ $results = $es_client->search($params);
             </div>
             <div class="movie-view-rating"> 
                 <br>
-                <h3>Rating: <b><?php echo $data['info']['rating']; ?> / 10 </b></h3>
+                <ul class="text-left">
+                    <li><h3><u>User-Rating:</u></h3></li>
+                    <li><h4>Score: <b><?php echo $data['rating']['rating_value']; ?> / 10 Stars</b></h4>
+                    <li><h4>Rank: #<b><?php echo $data['rating']['rating_rank']; ?></b></h4>
+                    <li><h4>Rated: <b><?php echo $data['rating']['rating_counter']; ?> times. </b></h4>
+                </ul>
                 <br>
                 <hr>
                 <form action="js/search_submit_rating.php" id="movie_rating" method="post">
@@ -135,6 +126,7 @@ $results = $es_client->search($params);
                 <b><h5 style="color:red;" id="result"></h5></b>
             </div>
         </div>
+
         <?php
         if (isset($_POST['movie_rating']) and isset($_POST['movie_title'])) {
             $rating = $_POST['movie_rating'];
@@ -169,11 +161,6 @@ $results = $es_client->search($params);
             echo "none";
         }
     }
-} elseif ($_SERVER['REQUEST_METHOD'] == "POST" and empty($_POST['title']) and isset($_POST["submit_search"])) {
-    ?>
-    <div class="container text-center">
-        <h4>Enter some title please.</h4>
-    </div>
 
-<?php } ?>
-                    
+}
+          
