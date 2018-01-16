@@ -10,7 +10,7 @@
     <h1>MDBIS Projekt</h1>
     <hr>
     <ul>
-        <li><h4>Lennard Gerdes - <b>xxxxxxxx</b></h4></li>
+        <li><h4>Lennard Gerdes - <b>6008663</b></h4></li>
         <li><h4>Henrik Weeken - <b>xxxxxxxx</b></h4></li>
         <li><h4>David Bregulla - <b>xxxxxxxx</b></h4></li>                
     </ul>
