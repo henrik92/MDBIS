@@ -35,12 +35,16 @@ if (!empty($_POST['title']) and isset($_POST["submit_search"])) {
     }
 
     if (!empty($results)) {
+        $count_results = 0;
+         for ($i = 0; !empty($results['hits']['hits'][$i]); $i++) {
+             $count_results += 1; 
+         }
         ?>
         <div class="container text-center" id="suggestion">
-            <h4>After hard searching we found a total of <?php echo $results['hits']['total'] ?> hits for your search request: <b>"<?php echo $es_title; ?>"</b>:</h4><br>
+            <h4>After hard searching we found a total of <?php echo $count_results ?> hits for your search request: <b>"<?php echo $es_title; ?>"</b>:</h4><br>
             <ul>
                 <?php
-                for ($i = 0; $i < $results['hits']['total']; $i++) {
+                for ($i = 0; !empty($results['hits']['hits'][$i]); $i++) {
                     $elastic_title = $results['hits']['hits'][$i]['_source']['title'];
                     echo '<li><a href="index.php?site=rating&movie=' . $elastic_title . '">' . $elastic_title . '</a></li>';
                 }

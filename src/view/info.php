@@ -15,3 +15,8 @@
         <li><h4>David Bregulla - <b>xxxxxxxx</b></h4></li>                
     </ul>
 </div>
+<div class="container text-center">
+    <p>Diese Seite wurde für das Projekt "Amazon Web Services" im Rahmen des Moduls "Moderne Datenbanken- und Informationssysteme" entwickelt.
+        Und dient als Anwendungsbeispiel zur Nutzung von AWS Diensten. 
+        </p>
+</div>
