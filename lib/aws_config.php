@@ -14,8 +14,8 @@ use Aws\DynamoDb\Marshaler;
     'version' => 'latest',
     'scheme' => 'http', 
     'credentials' => [
-        'key' => 'AKIAIG67QM6MABQ2DFEQ', 
-        'secret' => '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'
+        'key' => '*****************', 
+        'secret' => '*****************'
     ]
         ]);
     
