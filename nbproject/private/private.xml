@@ -3,10 +3,21 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/search.php</file>
-            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/submit_rating.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/content-search.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/inc/inc-navigation.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/index.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/content-security.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/content-info.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/inc/inc-footer.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/content-not_found.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/inc/inc-header.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/lib/es_config.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/content-collection.php</file>
             <file>file:/C:/Users/Henrik/Documents/MDBIS/css/Stylesheet.css</file>
-            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/all.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/lib/aws_config.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/content-start.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/src/view/content-impressum.php</file>
+            <file>file:/C:/Users/Henrik/Documents/MDBIS/js/submit_rating.js</file>
         </group>
     </open-files>
 </project-private>

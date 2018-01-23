@@ -1,3 +1,6 @@
+<div class="jumbotron text-center">
+    <h2>Browse our fantastic collection!</h2>
+</div>
 <?php
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -57,13 +60,14 @@ $params = [
 ];
 $total_result = $elastic_client->search($params);
 
+//CALCULATE/DEFINE -TOTAL AMOUNT OF MOVIES AND PAGENUMBER
 $total_movies_in_db = $total_result['hits']['total'];
 $total_number_of_pages = ceil($total_movies_in_db / PAGE_LIMIT);
 ?>
 
 
 
-<!--HEADER-->
+<!--HEADER: SHOW TOTAL MOVIES AND SORT/ODER SELECTION-->
 <div class="container">
     <div class="row">
         <div class="col-sm-6" style="text-align: left">
@@ -71,17 +75,37 @@ $total_number_of_pages = ceil($total_movies_in_db / PAGE_LIMIT);
         </div>
         <div class="col-sm-6 text-center" style="text-align: right">
             <form method="get" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                <input type="hidden" name="site" value="all"/>   
+                <input type="hidden" name="site" value="collection"/>   
                 <b>Sort by:</b>
              <select name="sort_by">
-                 <option selected value="rating_rank">Ranking</option>
-                 <option value="rating_value">Score</option>
-                 <option value="rating_counter">Amount of ratings</option>
+                 <option 
+                     <?php if($sort == "rating_rank"){
+                         echo 'selected';
+                     }?> 
+                     value="rating_rank">Ranking</option>
+                 <option 
+                     <?php if( $sort == "rating_value" ){
+                         echo 'selected';
+                     }?> 
+                     value="rating_value">Score</option>
+                 <option
+                     <?php if($sort == "rating_counter"){
+                         echo 'selected';
+                     }?> 
+                     value="rating_counter">Amount of ratings</option>
              </select>
                 <b>Order by:</b>
              <select name="order_by">
-                 <option selected value="asc">ascending</option>
-                 <option value="desc">descending</option>
+                 <option
+                     <?php if($order == "asc"){
+                         echo 'selected';
+                     }?> 
+                     value="asc">ascending</option>
+                 <option
+                     <?php if($order == "desc"){
+                         echo 'selected';
+                     }?> 
+                     value="desc">descending</option>
              </select>
             <button class="btn btn-sm btn-success" type="submit">Change the order</button>
             </form>
@@ -90,20 +114,22 @@ $total_number_of_pages = ceil($total_movies_in_db / PAGE_LIMIT);
         <hr>
     </div>   
 </div>
-<hr>
 <br>
 
 
 
-<!--PAGECONTROL-->
-<div class="container" style="border-bottom: 1px solid black">
+<!--PAGECONTROL-TOP-->
+<div class="container" >
     <div class="row">
+        <br>
         <div class="col-sm-4 text-center" >
             <?php
             if ($page == 1) {
-                echo '<a href="index.php?site=all&page=' . ($page) . '"><u>Previous Page</u></a>';
+                echo '<a href="index.php?site=collection&page=' . ($page) . '"><u><i class="fa fa-caret-left  fa-2x" aria-hidden="true"></i>
+<b>Previous Page</b></u></a>';
             } else {
-                echo '<a href="index.php?site=all&page=' . ($page - 1) . '"><u>Previous Page</u></a>';
+                echo '<a href="index.php?site=collection&page=' . ($page - 1) . '"><u><i class="fa fa-caret-left  fa-2x" aria-hidden="true"></i>
+<b>Previous Page</b></u></a>';
             }
             ?>
         </div>
@@ -111,13 +137,14 @@ $total_number_of_pages = ceil($total_movies_in_db / PAGE_LIMIT);
             <h5><b>Page <?php echo $page ?> / <?php echo $total_number_of_pages ?></b></h5>
         </div>
         <div class="col-sm-4 text-center">
-            <?php echo '<a href="index.php?site=all&page=' . ($page + 1) . '"><u>Next Page</u></a>' ?>
+            <?php echo '<a href="index.php?site=collection&page=' . ($page + 1) . '"><u><b>Next Page</b> <i class="fa fa-caret-right fa-2x" aria-hidden="true"></i>
+</u></a>' ?>
         </div>
-        <hr>
     </div>   
 </div>
-<div class="container-fluid col-container">
-   
+
+<!--RESULT SET-->  
+<div class="container col-container">
     <?php
     $i = 0;
     $j = 0;
@@ -126,6 +153,7 @@ $total_number_of_pages = ceil($total_movies_in_db / PAGE_LIMIT);
         if (empty($total_result['hits']['hits'][$j])) {
             $j++;
         } else {
+            
             //GET IMAGE URL FROM DATABASE
             require 'lib/aws_config.php';
 
@@ -142,13 +170,14 @@ $total_number_of_pages = ceil($total_movies_in_db / PAGE_LIMIT);
             $temp_result = $marshaler->unmarshalJson($image_result['Item']);
             $image_data = json_decode($temp_result, true);
             
+            //Create New Row if already displayed none or four Movies
             if(($i % ROW_LIMIT == 0) || ($i == 0)){
-               echo '<div class="row">';
+               echo '<div class="row col-container">';
             }
             ?>
-            <!--SHOW SMALL MOVIE RESULT-->  
+            
             <div class="col-sm-3 col">
-                <div class="row">
+                <div class="row col-container">
                     <div class="col-sm-4 col">
                         <?php if(!empty($image_data['info']['image_url'])){
                         echo '<img src="' .$image_data['info']['image_url'].'"/>';
@@ -164,7 +193,7 @@ $total_number_of_pages = ceil($total_movies_in_db / PAGE_LIMIT);
                             <li>Score:<?php echo $total_result['hits']['hits'][$j]['_source']['rating_value'] ?></li>
                             <li>Rated <?php echo $total_result['hits']['hits'][$j]['_source']['rating_counter'] ?> times</li>
                             <li><br></li>
-                            <li><button><?php echo '<a href="index.php?site=rating&movie=' . $title . '">More Details</a>' ?></button></li>
+                            <li><button><?php echo '<a href="index.php?site=search&movie=' . $title . '">More Details</a>' ?></button></li>
                         </ul>
                     </div>
                 </div>
@@ -181,4 +210,27 @@ $total_number_of_pages = ceil($total_movies_in_db / PAGE_LIMIT);
     ?>
             
 </div>
+<br>
+<div class="container" >
+    <div class="row">
+        <br>
+        <div class="col-sm-4 text-center" >
+            <?php
+            if ($page == 1) {
+                echo '<a href="index.php?site=collection&page=' . ($page) . '"><u><i class="fa fa-caret-left  fa-2x" aria-hidden="true"></i>
+<b>Previous Page</b></u></a>';
+            } else {
+                echo '<a href="index.php?site=collection&page=' . ($page - 1) . '"><u><i class="fa fa-caret-left  fa-2x" aria-hidden="true"></i>
+<b>Previous Page</b></u></a>';
+            }
+            ?>
+        </div>
+        <div class="col-sm-4 text-center">
+            <h5><b>Page <?php echo $page ?> / <?php echo $total_number_of_pages ?></b></h5>
+        </div>
+        <div class="col-sm-4 text-center">
+            <?php echo '<a href="index.php?site=collection&page=' . ($page + 1) . '"><u><b>Next Page</b> <i class="fa fa-caret-right fa-2x" aria-hidden="true"></i>
+</u></a>' ?>
+        </div>
+    </div>   
 </div>

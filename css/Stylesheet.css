@@ -1,54 +1,50 @@
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
 /* 
     Created on : 20.10.2017, 18:31:22
     Author     : henrik
 */
 
-
+/*BODY COLOR AND FONT*/
 body {
     background-color: white;
     color: black;
     font: 14px Lucida Sans Unicode,sans-serif;
 }
-/*CONTAINER*/
+/*CONTAINER-WIDTH*/
 .container{
     width: 90%;
+    position: relative;
 }
 
+/*SET IMAGE SIZE*/
 img{
     width: 70%;
     height: auto;
     border-radius: 5px;
 }
 
+/*LIST WITHOUT BULLETPOINTS*/
 ul{
     list-style-type: none;
 }
 
-/*SEARCH.PHP*/
-
+/*MOVIE DETAILS: IMAGE*/
 .movie-view-image {
     float: left;
     width: 30%;
     text-align: center;
 }
+/*MOVIE DETAILS: DESCRIPTION*/
 .movie-view-description {
     float: left;
     width: 40%;
 }
+/*MOVIE DETAILS: RATING*/
 .movie-view-rating {
     float: left;
     width: 20%;
     text-align: center;
 }
-.top-distance {
-    margin-top: 10%;
-    padding: 10px; 
-}
+/*MOVIE COLLECTION RESULT FIELD*/
 .col-sm-3 {
     border: 0.5px solid grey;
     border-radius: 10px;
@@ -59,12 +55,25 @@ ul{
 }
 .col-container {
     display: table; /* Make the container element behave like a table */
-    width: 100%; /* Set full-width to expand the whole page */
 }
 
 .col {
     display: table-cell; /* Make elements inside the container behave like table cells */
 }
-.suggestions{
-    
+/*- - - - -*/
+
+.panel-default{
+    border: 1px solid grey;
+    border-radius: 5px;
+}
+.jumbotron{
+    border-bottom: 1px solid grey; 
+}
+.footer-bar{
+    border-top: 2px solid lightgrey; 
+    bottom: 0;
+    left:0; 
+    margin-top: 15%;
+    position: relative; 
+    width: 100%;
 }

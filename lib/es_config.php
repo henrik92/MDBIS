@@ -1,5 +1,8 @@
 <?php
-require 'vendor/autoload.php';
+/*
+    ELASTIC SEARCH SERVICE CONNECTION
+ *  */
+require $_SERVER["DOCUMENT_ROOT"] . '/vendor/autoload.php';
 
 
 //Initializing Elastic Client

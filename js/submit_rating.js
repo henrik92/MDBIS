@@ -5,14 +5,22 @@ $(document).ready(
                 e.preventDefault();
 
                 var title = $('#mov_title').val();
-                var rating = $('#mov_rating').val();
+                
+                var user_rating = $('#mov_rating').val();
+                var current_rating = $('#rating_score').val();
+                var counter = $('#rating_counter').val();
+                var rank = $('#rating_rank').val();
+                
 
                 $.ajax({
                     type: 'post',
-                    url: 'js/search_submit_rating.php',
+                    url: 'src/processor/process_rating.php',
                     data: {
                         movie_title: title,
-                        movie_rating: rating
+                        movie_user_rating: user_rating, 
+                        movie_rank: rank, 
+                        movie_counter: counter,
+                        movie_current_rating: current_rating
                     },
                     success: function (response) {
                        /* if (response.search(/success/) !== -1)*/

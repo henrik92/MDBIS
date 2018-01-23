@@ -1,8 +1,11 @@
+<div class="jumbotron text-center">
+    <h2>Rate your favourite movie</h2>
+</div>
 <!--SEARCHFIELD-->
 <div class="container text-center top-distance">
-    <h2>Rate your favourite movie</h2><br>
+    
     <form id="search" action="" method="post">
-        <input class="input-lg" style="width: 40%" name="title" type="text" placeholder="Enter your title here...">
+        <input class="input-lg" style="width: 40%" name="title" type="text" placeholder="Enter your desired title here...">
         <button name="submit_search" type="submit" value="search" class="btn btn-success">Search</button>
     </form>
     <br>
@@ -46,7 +49,7 @@ if (!empty($_POST['title']) and isset($_POST["submit_search"])) {
                 <?php
                 for ($i = 0; !empty($results['hits']['hits'][$i]); $i++) {
                     $elastic_title = $results['hits']['hits'][$i]['_source']['title'];
-                    echo '<li><a href="index.php?site=rating&movie=' . $elastic_title . '">' . $elastic_title . '</a></li>';
+                    echo '<li><a href="index.php?site=search&movie=' . $elastic_title . '">' . $elastic_title . '</a></li>';
                 }
                 ?> 
             </ul>
@@ -120,11 +123,14 @@ if (isset($_GET['movie'])) {
                 </ul>
                 <br>
                 <hr>
-                <form action="js/search_submit_rating.php" id="movie_rating" method="post">
+                <form action="src/processor/process_rating.php" id="movie_rating" method="post">
+                    <input type="hidden" id="rating_rank" name="rating_rank" value="<?php echo $data['rating']['rating_rank']; ?>"/>
+                    <input type="hidden" id="rating_counter" name="rating_counter" value="<?php echo $data['rating']['rating_counter']; ?>"/>
+                    <input type="hidden" id="rating_score" name="rating_value" value="<?php echo $data['rating']['rating_value']; ?>"/>
                     <input id="mov_rating" style="width: 20%;" name="movie_rating" /><b> / 10 Stars</b>
                     <br><br>
                     <input id="mov_title" type="hidden" name="movie_title" value="<?php echo $data['title'] ?>">
-                    <button id="submitrating" onclick="submitrating();" name="submit_rating" type="submit" value="rating" class="btn btn-success">Submit my Rating</button>
+                    <button id="submitrating" name="submit" type="submit" value="rating" class="btn btn-success">Submit my Rating</button>
                 </form>
                 <br>
                 <b><h5 style="color:red;" id="result"></h5></b>
