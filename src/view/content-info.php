@@ -37,7 +37,7 @@
                     <i class="fa fa-user-circle-o fa-4x" aria-hidden="true"></i>
                 </div>
                 <div class="panel-body text-center">
-                    <h4>David Bregulla - <b>xxxxxxxx</b></h4>
+                    <h4>David Bregulla - <b>6010460</b></h4>
                 </div> </div>
 
         </div>
